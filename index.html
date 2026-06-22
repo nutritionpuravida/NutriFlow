@@ -759,6 +759,7 @@ tr:hover td { background: var(--bg-hover); }
           <div class="metric"><div class="m-label">TDEE</div><div class="m-value" id="r-tdee">—</div><div class="m-sub">kcal/day</div></div>
           <div class="metric"><div class="m-label">Goal Calories</div><div class="m-value" id="r-goal-kcal">—</div><div class="m-sub" id="r-goal-sub">kcal/day</div></div>
         </div>
+        <div id="expected-progress-box" class="alert info" style="display:none;margin-top:-4px;margin-bottom:12px"></div>
         <div id="condition-guidance" style="padding:12px;background:var(--teal-50);border:1px solid var(--teal-100);border-radius:var(--radius);font-size:13px;color:var(--teal-800);margin-top:8px"></div>
         <div style="margin-top:14px;display:flex;gap:8px;">
           <button class="btn primary" onclick="nav('macros')">Continue to Macro Targets →</button>
@@ -2527,6 +2528,33 @@ function onWeightInput(){
   calcAll();
 }
 
+function renderExpectedProgress(goal, tdee, goalKcal){
+  const box=document.getElementById('expected-progress-box');
+  if(!box) return;
+  const show=goal==='Weight Loss' && tdee && goalKcal;
+  if(!show){
+    box.style.display='none';
+    box.innerHTML='';
+    return;
+  }
+  const deficit=Math.round(tdee-goalKcal);
+  let note='';
+  if(deficit<300) note='<div style="margin-top:8px;color:var(--amber-text);font-weight:700">⚠️ Small deficit — weight loss will be gradual</div>';
+  else if(deficit>1000) note='<div style="margin-top:8px;color:var(--amber-text);font-weight:700">⚠️ Large deficit — consider increasing calories for sustainability</div>';
+  box.style.display='block';
+  box.innerHTML=`
+    <div style="line-height:1.55">
+      <strong>📉 Expected weight loss:</strong>
+      <ul style="margin:6px 0 0 18px;padding:0">
+        <li>Week 1: 0.5–1.5 kg (includes water weight)</li>
+        <li>Weeks 2–4: 0.3–0.8 kg/week (fat loss)</li>
+        <li>Monthly: 1.5–3 kg sustainable rate</li>
+      </ul>
+      <div style="margin-top:8px">Based on a deficit of <strong>${deficit}</strong> kcal/day from your TDEE.</div>
+      ${note}
+    </div>`;
+}
+
 function calcAll() {
   const age=parseFloat(v('p-age'))||null, sex=v('p-sex'), h=parseFloat(v('p-height'))||null;
   const w=parseFloat(v('p-weight'))||null, act=parseFloat(v('p-activity'))||1.55;
@@ -2644,6 +2672,7 @@ function calcAll() {
   setEl('r-bmi',bmi?bmi.toFixed(1):'—'); setEl('r-bmi-cat',bmiCat||'—');
   setEl('r-bmr',bmr?Math.round(bmr):'—'); setEl('r-tdee',tdee?Math.round(tdee):'—');
   setEl('r-goal-kcal',goalKcal?Math.round(goalKcal):'—');
+  renderExpectedProgress(goal, tdee, goalKcal);
   const bmiEl=document.getElementById('r-bmi');
   if(bmi) bmiEl.className='m-value '+(bmi<18.5||bmi>=30?'err':bmi<25?'ok':'warn');
 
