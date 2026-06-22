@@ -292,6 +292,10 @@ tr:hover td { background: var(--bg-hover); }
   .report-week-table { table-layout: fixed !important; width: 100% !important; }
   .report-week-table td, .report-week-table th { overflow-wrap: break-word !important; word-break: break-word !important; }
   .report-week-table td:last-child, .report-week-table th:last-child { white-space: nowrap !important; word-break: normal !important; }
+  .report-week-table th { background: #0f6e56 !important; color: #fff !important; }
+  .report-week-table tbody tr:nth-child(odd) td { background: #f8fffe !important; }
+  .report-week-table tbody tr:nth-child(even) td { background: #f0faf6 !important; }
+  .report-week-table tbody tr:last-child td { background: #e1f5ee !important; font-weight: 700 !important; border-top: 2px solid #0f6e56 !important; }
 
   /* ── ALL PAGES: base table styles for print ── */
   table { font-size: 10px !important; table-layout: auto !important;
@@ -978,9 +982,8 @@ tr:hover td { background: var(--bg-hover); }
         <div class="field-note" style="margin-bottom:8px">A printable food exchange list to give clients — shows what foods can be swapped 1-for-1 within each exchange category.</div>
         <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
           <div style="display:flex;gap:6px">
-            <button class="btn" id="eq-btn-gr" onclick="setEquivalentsLang('gr')">Ελληνικά</button>
+            <button class="btn primary" id="eq-btn-gr" onclick="setEquivalentsLang('gr')">Ελληνικά</button>
             <button class="btn" id="eq-btn-en" onclick="setEquivalentsLang('en')">English</button>
-            <button class="btn primary" id="eq-btn-both" onclick="setEquivalentsLang('both')">Both / Και τα δύο</button>
           </div>
           <button class="btn" onclick="printPage()">🖨️ Print for client</button>
         </div>
@@ -1059,7 +1062,7 @@ tr:hover td { background: var(--bg-hover); }
           <div>
             <div id="appointments-calendar"></div>
           </div>
-          <div class="card appointment-form-panel" style="margin:0">
+          <div class="card appointment-form-panel" id="appointment-form-card" style="margin:0;display:none">
             <div class="card-header"><span class="card-title" id="appointment-form-title">New appointment</span></div>
             <div class="card-body">
               <input type="hidden" id="appt-id">
@@ -1213,15 +1216,22 @@ function subscriptionIsActive(row){
 }
 async function fetchSubscriptionStatus(){
   if(!currentUser) return {status:'signed_out', active:false};
-  const {data, error} = await sb.from('profiles')
+  let {data, error} = await sb.from('profiles')
     .select('subscription_status,current_period_end,stripe_customer_id')
     .eq('id', currentUser.id)
     .maybeSingle();
-  if(error) return {status:'unknown', active:false, error:error.message};
+  if(error){
+    const alt = await sb.from('subscriptions')
+      .select('status,subscription_status,current_period_end,current_period_end_at,stripe_customer_id')
+      .eq('user_id', currentUser.id)
+      .maybeSingle();
+    if(!alt.error) { data=alt.data; error=null; }
+  }
+  if(error) return {status:'No active subscription', active:false, missingTable:true};
   return {
-    status:(data&&data.subscription_status)||'inactive',
+    status:(data&&(data.subscription_status||data.status))||'No active subscription',
     active:subscriptionIsActive(data),
-    currentPeriodEnd:data&&data.current_period_end,
+    currentPeriodEnd:data&&(data.current_period_end||data.current_period_end_at),
     stripeCustomerId:data&&data.stripe_customer_id,
   };
 }
@@ -1232,9 +1242,7 @@ async function refreshSubscriptionGate(){
   if(subscriptionState.active){
     hideSubscriptionScreen();
   } else {
-    const msg = subscriptionState.error
-      ? `Could not verify subscription: ${subscriptionState.error}`
-      : 'Subscribe to unlock NutriFlow for your practice.';
+    const msg = 'No active subscription. Subscribe to unlock NutriFlow for your practice.';
     showSubscriptionScreen(msg);
   }
 }
@@ -1260,13 +1268,13 @@ async function openBillingPortal(){
 }
 function updateAccountPage(){
   const emailEl=document.getElementById('acct-email'); if(emailEl) emailEl.value=currentUser?currentUser.email:'';
-  const statusEl=document.getElementById('acct-subscription'); if(statusEl) statusEl.value=subscriptionState.status||'unknown';
+  const statusEl=document.getElementById('acct-subscription'); if(statusEl) statusEl.value=subscriptionState.active?'Active':(subscriptionState.status||'No active subscription');
   const detail=document.getElementById('account-subscription-detail');
   if(detail){
     const until=subscriptionState.currentPeriodEnd ? ` Current period ends ${new Date(subscriptionState.currentPeriodEnd).toLocaleDateString('el-GR')}.` : '';
     detail.innerHTML = subscriptionState.active
       ? `<strong>Active subscription.</strong>${until}`
-      : `<strong>Subscription required.</strong> Use Checkout to activate this account.`;
+      : `<strong>No active subscription.</strong> Use Checkout to activate this account.`;
   }
 }
 
@@ -1834,28 +1842,27 @@ const EQUIVALENTS_DATA = [
     ]},
 ];
 
-let equivalentsLang='both';
+let equivalentsLang='gr';
 function setEquivalentsLang(lang){
-  equivalentsLang=lang;
-  ['gr','en','both'].forEach(l=>{
+  equivalentsLang=lang==='en' ? 'en' : 'gr';
+  ['gr','en'].forEach(l=>{
     const btn=document.getElementById('eq-btn-'+l);
-    if(btn) btn.className = 'btn'+(l===lang?' primary':'');
+    if(btn) btn.className = 'btn'+(l===equivalentsLang?' primary':'');
   });
   buildEquivalents();
 }
 
 function buildEquivalents(){
   const lang=equivalentsLang;
-  let html=`<div class="alert info">ℹ️ ${lang==='en'?'Within each category, foods can be swapped for one another in the listed amounts.':lang==='gr'?'Μέσα στην ίδια κατηγορία, τα τρόφιμα μπορούν να αντικατασταθούν μεταξύ τους στις αναγραφόμενες ποσότητες.':'Μέσα στην ίδια κατηγορία, τα τρόφιμα μπορούν να αντικατασταθούν μεταξύ τους στις αναγραφόμενες ποσότητες. / Within each category, foods can be swapped for one another in the listed amounts.'}</div>`;
+  let html=`<div class="alert info">ℹ️ ${lang==='en'?'Within each category, foods can be swapped for one another in the listed amounts.':'Μέσα στην ίδια κατηγορία, τα τρόφιμα μπορούν να αντικατασταθούν μεταξύ τους στις αναγραφόμενες ποσότητες.'}</div>`;
   EQUIVALENTS_DATA.forEach(cat=>{
-    const title = lang==='en' ? cat.en : lang==='gr' ? cat.gr : `${cat.gr} / ${cat.en}`;
+    const title = lang==='en' ? cat.en : cat.gr;
     html+=`<div style="margin-bottom:16px">
       <div style="font-weight:700;font-size:14px;color:var(--text-active);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)">${cat.icon} ${title}</div>
       <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.8">
         ${cat.items.map(it=>{
           if(lang==='en') return `<li>${it.en}</li>`;
-          if(lang==='gr') return `<li>${it.gr}</li>`;
-          return `<li>${it.gr} <span style="color:var(--text-muted)">— ${it.en}</span></li>`;
+          return `<li>${it.gr}</li>`;
         }).join('')}
       </ul>
     </div>`;
@@ -1923,15 +1930,28 @@ function mealOptionsHtml(options, current){
 // the same time — the two are no longer in tension the way they were in
 // either previous version.
 const SNACK_EXTRAS = [
-  {v:'driedfruit', l:'🍇 Αποξηραμένα αντί φρέσκα'}, // style toggle for the auto fruit serving
-  {v:'yogurt',     l:'🍦 Γιαούρτι αντί γάλα'},        // style toggle for the auto dairy serving
-  {v:'nuts',       l:'🥜 + Ξηροί καρποί'},            // additive extra
-  {v:'coffee',     l:'☕ + Καφές'},                    // additive extra
+  {v:'driedfruit', gr:'🍇 Αποξηραμένα αντί φρέσκα', en:'🍇 Dried fruit instead of fresh'}, // style toggle for the auto fruit serving
+  {v:'yogurt',     gr:'🍦 Γιαούρτι αντί γάλα',        en:'🍦 Yogurt instead of milk'},       // style toggle for the auto dairy serving
+  {v:'nuts',       gr:'🥜 + Ξηροί καρποί',            en:'🥜 + Nuts'},                       // additive extra
+  {v:'coffee',     gr:'☕ + Καφές',                    en:'☕ + Coffee (without sugar)'},      // additive extra
 ];
 
 // Renders the checkbox group HTML for a snack slot's extras
 function snackExtrasHtml(){
-  return SNACK_EXTRAS.map(e=>`<label style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;white-space:nowrap"><input type="checkbox" value="${e.v}" style="width:auto"> ${e.l}</label>`).join('');
+  const lang=S.mealLanguage==='EN' ? 'en' : 'gr';
+  return SNACK_EXTRAS.map(e=>`<label style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;white-space:nowrap"><input type="checkbox" value="${e.v}" style="width:auto"> ${e[lang]}</label>`).join('');
+}
+
+function refreshSnackExtrasLabels(){
+  [['s-snack1','snack1Extras'],['s-snack2','snack2Extras'],['s-sleep','sleepExtras']].forEach(([elId,key])=>{
+    const el=document.getElementById(elId);
+    if(!el) return;
+    const checked=getSnackExtras(elId);
+    el.innerHTML=snackExtrasHtml();
+    el.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+      cb.checked = checked.includes(cb.value) || (S.mealSel[key]||[]).includes(cb.value);
+    });
+  });
 }
 
 // Reads which extras are ticked in a snack slot's checkbox group
@@ -1984,8 +2004,10 @@ function buildSlotSnack(slot, extras, lang='GR'){
 function setMealLanguage(lang){
   S.mealLanguage = lang==='EN' ? 'EN' : 'GR';
   updateMealLanguageButtons();
+  refreshSnackExtrasLabels();
   if(document.getElementById('page-oneday')?.classList.contains('active')) buildOneDayPlan();
   if(document.getElementById('page-sevenday')?.classList.contains('active')) buildSevenDay();
+  if(document.getElementById('page-report')?.classList.contains('active')) buildReport();
 }
 function updateMealLanguageButtons(){
   const isEn=S.mealLanguage==='EN';
@@ -2981,16 +3003,18 @@ function onReportOptionsChange(){
 function buildReport(){
   const ex=S.ex;
   const portions=getMealPortions();
+  const lang=S.mealLanguage||'GR';
+  const isEn=lang==='EN';
   const condList=(S.conditions&&S.conditions.length)?S.conditions:['General'];
   const condNames=condList.map(c=>(COND_GUIDANCE[c]||COND_GUIDANCE.General).gr).join(', ');
   const today=new Date().toLocaleDateString('el-GR');
   const n=S.notes, intake=S.intake;
-  const brkText=MEALS[S.mealSel.breakfast]?MEALS[S.mealSel.breakfast](ex,null):'—';
-  const lunText=MEALS[S.mealSel.lunch]?MEALS[S.mealSel.lunch](ex,portions.lunch):'—';
-  const dinText=MEALS[S.mealSel.dinner]?MEALS[S.mealSel.dinner](ex,portions.dinner):'—';
-  const snk1Text=buildSlotSnack('snk1', S.mealSel.snack1Extras||[]).text;
-  const snk2Text=buildSlotSnack('snk2', S.mealSel.snack2Extras||[]).text;
-  const sleepText=buildSlotSnack('sleep', S.mealSel.sleepExtras||[]).text;
+  const brkText=mealText(S.mealSel.breakfast,null,lang)||'—';
+  const lunText=mealText(S.mealSel.lunch,portions.lunch,lang)||'—';
+  const dinText=mealText(S.mealSel.dinner,portions.dinner,lang)||'—';
+  const snk1Text=buildSlotSnack('snk1', S.mealSel.snack1Extras||[], lang).text;
+  const snk2Text=buildSlotSnack('snk2', S.mealSel.snack2Extras||[], lang).text;
+  const sleepText=buildSlotSnack('sleep', S.mealSel.sleepExtras||[], lang).text;
   const day=calcDayTotals();
   const gapOk=Math.abs(day.gap)<=100;
   setEl('report-body',`<div style="width:100%;font-family:Arial,sans-serif;font-size:13px">
@@ -3025,16 +3049,16 @@ function buildReport(){
       ${n.medication?'<br><strong>Φαρμακευτική αγωγή:</strong> '+n.medication:''}
     </div>`:''}
     ${(S.reportOptions?.oneDay!==false) ? `
-    <div style="font-size:14px;font-weight:700;color:var(--teal-800);margin:14px 0 6px;border-bottom:2px solid var(--teal-600);padding-bottom:4px">☀️ ΗΜΕΡΗΣΙΟ ΠΛΑΝΟ ΓΕΥΜΑΤΩΝ</div>
-    <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Σύνολο: <strong>${day.totalKcal} kcal</strong> | Στόχος: ${day.target} kcal ${gapOk?'✅':''}</div>
+    <div style="font-size:14px;font-weight:700;color:var(--teal-800);margin:14px 0 6px;border-bottom:2px solid var(--teal-600);padding-bottom:4px">☀️ ${isEn?'DAILY MEAL PLAN':'ΗΜΕΡΗΣΙΟ ΠΛΑΝΟ ΓΕΥΜΑΤΩΝ'}</div>
+    <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">${isEn?'Total':'Σύνολο'}: <strong>${day.totalKcal} kcal</strong> | ${isEn?'Target':'Στόχος'}: ${day.target} kcal ${gapOk?'✅':''}</div>
     <table style="width:100%;border-collapse:collapse;font-size:13px">
       ${[
-        ['🌅','Πρωινό',brkText,day.brkKcal],
-        ['🍎','Σνακ 1',snk1Text,day.snk1Kcal],
-        ['🍽️','Μεσημεριανό',lunText,day.lunKcal],
-        ['🍊','Σνακ 2',snk2Text,day.snk2Kcal],
-        ['🌙','Βραδινό',dinText,day.dinKcal],
-        ['😴','Πριν τον ύπνο',sleepText,day.slpKcal],
+        ['🌅',isEn?'Breakfast':'Πρωινό',brkText,day.brkKcal],
+        ['🍎',isEn?'Snack 1':'Σνακ 1',snk1Text,day.snk1Kcal],
+        ['🍽️',isEn?'Lunch':'Μεσημεριανό',lunText,day.lunKcal],
+        ['🍊',isEn?'Snack 2':'Σνακ 2',snk2Text,day.snk2Kcal],
+        ['🌙',isEn?'Dinner':'Βραδινό',dinText,day.dinKcal],
+        ['😴',isEn?'Before sleep':'Πριν τον ύπνο',sleepText,day.slpKcal],
       ].map(([icon,label,text,kcal])=>`<tr style="border-bottom:1px solid #eee">
         <td style="padding:6px 4px;width:24px;font-size:16px">${icon}</td>
         <td style="padding:6px 4px;font-weight:600;width:130px;white-space:nowrap">${label}</td>
@@ -3042,45 +3066,46 @@ function buildReport(){
         <td style="padding:6px 4px;text-align:right;color:var(--text-muted);white-space:nowrap;font-size:11px">${kcal} kcal</td>
       </tr>`).join('')}
       <tr style="border-top:2px solid var(--teal-600);font-weight:700;background:var(--teal-50)">
-        <td colspan="3" style="padding:6px 4px">Σύνολο ημέρας</td>
+        <td colspan="3" style="padding:6px 4px">${isEn?'Daily total':'Σύνολο ημέρας'}</td>
         <td style="padding:6px 4px;text-align:right">${day.totalKcal} kcal</td>
       </tr>
     </table>` : ''}
 
     ${(S.reportOptions?.sevenDay!==false) ? `
-    <div style="font-size:14px;font-weight:700;color:var(--teal-800);margin:16px 0 6px;border-bottom:2px solid var(--teal-600);padding-bottom:4px">📅 ΕΒΔΟΜΑΔΙΑΙΟ ΠΛΑΝΟ</div>
-    <table class="report-week-table" style="width:100%;table-layout:fixed;border-collapse:collapse;font-size:10px">
+    <div style="font-size:14px;font-weight:700;color:var(--teal-800);margin:16px 0 6px;border-bottom:2px solid var(--teal-600);padding-bottom:4px">📅 ${isEn?'WEEKLY PLAN':'ΕΒΔΟΜΑΔΙΑΙΟ ΠΛΑΝΟ'}</div>
+    <table class="report-week-table" style="width:100%;table-layout:fixed;border-collapse:collapse;font-size:10px;background:var(--bg-surface);border:1px solid var(--border)">
       <colgroup>
         <col style="width:6%"><col style="width:14%"><col style="width:14%"><col style="width:14%">
         <col style="width:14%"><col style="width:14%"><col style="width:14%"><col style="width:10%">
       </colgroup>
       <thead><tr style="background:var(--teal-600);color:#fff">
-        <th style="padding:4px">Ημέρα</th>
-        <th style="padding:4px">Πρωινό</th>
-        <th style="padding:4px">Σνακ 1</th>
-        <th style="padding:4px">Μεσημεριανό</th>
-        <th style="padding:4px">Σνακ 2</th>
-        <th style="padding:4px">Βραδινό</th>
-        <th style="padding:4px">Πριν ύπνο</th>
+        <th style="padding:4px">${isEn?'Day':'Ημέρα'}</th>
+        <th style="padding:4px">${isEn?'Breakfast':'Πρωινό'}</th>
+        <th style="padding:4px">${isEn?'Snack 1':'Σνακ 1'}</th>
+        <th style="padding:4px">${isEn?'Lunch':'Μεσημεριανό'}</th>
+        <th style="padding:4px">${isEn?'Snack 2':'Σνακ 2'}</th>
+        <th style="padding:4px">${isEn?'Dinner':'Βραδινό'}</th>
+        <th style="padding:4px">${isEn?'Before sleep':'Πριν ύπνο'}</th>
         <th style="padding:4px;text-align:right;white-space:nowrap">kcal</th>
       </tr></thead>
       <tbody>
       ${(S.weekPlans||WEEK_PLANS).map((p,i)=>{
-        const dt=calcDayTotalsForPlan(p);
+        const dt=calcDayTotalsForPlan(p, lang);
         const ok=Math.abs(dt.gap)<=100;
-        return `<tr style="background:${i%2===0?'#fff':'#f8fffe'};border-bottom:1px solid #e5e7eb">
-          <td style="padding:4px;font-weight:700;word-wrap:break-word">${p.day}</td>
-          <td style="padding:4px;word-wrap:break-word">${MEALS[p.brk]?MEALS[p.brk](ex,null):''}</td>
+        const dayLabel=isEn ? ({'Δευτέρα':'Monday','Τρίτη':'Tuesday','Τετάρτη':'Wednesday','Πέμπτη':'Thursday','Παρασκευή':'Friday','Σάββατο':'Saturday','Κυριακή':'Sunday'}[p.day]||p.day) : p.day;
+        return `<tr style="background:${i%2===0?'var(--bg-surface)':'var(--teal-50)'};border-bottom:1px solid var(--border)">
+          <td style="padding:4px;font-weight:700;word-wrap:break-word">${dayLabel}</td>
+          <td style="padding:4px;word-wrap:break-word">${mealText(p.brk,null,lang)}</td>
           <td style="padding:4px;word-wrap:break-word">${dt.snk1Text}</td>
-          <td style="padding:4px;word-wrap:break-word">${MEALS[p.lun]?MEALS[p.lun](ex,portions.lunch):''}</td>
+          <td style="padding:4px;word-wrap:break-word">${mealText(p.lun,portions.lunch,lang)}</td>
           <td style="padding:4px;word-wrap:break-word">${dt.snk2Text}</td>
-          <td style="padding:4px;word-wrap:break-word">${MEALS[p.din]?MEALS[p.din](ex,portions.dinner):''}</td>
+          <td style="padding:4px;word-wrap:break-word">${mealText(p.din,portions.dinner,lang)}</td>
           <td style="padding:4px;word-wrap:break-word">${dt.slpText}</td>
           <td style="padding:4px;text-align:right;font-weight:700;white-space:nowrap;color:${ok?'#0f6e56':'#b45309'}">${dt.totalKcal}</td>
         </tr>`;
       }).join('')}
       <tr style="background:var(--teal-50);font-weight:700;border-top:2px solid var(--teal-600)">
-        <td colspan="7" style="padding:5px">Στόχος/ημέρα</td>
+        <td colspan="7" style="padding:5px">${isEn?'Target/day':'Στόχος/ημέρα'}</td>
         <td style="padding:5px;text-align:right">${Math.round(S.goalKcal||0)} kcal</td>
       </tr>
       </tbody>
@@ -3572,11 +3597,9 @@ function formatFoodNumber(value, unit){
 function normalizeFoodProduct(product){
   const nutr=product.nutriments||{};
   return {
-    code:product.code||'',
     name:product.product_name || product.generic_name || 'Unnamed food',
     brand:product.brands||'',
     serving:product.serving_size||'',
-    image:product.image_front_small_url||'',
     kcal100:foodNumber(nutr['energy-kcal_100g'] ?? nutr['energy-kcal']),
     carbs100:foodNumber(nutr.carbohydrates_100g),
     protein100:foodNumber(nutr.proteins_100g),
@@ -3594,18 +3617,25 @@ async function searchFoodDatabase(){
     action:'process',
     json:'1',
     page_size:'20',
-    fields:'code,product_name,generic_name,brands,serving_size,image_front_small_url,nutriments'
+    fields:'product_name,brands,serving_size,nutriments'
   });
   try{
-    const res=await fetch(`https://world.openfoodfacts.org/cgi/search.pl?${params.toString()}`);
-    if(!res.ok) throw new Error(`Open Food Facts returned ${res.status}`);
+    const url=`https://world.openfoodfacts.org/cgi/search.pl?${params.toString()}`;
+    let res=await fetch(url, {headers:{'Accept':'application/json'}});
+    if(res.status===503){
+      await new Promise(resolve=>setTimeout(resolve, 700));
+      res=await fetch(url, {headers:{'Accept':'application/json'}});
+    }
+    if(!res.ok) throw new Error(`Open Food Facts returned HTTP ${res.status}`);
     const data=await res.json();
     const products=(data.products||[]).map(normalizeFoodProduct).filter(p=>p.name && (p.kcal100!==null || p.carbs100!==null || p.protein100!==null || p.fat100!==null));
     S.foodResults=products;
     renderFoodResults(products);
-    setEl('fooddb-status', products.length ? `${products.length} foods found. Nutrition shown per 100g.` : 'No foods with nutrition values found. Try another search term.');
+    setEl('fooddb-status', products.length ? `${products.length} foods found. Nutrition shown per 100g.` : `No nutrition-labelled foods found for "${query}". Try a broader term such as oats, yogurt, or chicken.`);
   }catch(err){
-    setEl('fooddb-status', `Food search failed: ${err.message}`);
+    S.foodResults=[];
+    setEl('fooddb-results','');
+    setEl('fooddb-status', `Food search failed because the Open Food Facts API could not be reached or returned an error. Details: ${err.message}`);
   }
 }
 function renderFoodResults(products){
@@ -3613,7 +3643,7 @@ function renderFoodResults(products){
   if(!products || !products.length){ el.innerHTML=''; return; }
   el.innerHTML=`<table><thead><tr><th>Food</th><th>Serving</th><th>kcal/100g</th><th>Carb</th><th>Protein</th><th>Fat</th><th>Recipe</th></tr></thead><tbody>${products.map((p,i)=>`
     <tr>
-      <td><strong>${p.name}</strong><div style="font-size:11px;color:var(--text-muted)">${p.brand||'Open Food Facts'}${p.code?` · ${p.code}`:''}</div></td>
+      <td><strong>${p.name}</strong><div style="font-size:11px;color:var(--text-muted)">${p.brand||'Open Food Facts'}</div></td>
       <td>${p.serving||'—'}</td>
       <td>${formatFoodNumber(p.kcal100,'')}</td>
       <td>${formatFoodNumber(p.carbs100,'g')}</td>
@@ -3825,9 +3855,18 @@ function normalizeAppointment(row){
 }
 function persistAppointmentsLocal(){
   try{ localStorage.setItem(appointmentStorageKey(), JSON.stringify(S.appointments||[])); }catch(e){}
+  try{
+    if(!currentUser || (S.appointments||[]).some(a=>a.localOnly)){
+      localStorage.setItem('nutriflow_appointments_local', JSON.stringify(S.appointments||[]));
+    }
+  }catch(e){}
 }
 function loadAppointmentsLocal(){
-  try{ return (JSON.parse(localStorage.getItem(appointmentStorageKey())||'[]')||[]).map(normalizeAppointment); }catch(e){ return []; }
+  try{
+    const scoped=localStorage.getItem(appointmentStorageKey());
+    const fallback=localStorage.getItem('nutriflow_appointments_local');
+    return (JSON.parse(scoped || fallback || '[]')||[]).map(normalizeAppointment);
+  }catch(e){ return []; }
 }
 async function loadAppointments(force=false){
   const scope=currentUser ? currentUser.id : 'local';
@@ -3904,6 +3943,8 @@ function goTodayCalendar(){
 }
 function openAppointmentForm(date, id=''){
   const appt=id ? (S.appointments||[]).find(a=>String(a.id)===String(id)) : null;
+  const card=document.getElementById('appointment-form-card');
+  if(card) card.style.display='block';
   const formTitle=document.getElementById('appointment-form-title');
   const delBtn=document.getElementById('appt-delete-btn');
   if(formTitle) formTitle.textContent = appt ? 'Edit appointment' : 'New appointment';
@@ -3919,7 +3960,13 @@ function openAppointmentForm(date, id=''){
   document.getElementById('appt-notes').value = appt?.notes || '';
 }
 function clearAppointmentForm(){
-  openAppointmentForm(todayISO());
+  ['appt-id','appt-client','appt-notes'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
+  const dateEl=document.getElementById('appt-date'); if(dateEl) dateEl.value=todayISO();
+  const timeEl=document.getElementById('appt-time'); if(timeEl) timeEl.value=new Date().toTimeString().slice(0,5);
+  const durationEl=document.getElementById('appt-duration'); if(durationEl) durationEl.value='45';
+  const typeEl=document.getElementById('appt-type'); if(typeEl) typeEl.value='Follow-up';
+  const delBtn=document.getElementById('appt-delete-btn'); if(delBtn) delBtn.style.display='none';
+  const card=document.getElementById('appointment-form-card'); if(card) card.style.display='none';
 }
 async function saveAppointmentFromForm(){
   const clientName=(v('appt-client')||'').trim();
@@ -3951,7 +3998,10 @@ async function saveAppointmentFromForm(){
   S.appointments=[saved,...(S.appointments||[]).filter(a=>String(a.id)!==String(id))].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
   persistAppointmentsLocal();
   appointmentsLoadedFor=currentUser ? currentUser.id : 'local';
-  document.getElementById('appt-id').value=saved.id;
+  calendarCursor=parseISODate(saved.date);
+  clearAppointmentForm();
+  const note=document.getElementById('appointments-save-note');
+  if(note) note.textContent = saved.localOnly ? 'Saved locally because Supabase appointments storage is unavailable.' : 'Appointment saved.';
   renderAppointments();
 }
 async function deleteAppointment(id){
