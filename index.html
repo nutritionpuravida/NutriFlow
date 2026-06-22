@@ -471,7 +471,6 @@ tr:hover td { background: var(--bg-hover); }
   <button class="nav-item" onclick="nav('tracking')">📈 Progress Tracking</button>
   <button class="nav-item" onclick="nav('equivalents')">📖 Equivalents Guide</button>
 <div class="nav-group-label">Clinical</div>
-  <button class="nav-item" onclick="nav('engine')">⚙️ Engine Control <span class="nav-badge" id="engine-badge">!</span></button>
   <button class="nav-item" onclick="nav('account')">💳 Account / Subscription</button>
   <div class="sidebar-footer">NutriFlow v1 · Fingerprint <span id="build-date-sidebar" style="font-family:monospace">—</span><br>Opened: <span id="opened-date-sidebar">—</span><br>Fill green inputs · Avoid overwriting formulas</div>
 </nav>
@@ -485,7 +484,7 @@ tr:hover td { background: var(--bg-hover); }
     </div>
     <div class="topbar-actions">
       <span class="no-print" style="font-size:11px;color:var(--text-muted);background:var(--bg-page);padding:4px 8px;border-radius:6px;border:1px solid var(--border)" title="Opened-on date — this is today's date, whenever you happen to open this file. It does NOT tell you when the content was last edited; use the fingerprint next to it for that (identical content always produces an identical fingerprint).">📅 <span id="opened-date-topbar">—</span></span>
-      <span class="no-print" style="font-size:11px;color:var(--text-muted);background:var(--bg-page);padding:4px 8px;border-radius:6px;border:1px solid var(--border);font-family:monospace" title="Content fingerprint — computed fresh from this exact file's content every time it loads, so it can never be a stale label. Two files with identical content always show the same fingerprint.">v55 · <span id="build-date-topbar">—</span></span>
+      <span class="no-print" style="font-size:11px;color:var(--text-muted);background:var(--bg-page);padding:4px 8px;border-radius:6px;border:1px solid var(--border);font-family:monospace" title="Content fingerprint — computed fresh from this exact file's content every time it loads, so it can never be a stale label. Two files with identical content always show the same fingerprint.">v1 · <span id="build-date-topbar">—</span></span>
       <div class="user-chip no-print" id="user-chip" style="display:none">
         <span id="user-email"></span>
         <button onclick="handleSignOut()">Sign out</button>
@@ -508,7 +507,7 @@ tr:hover td { background: var(--bg-hover); }
     </div>
     <div class="two-col">
       <div class="card">
-        <div class="card-header"><span class="card-title">⚙️ Engine checks</span><span class="card-action" onclick="nav('engine')">View all →</span></div>
+        <div class="card-header"><span class="card-title">⚙️ Safety checks</span></div>
         <div class="card-body" id="dash-engine-checks"><div style="color:var(--gray-400);font-size:13px">Fill client profile to run checks</div></div>
       </div>
       <div class="card">
@@ -1039,7 +1038,6 @@ tr:hover td { background: var(--bg-hover); }
   <button class="bnav-item" onclick="nav('profile');setBnav(this)"><span>👤</span><span>Profile</span></button>
   <button class="bnav-item" onclick="nav('exchanges');setBnav(this)"><span>🔄</span><span>Exchanges</span></button>
   <button class="bnav-item" onclick="nav('oneday');setBnav(this)"><span>☀️</span><span>1-Day</span></button>
-  <button class="bnav-item bnav-badge" onclick="nav('engine');setBnav(this)" id="bnav-engine"><span>⚙️</span><span>Engine</span></button>
   <button class="bnav-item" onclick="nav('account');setBnav(this)"><span>💳</span><span>Account</span></button>
 </nav>
 <script>
@@ -3160,7 +3158,7 @@ function updateDashMetrics(){
   const alerts=[];
   if(incomplete) alerts.push('Client profile incomplete — fill all required fields before printing.');
   if(lowKcal) alerts.push('⚠ Goal calories very low ('+Math.round(S.goalKcal)+' kcal) — clinical review needed.');
-  if(anyCapped) alerts.push('Macro target exceeds realistic food portions — see <a onclick="nav(\'engine\')" style="color:inherit;text-decoration:underline;cursor:pointer">Engine Control</a> for adjustment options.');
+  if(anyCapped) alerts.push('Macro target exceeds realistic food portions — review the safety checks and adjust the exchange targets if needed.');
   const dashAlert=document.getElementById('dash-alert');
   if(dashAlert) dashAlert.innerHTML=alerts.map(a=>`<div class="alert warn">⚠️ ${a}</div>`).join('');
 }
