@@ -164,12 +164,14 @@ select option { background-color: var(--bg-surface); color: var(--text-primary);
 }
 .form-field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236C757D' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
 .form-field input:focus, .form-field select:focus, .form-field textarea:focus { outline: none; border-color: var(--teal-400); box-shadow: 0 0 0 3px rgba(29,158,117,.15); }
+.form-field input.weight-suggested::placeholder { color: var(--text-muted); opacity: .75; font-style: italic; }
 .form-field input[type="checkbox"] {
   -webkit-appearance: checkbox; appearance: checkbox;
   width: 16px; height: 16px; padding: 0; border: none; background: none;
   accent-color: var(--teal-600); flex-shrink: 0; cursor: pointer;
 }
 .form-field .field-note { font-size: 11px; color: var(--text-muted); }
+.form-field .field-note.suggested { color: var(--text-muted); font-style: italic; }
 .section-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .07em; margin: 16px 0 9px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 
 /* ─── TABLES ─── */
@@ -684,7 +686,7 @@ tr:hover td { background: var(--bg-hover); }
         <div class="section-label">ANTHROPOMETRICS</div>
         <div class="form-grid three">
           <div class="form-field"><label>Height (cm)</label><input type="number" id="p-height" placeholder="170" oninput="calcAll()"></div>
-          <div class="form-field"><label>Weight (kg)</label><input type="number" id="p-weight" placeholder="70" step="0.1" oninput="calcAll()"></div>
+          <div class="form-field"><label>Weight (kg)</label><input type="number" id="p-weight" placeholder="70" step="0.1" oninput="onWeightInput()"><div class="field-note suggested" id="weight-suggestion-note"></div></div>
           <div class="form-field"><label>Calorie Adjustment (kcal)</label><input type="number" id="p-cal-adj" placeholder="Auto (0)" step="50" oninput="calcAll()">
             <div class="field-note" id="cal-adj-note" style="margin-top:4px"></div>
           </div>
@@ -1145,7 +1147,7 @@ const S = {
   carbPct:45,protPct:20,fatPct:35,carbG:0,protG:0,fatG:0,
   ex:{fruit:2,veg:5,dairy:2,starch:0,protein:0,fat:0},
   exAuto:{starch:true,protein:true,fat:true},
-  exMeta:null, lastDairyType:'Moderate-fat', lastMeatType:'Lean',
+  exMeta:null, lastDairyType:'Moderate-fat', lastMeatType:'Lean', weightSuggestionLocked:false,
   bc:{bf:null,water:null,fatmass:null,muscle:null,metage:null,visceral:null},
   tracking:[],intake:{},notes:{},labValues:{},foodResults:[],recipes:[],recipeDraft:[],extraFoods:[],appointments:[],mealLanguage:'GR',reportOptions:{oneDay:true,sevenDay:true},
   mealSel:{breakfast:'BRK_TOAST',lunch:'LUN_CHICKEN_RICE',dinner:'DIN_FISH_POTATO',snack1Extras:[],snack2Extras:[],sleepExtras:[]}
@@ -2494,12 +2496,44 @@ function nav(id) {
   if(id==='tracking') renderTracking();
 }
 
+function calcDevineIbw(heightCm, sex){
+  const h=parseFloat(heightCm);
+  if(!h || h<130) return null;
+  const inches=h/2.54;
+  const ibw=(sex==='M'?50:45.5) + 2.3*(inches-60);
+  return ibw>0 ? ibw : null;
+}
+
+function updateWeightSuggestion(age, sex, heightCm){
+  const weightEl=document.getElementById('p-weight');
+  const note=document.getElementById('weight-suggestion-note');
+  if(!weightEl) return;
+  const ibw=calcDevineIbw(heightCm, sex);
+  const canSuggest=!!(age && ibw && !weightEl.value && !S.weightSuggestionLocked);
+  if(canSuggest){
+    weightEl.placeholder=ibw.toFixed(1);
+    weightEl.classList.add('weight-suggested');
+    if(note) note.textContent=`Ideal / estimated: ${ibw.toFixed(1)} kg (Devine). Enter measured weight to override.`;
+  } else {
+    weightEl.placeholder='70';
+    weightEl.classList.remove('weight-suggested');
+    if(note) note.textContent='';
+  }
+}
+
+function onWeightInput(){
+  const weightEl=document.getElementById('p-weight');
+  if(weightEl && weightEl.value!=='') S.weightSuggestionLocked=true;
+  calcAll();
+}
+
 function calcAll() {
   const age=parseFloat(v('p-age'))||null, sex=v('p-sex'), h=parseFloat(v('p-height'))||null;
   const w=parseFloat(v('p-weight'))||null, act=parseFloat(v('p-activity'))||1.55;
   const conditions=Array.from(document.querySelectorAll('#p-conditions input[name="p-condition"]:checked')).map(cb=>cb.value);
   const goal=v('p-goal'), meatType=v('p-meat'), dairyType=v('p-dairy');
   const name=v('p-name');
+  updateWeightSuggestion(age, sex, h);
 
   // ── Calorie adjustment: auto-suggest a default, but never silently
   // overwrite a clinician's own typed value. ──
@@ -2553,11 +2587,7 @@ function calcAll() {
   // Shown as a general reference only — not a treatment target — and
   // intentionally not displayed below 130cm where the formula becomes
   // unreliable (not validated/designed for pediatric height ranges).
-  let ibw=null;
-  if(h && h>=130){
-    ibw = (sex==='M'?50:45.5) + 0.9*(h-152);
-    if(ibw<0) ibw=null;
-  }
+  let ibw=calcDevineIbw(h, sex);
   S.ibw=ibw;
   setEl('r-ibw', ibw?ibw.toFixed(1)+' kg':'—');
   const ibwSubEl=document.getElementById('r-ibw-sub');
@@ -4237,6 +4267,7 @@ return {
     fields, conditions,
     ex:S.ex, exAuto:S.exAuto, exMeta:S.exMeta, tracking:S.tracking, mealSel:S.mealSel,
     weekPlans:S.weekPlans, mealLanguage:S.mealLanguage, reportOptions:S.reportOptions,
+    weightSuggestionLocked:S.weightSuggestionLocked,
     intake:S.intake, notes:S.notes, labValues:S.labValues, extraFoods:S.extraFoods,
     savedAt:new Date().toISOString()
   };
@@ -4246,6 +4277,7 @@ return {
 function applyState(state){
   if(!state) return;
   Object.entries(state.fields||{}).forEach(([id,val])=>{const el=document.getElementById(id); if(el) el.value=val;});
+  S.weightSuggestionLocked=state.weightSuggestionLocked!==undefined ? !!state.weightSuggestionLocked : !!(state.fields&&state.fields['p-weight']);
   document.querySelectorAll('#p-conditions input[name="p-condition"]').forEach(cb=>{cb.checked=(state.conditions||[]).includes(cb.value);});
   lastConditionRadio = document.querySelector('#p-conditions input[name="p-condition"]:checked') || null;
   document.getElementById('pregnancy-trimester-field').style.display = (state.conditions||[]).includes('Pregnancy') ? 'block' : 'none';
@@ -4291,6 +4323,7 @@ function applyState(state){
 // Resets the whole form/state back to a blank "new client" template
 function resetForm(){
   S.calAdjAutoValue = undefined;
+  S.weightSuggestionLocked = false;
   SAVE_FIELD_IDS.forEach(id=>{
     const el=document.getElementById(id);
     if(!el) return;
