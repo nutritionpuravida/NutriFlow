@@ -209,6 +209,10 @@ tr:hover td { background: var(--bg-hover); }
 .extra-food-title { font-weight: 700; color: var(--teal-600); margin-bottom: 4px; }
 .extra-food-row { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; margin-top: 3px; line-height: 1.35; }
 .extra-food-macros { color: var(--text-muted); font-size: 10px; white-space: nowrap; }
+.extra-food-db-note { margin-top: 4px; font-size: 10px; color: var(--text-muted); font-style: italic; }
+#page-report .report-extra-foods { border-top: 0; padding-top: 3px; margin-top: 3px; }
+#page-report .report-extra-foods .extra-food-row { display: block; white-space: normal; overflow-wrap: break-word; word-break: normal; }
+#page-report .report-extra-foods .extra-food-macros { display: block; white-space: normal; }
 .food-add-panel { margin-top: 6px; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-page); display: none; min-width: 230px; }
 .food-add-panel.open { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .food-add-panel input, .food-add-panel select { font-size: 11px; padding: 5px 6px; }
@@ -258,7 +262,7 @@ tr:hover td { background: var(--bg-hover); }
 /* ─── PRINT ─── */
 @media print {
   /* Default: portrait A4 for client report (clean, readable handout) */
-  @page { size: A4 portrait; margin: 14mm 16mm; }
+  @page { size: A4 portrait; margin: 1cm; }
   /* Clinical pages override: landscape A4 */
   @page landscape-page { size: A4 landscape; margin: 8mm 10mm; }
 
@@ -299,8 +303,14 @@ tr:hover td { background: var(--bg-hover); }
      colgroup widths are set inline above; reinforced here for print since
      some print engines apply table sizing slightly differently than screen. */
   .report-week-table { table-layout: fixed !important; width: 100% !important; }
-  .report-week-table td, .report-week-table th { overflow-wrap: break-word !important; word-break: break-word !important; }
+  .report-week-table td, .report-week-table th { overflow-wrap: break-word !important; word-break: normal !important; white-space: normal !important; vertical-align: top !important; }
   .report-week-table td:last-child, .report-week-table th:last-child { white-space: nowrap !important; word-break: normal !important; }
+  #page-report .extra-food-title, #page-report .extra-food-db-note { display: none !important; }
+  .extra-food-db-note { display: none !important; }
+  #page-report .extra-foods { margin-top: 3px !important; padding-top: 3px !important; border-top: 0 !important; font-size: inherit !important; color: inherit !important; }
+  #page-report .extra-food-row { display: block !important; margin-top: 2px !important; line-height: 1.3 !important; overflow-wrap: break-word !important; word-break: normal !important; white-space: normal !important; }
+  #page-report .extra-food-row strong { font-weight: 600 !important; overflow-wrap: break-word !important; white-space: normal !important; }
+  #page-report .extra-food-macros { display: block !important; white-space: normal !important; font-size: 9px !important; color: #6b7280 !important; }
   .report-week-table th { background: #0f6e56 !important; color: #fff !important; }
   .report-week-table tbody tr:nth-child(odd) td { background: #f8fffe !important; }
   .report-week-table tbody tr:nth-child(even) td { background: #f0faf6 !important; }
@@ -543,7 +553,7 @@ tr:hover td { background: var(--bg-hover); }
         <button onclick="handleSignOut()">Sign out</button>
       </div>
       <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle dark mode">🌙 Dark</button>
-      <button class="btn" onclick="printPage()" title="Print current page">🖨️ Print</button>
+      <button class="btn" onclick="printPage()" id="topbar-print-btn" title="Print current page">🖨️ Print</button>
     </div>
   </div>
 
@@ -1596,6 +1606,8 @@ function renderExtraFoodsForSlot(slot, dayIndex=null, opts={}){
   const foods=getExtraFoodsForSlot(slot, dayIndex);
   if(!foods.length) return '';
   const title=opts.title || (S.mealLanguage==='EN'?'Extra foods':'Επιπλέον τρόφιμα');
+  const hideTitle=opts.hideTitle===true;
+  const showDbNote=opts.showDbNote!==false && opts.showRemove!==false;
   const rows=foods.map(food=>{
     const t=extraFoodTotalsForItem(food);
     const grams=foodNumber(food.grams)||100;
@@ -1606,7 +1618,8 @@ function renderExtraFoodsForSlot(slot, dayIndex=null, opts={}){
       <div style="display:flex;gap:5px;align-items:flex-start"><span class="extra-food-macros">${macros}</span>${removeBtn}</div>
     </div>`;
   }).join('');
-  return `<div class="extra-foods"><div class="extra-food-title">${title}</div>${rows}</div>`;
+  const note=showDbNote ? `<div class="extra-food-db-note">Added from food database — shown in original language</div>` : '';
+  return `<div class="extra-foods ${opts.reportMode?'report-extra-foods':''}">${hideTitle?'':`<div class="extra-food-title">${title}</div>`}${rows}${note}</div>`;
 }
 function refreshMealPlanViews(){
   buildOneDayPlan();
@@ -1743,6 +1756,7 @@ function printPage(){
   const pageId = activePage ? activePage.id : '';
   const isReport = pageId === 'page-report';
   const isEquivalents = pageId === 'page-equivalents';
+  const oldTitle=document.title;
 
   // Set page orientation via a temporary style tag
   let styleEl = document.getElementById('print-orientation-override');
@@ -1750,9 +1764,10 @@ function printPage(){
 
   if(isReport || isEquivalents){
     // Portrait: client-facing documents
-    styleEl.textContent = '@media print { @page { size: A4 portrait; margin: 14mm 16mm; } }';
+    styleEl.textContent = '@media print { @page { size: A4 portrait; margin: 1cm; } }';
     if(isReport){ buildReport(); }
     if(isEquivalents){ buildEquivalents(); }
+    if(isReport) document.title = `NutriFlow - Client Report - ${S.name||'Client'}`;
   } else {
     // Landscape: clinical working pages (7-day, 1-day, blood analysis, etc.)
     styleEl.textContent = '@media print { @page { size: A4 landscape; margin: 8mm 10mm; } }';
@@ -1767,7 +1782,10 @@ function printPage(){
   // in particular don't reliably expand to show full content via CSS alone
   // (height:auto doesn't work on native textareas in print).
   injectPrintTwins(activePage);
-  setTimeout(()=>window.print(), 300);
+  setTimeout(()=>{
+    window.print();
+    setTimeout(()=>{ document.title=oldTitle; }, 500);
+  }, 300);
 }
 
 // Inserts a plain-text copy directly after each visible, non-empty
@@ -1860,7 +1878,7 @@ const EQUIVALENTS_DATA = [
       {gr:'2 μικρά ροδάκινα ή βερίκοκα', en:'2 small peaches or apricots'},
       {gr:'1 μικρό αχλάδι ή 1 ακτινίδιο μεγάλο', en:'1 small pear or 1 large kiwi'},
       {gr:'½ μεγάλο γκρέιπφρουτ', en:'½ large grapefruit'},
-      {gr:'2 κ.σ. αποξηραμένα φρούτα (σταφίδες, αποξ. βερίκοκο)', en:'2 tbsp dried fruit (raisins, dried apricot)'},
+      {gr:'6 κομμάτια αποξηραμένα φρούτα (σταφίδες, αποξ. βερίκοκο)', en:'6 pieces dried fruit (raisins, dried apricot)'},
       {gr:'3 δαμάσκηνα φρέσκα', en:'3 fresh plums'},
     ]},
   { key:'veg', icon:'🥗', gr:'Λαχανικά (1 μερίδα)', en:'Vegetables (1 exchange)',
@@ -2074,7 +2092,7 @@ function buildSlotSnack(slot, extras, lang='GR'){
   if(fruitCount>0){
     exch.fruit += fruitCount;
     parts.push(useDriedFruit
-      ? (lang==='EN' ? `${fruitCount>1?fruitCount+'x ':''}2 tbsp dried fruit` : `${fruitCount>1?fruitCount+'x ':''}2 κ.σ. αποξηραμένα φρούτα`)
+      ? (lang==='EN' ? `${fruitCount>1?fruitCount+'x ':''}6 pieces dried fruit` : `${fruitCount>1?fruitCount+'x ':''}6 κομμάτια αποξηραμένα φρούτα`)
       : (lang==='EN' ? `${fruitCount} fruit${fruitCount>1?'s':''} (see Equivalents Guide)` : `${fruitCount} φρούτ${fruitCount>1?'α':'ο'} (βλ. Οδηγό Ισοδυναμιών)`));
   }
   if(dairyCount>0){
@@ -2474,6 +2492,8 @@ function nav(id) {
   document.querySelectorAll('.nav-item').forEach(btn=>{
     if(btn.getAttribute('onclick')&&btn.getAttribute('onclick').includes("'"+id+"'")) btn.classList.add('active');
   });
+  const printBtn=document.getElementById('topbar-print-btn');
+  if(printBtn) printBtn.style.display = id==='report' ? 'none' : '';
   const info = PAGE_INFO[id]||{title:id,sub:''};
   setEl('page-title',info.title); setEl('page-sub',info.sub);
   if(id==='dashboard') renderDashboard();
@@ -2531,13 +2551,16 @@ function onWeightInput(){
 function renderExpectedProgress(goal, tdee, goalKcal){
   const box=document.getElementById('expected-progress-box');
   if(!box) return;
-  const show=goal==='Weight Loss' && tdee && goalKcal;
+  const actualTdee=Number(S.tdee || tdee || 0);
+  const renderedGoal=parseFloat(String(document.getElementById('r-goal-kcal')?.textContent||'').replace(/[^\d.-]/g,''));
+  const actualGoal=Number(S.goalKcal || goalKcal || renderedGoal || 0);
+  const show=goal==='Weight Loss' && actualTdee && actualGoal;
   if(!show){
     box.style.display='none';
     box.innerHTML='';
     return;
   }
-  const deficit=Math.round(tdee-goalKcal);
+  const deficit=Math.round(actualTdee-actualGoal);
   let note='';
   if(deficit<300) note='<div style="margin-top:8px;color:var(--amber-text);font-weight:700">⚠️ Small deficit — weight loss will be gradual</div>';
   else if(deficit>1000) note='<div style="margin-top:8px;color:var(--amber-text);font-weight:700">⚠️ Large deficit — consider increasing calories for sustainability</div>';
@@ -3192,12 +3215,13 @@ function buildReport(){
   const condNames=condList.map(reportCondName).join(', ');
   const today=new Date().toLocaleDateString('el-GR');
   const n=S.notes, intake=S.intake;
-  const brkText=(mealText(S.mealSel.breakfast,null,lang)||'—')+renderExtraFoodsForSlot('brk', null, {showRemove:false});
-  const lunText=(mealText(S.mealSel.lunch,portions.lunch,lang)||'—')+renderExtraFoodsForSlot('lun', null, {showRemove:false});
-  const dinText=(mealText(S.mealSel.dinner,portions.dinner,lang)||'—')+renderExtraFoodsForSlot('din', null, {showRemove:false});
-  const snk1Text=buildSlotSnack('snk1', S.mealSel.snack1Extras||[], lang).text+renderExtraFoodsForSlot('snk1', null, {showRemove:false});
-  const snk2Text=buildSlotSnack('snk2', S.mealSel.snack2Extras||[], lang).text+renderExtraFoodsForSlot('snk2', null, {showRemove:false});
-  const sleepText=buildSlotSnack('sleep', S.mealSel.sleepExtras||[], lang).text+renderExtraFoodsForSlot('sleep', null, {showRemove:false});
+  const reportExtraOpts={showRemove:false,hideTitle:true,showDbNote:false,reportMode:true};
+  const brkText=(mealText(S.mealSel.breakfast,null,lang)||'—')+renderExtraFoodsForSlot('brk', null, reportExtraOpts);
+  const lunText=(mealText(S.mealSel.lunch,portions.lunch,lang)||'—')+renderExtraFoodsForSlot('lun', null, reportExtraOpts);
+  const dinText=(mealText(S.mealSel.dinner,portions.dinner,lang)||'—')+renderExtraFoodsForSlot('din', null, reportExtraOpts);
+  const snk1Text=buildSlotSnack('snk1', S.mealSel.snack1Extras||[], lang).text+renderExtraFoodsForSlot('snk1', null, reportExtraOpts);
+  const snk2Text=buildSlotSnack('snk2', S.mealSel.snack2Extras||[], lang).text+renderExtraFoodsForSlot('snk2', null, reportExtraOpts);
+  const sleepText=buildSlotSnack('sleep', S.mealSel.sleepExtras||[], lang).text+renderExtraFoodsForSlot('sleep', null, reportExtraOpts);
   const day=calcDayTotals();
   const gapOk=Math.abs(day.gap)<=100;
   const reportRules=isEn ? GENERAL_HEALTH_RULES_EN : GENERAL_HEALTH_RULES;
@@ -3215,7 +3239,12 @@ function buildReport(){
   setEl('report-body',`<div style="width:100%;font-family:Arial,sans-serif;font-size:13px">
 
     <!-- HEADER -->
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:3px solid var(--teal-600);margin-bottom:14px">
+    <div style="padding-bottom:12px;border-bottom:3px solid var(--teal-600);margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px">
+        <div style="font-size:18px;font-weight:800;color:var(--teal-800)">Κλινική Αναφορά Διατροφής / Clinical Nutrition Report</div>
+        <div style="font-size:12px;color:var(--text-muted);text-align:right"><strong>${S.name||'—'}</strong> · ${today}</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
       <div>
         <div style="font-size:20px;font-weight:700;color:var(--teal-800)">NutriFlow</div>
         <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Smart Nutrition Software</div>
@@ -3224,6 +3253,7 @@ function buildReport(){
         <div><strong>${S.name||'—'}</strong></div>
         <div>${today}</div>
         <div>${goalLabel}: ${S.goalKcal?Math.round(S.goalKcal)+' '+dayUnit:'—'}</div>
+      </div>
       </div>
     </div>
 
@@ -3244,9 +3274,6 @@ function buildReport(){
       ${n.medication?'<br><strong>'+(isEn?'Medication':'Φαρμακευτική αγωγή')+':</strong> '+n.medication:''}
       ${conditionGuidanceHtml}
     </div>`:''}
-    <div style="background:${gapOk?'var(--green-bg)':'var(--amber-bg)'};color:${gapOk?'var(--green-text)':'var(--amber-text)'};border:1px solid ${gapOk?'var(--green-border)':'var(--amber-border)'};border-radius:6px;padding:8px 10px;margin-bottom:12px;font-size:12px">
-      <strong>${isEn?'Plan check':'Έλεγχος πλάνου'}:</strong> ${gapOk?(isEn?'Daily plan is within the kcal tolerance.':'Το ημερήσιο πλάνο είναι εντός αποδεκτής απόκλισης kcal.'):(isEn?'Review kcal gap and clinical realism before printing.':'Χρειάζεται έλεγχος απόκλισης kcal και ρεαλισμού πριν την εκτύπωση.')}
-    </div>
     ${(S.reportOptions?.oneDay!==false) ? `
     <div style="font-size:14px;font-weight:700;color:var(--teal-800);margin:14px 0 6px;border-bottom:2px solid var(--teal-600);padding-bottom:4px">☀️ ${isEn?'DAILY MEAL PLAN':'ΗΜΕΡΗΣΙΟ ΠΛΑΝΟ ΓΕΥΜΑΤΩΝ'}</div>
     <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">${isEn?'Total':'Σύνολο'}: <strong>${day.totalKcal} kcal</strong> | ${isEn?'Target':'Στόχος'}: ${day.target} kcal ${gapOk?'✅':''}</div>
@@ -3294,12 +3321,12 @@ function buildReport(){
         const dayLabel=isEn ? ({'Δευτέρα':'Monday','Τρίτη':'Tuesday','Τετάρτη':'Wednesday','Πέμπτη':'Thursday','Παρασκευή':'Friday','Σάββατο':'Saturday','Κυριακή':'Sunday'}[p.day]||p.day) : p.day;
         return `<tr style="background:${i%2===0?'var(--bg-surface)':'var(--teal-50)'};border-bottom:1px solid var(--border)">
           <td style="padding:4px;font-weight:700;word-wrap:break-word">${dayLabel}</td>
-          <td style="padding:4px;word-wrap:break-word">${mealText(p.brk,null,lang)}${renderExtraFoodsForSlot('brk', i, {showRemove:false})}</td>
-          <td style="padding:4px;word-wrap:break-word">${dt.snk1Text}${renderExtraFoodsForSlot('snk1', i, {showRemove:false})}</td>
-          <td style="padding:4px;word-wrap:break-word">${mealText(p.lun,portions.lunch,lang)}${renderExtraFoodsForSlot('lun', i, {showRemove:false})}</td>
-          <td style="padding:4px;word-wrap:break-word">${dt.snk2Text}${renderExtraFoodsForSlot('snk2', i, {showRemove:false})}</td>
-          <td style="padding:4px;word-wrap:break-word">${mealText(p.din,portions.dinner,lang)}${renderExtraFoodsForSlot('din', i, {showRemove:false})}</td>
-          <td style="padding:4px;word-wrap:break-word">${dt.slpText}${renderExtraFoodsForSlot('sleep', i, {showRemove:false})}</td>
+          <td style="padding:4px;word-wrap:break-word">${mealText(p.brk,null,lang)}${renderExtraFoodsForSlot('brk', i, reportExtraOpts)}</td>
+          <td style="padding:4px;word-wrap:break-word">${dt.snk1Text}${renderExtraFoodsForSlot('snk1', i, reportExtraOpts)}</td>
+          <td style="padding:4px;word-wrap:break-word">${mealText(p.lun,portions.lunch,lang)}${renderExtraFoodsForSlot('lun', i, reportExtraOpts)}</td>
+          <td style="padding:4px;word-wrap:break-word">${dt.snk2Text}${renderExtraFoodsForSlot('snk2', i, reportExtraOpts)}</td>
+          <td style="padding:4px;word-wrap:break-word">${mealText(p.din,portions.dinner,lang)}${renderExtraFoodsForSlot('din', i, reportExtraOpts)}</td>
+          <td style="padding:4px;word-wrap:break-word">${dt.slpText}${renderExtraFoodsForSlot('sleep', i, reportExtraOpts)}</td>
           <td style="padding:4px;text-align:right;font-weight:700;white-space:nowrap;color:${ok?'#0f6e56':'#b45309'}">${dt.totalKcal}</td>
         </tr>`;
       }).join('')}
@@ -3633,7 +3660,7 @@ const NUTRIENT_FOOD_SOURCES = {
   'Σίδηρος':      'κόκκινο κρέας, συκώτι, όσπρια (φακές, ρεβίθια), σπανάκι (με πηγή βιτ. C για απορρόφηση), εμπλουτισμένα δημητριακά',
   'Μαγνήσιο':     'ξηροί καρποί (αμύγδαλα, κάσιους), σπόροι, πράσινα φυλλώδη λαχανικά, όσπρια, δημητριακά ολικής άλεσης, μαύρη σοκολάτα',
   'Φολικό':       'πράσινα φυλλώδη λαχανικά, όσπρια, εσπεριδοειδή, εμπλουτισμένα δημητριακά, αβοκάντο',
-  'Ασβέστιο':     'γαλακτοκομικά, αμύγδαλα, ταχίνι, μπρόκολο, σαρδέλες με κόκκαλα, εμπλουτισμένο φυτικό γάλα',
+  'Ασβέστιο':     'γαλακτοκομικά, σαρδέλες με κόκαλο, αμύγδαλα, μπρόκολο, εμπλουτισμένα φυτικά γάλατα',
   'Σελήνιο':      'καρύδια Βραζιλίας (1-2/ημέρα αρκούν), ψάρι, αυγά, ηλιόσποροι',
   'Ψευδάργυρος':  'κρέας, θαλασσινά (ιδίως στρείδια), ξηροί καρποί, σπόροι κολοκύθας, όσπρια',
   'Ωμέγα-3':      'λιπαρά ψάρια (σολομός, σαρδέλα, σκουμπρί), λιναρόσπορος, καρύδια, σόγια',
@@ -3761,8 +3788,8 @@ function renderVitaminSuggestions(){
   LAB_TESTS.forEach(t=>{
     const val=S.labValues[t.key];
     const status=labStatus(t,val);
-    if(status==='low' && t.lowMsg && ['b12','folate','vitd','ferritin','iron','magnesium','hgb'].includes(t.key)){
-      const map={b12:'Βιταμίνη Β12',folate:'Φολικό οξύ',vitd:'Βιταμίνη D',ferritin:'Σίδηρος',iron:'Σίδηρος',magnesium:'Μαγνήσιο',hgb:'Σίδηρος/Β12/Φολικό (αναιμία)'};
+    if(status==='low' && ['b12','folate','vitd','ferritin','iron','magnesium','hgb','calcium'].includes(t.key)){
+      const map={b12:'Βιταμίνη Β12',folate:'Φολικό οξύ',vitd:'Βιταμίνη D',ferritin:'Σίδηρος',iron:'Σίδηρος',magnesium:'Μαγνήσιο',hgb:'Σίδηρος/Β12/Φολικό (αναιμία)',calcium:'Ασβέστιο'};
       addVitaminItem(items, {n:map[t.key], why:`Εργαστηριακά: ${t.gr} = ${val} ${t.unit} (κάτω του φυσιολογικού ${t.low}–${t.high})`, source:'Από αιματολογικό έλεγχο'});
     }
   });
@@ -3805,6 +3832,14 @@ function normalizeFoodProduct(product){
     fat100:foodNumber(nutr.fat_100g),
   };
 }
+async function fetchWithRetryOnce(url, options={}, delayMs=2000){
+  try{
+    return await fetch(url, options);
+  }catch(err){
+    await new Promise(resolve=>setTimeout(resolve, delayMs));
+    return await fetch(url, options);
+  }
+}
 async function searchFoodDatabase(){
   const query=(v('food-search')||'').trim();
   if(!query){ setEl('fooddb-status','Enter a food name to search.'); return; }
@@ -3820,10 +3855,10 @@ async function searchFoodDatabase(){
   });
   try{
     const url=`https://world.openfoodfacts.org/cgi/search.pl?${params.toString()}`;
-    let res=await fetch(url, {headers:{'Accept':'application/json'}});
+    let res=await fetchWithRetryOnce(url, {headers:{'Accept':'application/json'}});
     if(res.status===503){
       await new Promise(resolve=>setTimeout(resolve, 700));
-      res=await fetch(url, {headers:{'Accept':'application/json'}});
+      res=await fetchWithRetryOnce(url, {headers:{'Accept':'application/json'}});
     }
     if(!res.ok) throw new Error(`Open Food Facts returned HTTP ${res.status}`);
     const data=await res.json();
@@ -4115,19 +4150,27 @@ function loadAppointmentsLocal(){
 async function loadAppointments(force=false){
   const scope=currentUser ? currentUser.id : 'local';
   if(!force && appointmentsLoadedFor===scope && Array.isArray(S.appointments)) return S.appointments;
-  if(currentUser){
-    const {data,error}=await sb.from('appointments').select('id,user_id,client_name,date,time,duration,type,notes,updated_at').eq('user_id',currentUser.id).order('date',{ascending:true}).order('time',{ascending:true});
-    if(!error && data){
-      S.appointments=data.map(normalizeAppointment);
-      appointmentsLoadedFor=scope;
-      persistAppointmentsLocal();
-      renderDashboardAppointments();
-      return S.appointments;
-    }
-  }
   S.appointments=loadAppointmentsLocal();
   appointmentsLoadedFor=scope;
   renderDashboardAppointments();
+  if(currentUser){
+    try{
+      const {data,error}=await sb.from('appointments').select('id,user_id,client_name,date,time,duration,type,notes,updated_at').eq('user_id',currentUser.id).order('date',{ascending:true}).order('time',{ascending:true});
+      if(!error && data){
+        const remote=data.map(normalizeAppointment);
+        const localOnly=(S.appointments||[]).filter(a=>a.localOnly || String(a.id).startsWith('appt_'));
+        const remoteIds=new Set(remote.map(a=>String(a.id)));
+        S.appointments=[...remote, ...localOnly.filter(a=>!remoteIds.has(String(a.id)))]
+          .sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+        appointmentsLoadedFor=scope;
+        persistAppointmentsLocal();
+        renderDashboardAppointments();
+        return S.appointments;
+      }
+    }catch(e){
+      // local appointments are already loaded above
+    }
+  }
   return S.appointments;
 }
 function appointmentClass(type){
@@ -4230,14 +4273,18 @@ async function saveAppointmentFromForm(){
   let saved=appt;
   if(currentUser){
     const row={user_id:currentUser.id,client_name:appt.client_name,date:appt.date,time:appt.time,duration:appt.duration,type:appt.type,notes:appt.notes,updated_at:appt.updated_at};
-    let result;
-    if(String(id).startsWith('appt_')){
-      result=await sb.from('appointments').insert(row).select().maybeSingle();
-    } else {
-      result=await sb.from('appointments').update(row).eq('id',id).eq('user_id',currentUser.id).select().maybeSingle();
+    try{
+      let result;
+      if(String(id).startsWith('appt_')){
+        result=await sb.from('appointments').insert(row).select().maybeSingle();
+      } else {
+        result=await sb.from('appointments').update(row).eq('id',id).eq('user_id',currentUser.id).select().maybeSingle();
+      }
+      if(!result.error && result.data) saved=normalizeAppointment(result.data);
+      else saved.localOnly=true;
+    }catch(e){
+      saved.localOnly=true;
     }
-    if(!result.error && result.data) saved=normalizeAppointment(result.data);
-    else saved.localOnly=true;
   }
   S.appointments=[saved,...(S.appointments||[]).filter(a=>String(a.id)!==String(id))].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
   persistAppointmentsLocal();
@@ -4245,8 +4292,9 @@ async function saveAppointmentFromForm(){
   calendarCursor=parseISODate(saved.date);
   clearAppointmentForm();
   const note=document.getElementById('appointments-save-note');
-  if(note) note.textContent = saved.localOnly ? 'Saved locally because Supabase appointments storage is unavailable.' : 'Appointment saved.';
+  if(note) note.textContent = saved.localOnly ? 'Appointment saved locally. Supabase appointments storage is unavailable.' : 'Appointment saved';
   renderAppointments();
+  renderDashboardAppointments();
 }
 async function deleteAppointment(id){
   const appt=(S.appointments||[]).find(a=>String(a.id)===String(id));
@@ -4401,20 +4449,25 @@ async function saveCurrentClient(){
   let id=v('p-id');
   if(!id){ id='c'+Date.now(); document.getElementById('p-id').value=id; }
   const state=captureState();
-  const {data:existing} = await sb.from('clients').select('id').eq('user_id',currentUser.id).eq('client_ref',id).maybeSingle();
-  let error;
-  if(existing){
-    ({error} = await sb.from('clients').update({name, data:state, updated_at:new Date().toISOString()}).eq('id',existing.id));
-  } else {
-    ({error} = await sb.from('clients').insert({user_id:currentUser.id, client_ref:id, name, data:state}));
+  let error=null;
+  try{
+    const existingResult = await sb.from('clients').select('id').eq('user_id',currentUser.id).eq('client_ref',id).maybeSingle();
+    const existing=existingResult.data;
+    if(existing){
+      ({error} = await sb.from('clients').update({name, data:state, updated_at:new Date().toISOString()}).eq('id',existing.id));
+    } else {
+      ({error} = await sb.from('clients').insert({user_id:currentUser.id, client_ref:id, name, data:state}));
+    }
+  }catch(e){
+    error=e;
   }
   if(error){
-    alert('⚠️ Could not save: '+error.message);
+    alert('⚠️ Could not save: '+(error.message||error));
   } else {
     S_isDirty=false; // changes are now safely in the cloud
     alert('✅ Client saved: '+name+'\n\nFind it anytime under "My Clients" in the sidebar.');
   }
-  renderClientList();
+  await renderClientList();
 }
 
 async function loadClientById(rowId){
