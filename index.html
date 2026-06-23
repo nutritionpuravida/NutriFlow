@@ -115,6 +115,9 @@ select option { background-color: var(--bg-surface); color: var(--text-primary);
 .subscription-status { padding: 10px 12px; border-radius: 6px; font-size: 13px; margin: 10px 0; background: var(--bg-page); border: 1px solid var(--border); }
 .subscription-plan { border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 14px; margin: 12px 0; background: var(--bg-input); }
 .subscription-plan strong { display:block; font-size:16px; margin-bottom:4px; }
+.trial-banner { display:none; align-items:center; justify-content:space-between; gap:12px; padding:9px 16px; background:var(--teal-600); color:#fff; font-size:13px; font-weight:700; flex-shrink:0; }
+.trial-banner button { border:1px solid rgba(255,255,255,.6); background:rgba(255,255,255,.16); color:#fff; border-radius:6px; padding:5px 9px; font-size:12px; font-weight:800; cursor:pointer; white-space:nowrap; }
+.trial-banner button:hover { background:rgba(255,255,255,.24); }
 .user-chip { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); }
 .user-chip button { background: none; border: 1px solid var(--border-strong); border-radius: 6px; padding: 4px 9px; cursor: pointer; font-size: 12px; color: var(--text-secondary); }
 .user-chip button:hover { background: var(--bg-hover); }
@@ -570,6 +573,11 @@ tr:hover td { background: var(--bg-hover); }
       <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle dark mode">🌙 Dark</button>
       <button class="btn" onclick="printPage()" id="topbar-print-btn" title="Print current page">🖨️ Print</button>
     </div>
+  </div>
+
+  <div class="trial-banner no-print" id="trial-banner">
+    <span id="trial-banner-text">🎁 Free trial — 0 days remaining. Subscribe to continue after your trial.</span>
+    <button onclick="openTrialSubscribe()">Subscribe now</button>
   </div>
 
   <div class="content">
@@ -1195,7 +1203,7 @@ const AUTH_EMAIL_REDIRECT_URL = 'https://nutritionpuravida.github.io/NutriFlow';
 
 let currentUser = null;
 let authTab = 'signin';
-let subscriptionState = {status:'unknown', active:false, currentPeriodEnd:null};
+let subscriptionState = {status:'unknown', active:false, currentPeriodEnd:null, trialDaysRemaining:null, trialActive:false, trialExpired:false};
 
 function setAuthTab(tab){
   authTab = tab;
@@ -1282,26 +1290,47 @@ function hideSubscriptionScreen(){
   const el=document.getElementById('subscription-screen');
   if(el) el.classList.add('hidden');
 }
+function trialDaysRemaining(trialStart){
+  if(!trialStart) return 0;
+  const start=new Date(trialStart).getTime();
+  if(!Number.isFinite(start)) return 0;
+  const elapsed=Date.now()-start;
+  return Math.max(0, Math.ceil((14*24*60*60*1000 - elapsed)/(24*60*60*1000)));
+}
 function subscriptionIsActive(row){
   if(!row) return false;
   const status=(row.subscription_status || row.status || '').toLowerCase();
   const periodEnd=row.current_period_end || row.current_period_end_at || null;
   const dateOk=!periodEnd || new Date(periodEnd).getTime() > Date.now();
-  return ['active','trialing'].includes(status) && dateOk;
+  return status==='active' && dateOk;
 }
 const OWNER_ADMIN_EMAIL = 'nutrition.puravida@gmail.com';
 function isOwnerAdminUser(){
   return (currentUser?.email || '').trim().toLowerCase() === OWNER_ADMIN_EMAIL;
+}
+async function ensureUserProfile(){
+  if(!currentUser) return {data:null,error:null};
+  let {data,error}=await sb.from('profiles')
+    .select('id,email,trial_start,subscription_status')
+    .eq('id', currentUser.id)
+    .maybeSingle();
+  if(error) return {data:null,error};
+  if(!data){
+    const insert=await sb.from('profiles')
+      .insert({id:currentUser.id,email:currentUser.email,subscription_status:'trial'})
+      .select('id,email,trial_start,subscription_status')
+      .maybeSingle();
+    data=insert.data;
+    error=insert.error;
+  }
+  return {data,error};
 }
 async function fetchSubscriptionStatus(){
   if(!currentUser) return {status:'signed_out', active:false};
   if(isOwnerAdminUser()){
     return {status:'Owner admin access', active:true, ownerBypass:true};
   }
-  let {data, error} = await sb.from('profiles')
-    .select('subscription_status,current_period_end,stripe_customer_id')
-    .eq('id', currentUser.id)
-    .maybeSingle();
+  let {data, error} = await ensureUserProfile();
   if(error){
     const alt = await sb.from('subscriptions')
       .select('status,subscription_status,current_period_end,current_period_end_at,stripe_customer_id')
@@ -1310,23 +1339,50 @@ async function fetchSubscriptionStatus(){
     if(!alt.error) { data=alt.data; error=null; }
   }
   if(error) return {status:'No active subscription', active:false, missingTable:true};
+  const status=(data&&(data.subscription_status||data.status))||'trial';
+  const days=status.toLowerCase()==='trial' ? trialDaysRemaining(data.trial_start) : null;
+  const isTrialActive=status.toLowerCase()==='trial' && days>0;
+  const active=subscriptionIsActive(data) || isTrialActive;
   return {
-    status:(data&&(data.subscription_status||data.status))||'No active subscription',
-    active:subscriptionIsActive(data),
+    status,
+    active,
+    trialActive:isTrialActive,
+    trialExpired:status.toLowerCase()==='trial' && days<=0,
+    trialDaysRemaining:days,
+    trialStart:data&&data.trial_start,
     currentPeriodEnd:data&&(data.current_period_end||data.current_period_end_at),
     stripeCustomerId:data&&data.stripe_customer_id,
   };
 }
+function updateTrialBanner(){
+  const banner=document.getElementById('trial-banner');
+  const text=document.getElementById('trial-banner-text');
+  if(!banner) return;
+  const days=subscriptionState.trialDaysRemaining;
+  const show=subscriptionState.trialActive && days<=10 && !subscriptionState.ownerBypass;
+  banner.style.display=show ? 'flex' : 'none';
+  if(show && text) text.textContent=`🎁 Free trial — ${days} day${days===1?'':'s'} remaining. Subscribe to continue after your trial.`;
+}
+function openTrialSubscribe(){
+  const days=subscriptionState.trialDaysRemaining;
+  const msg=subscriptionState.trialActive
+    ? `Your free trial ends in ${days} day${days===1?'':'s'}.`
+    : 'Your free trial has ended. Subscribe to continue.';
+  showSubscriptionScreen(msg);
+}
 async function refreshSubscriptionGate(){
-  if(!SUBSCRIPTION_REQUIRED){ subscriptionState={status:'disabled',active:true}; hideSubscriptionScreen(); updateAccountPage(); return; }
+  if(!SUBSCRIPTION_REQUIRED){ subscriptionState={status:'disabled',active:true}; hideSubscriptionScreen(); updateTrialBanner(); updateAccountPage(); return; }
   subscriptionState = await fetchSubscriptionStatus();
   updateAccountPage();
   if(subscriptionState.active){
     hideSubscriptionScreen();
   } else {
-    const msg = 'No active subscription. Subscribe to unlock NutriFlow for your practice.';
+    const msg = subscriptionState.trialExpired
+      ? 'Your free trial has ended. Subscribe to continue.'
+      : 'No active subscription. Subscribe to unlock NutriFlow for your practice.';
     showSubscriptionScreen(msg);
   }
+  updateTrialBanner();
 }
 async function startStripeCheckout(){
   if(!currentUser){ showAuthScreen(); return; }
@@ -1350,13 +1406,25 @@ async function openBillingPortal(){
 }
 function updateAccountPage(){
   const emailEl=document.getElementById('acct-email'); if(emailEl) emailEl.value=currentUser?currentUser.email:'';
-  const statusEl=document.getElementById('acct-subscription'); if(statusEl) statusEl.value=subscriptionState.active?'Active':(subscriptionState.status||'No active subscription');
+  const statusEl=document.getElementById('acct-subscription');
+  if(statusEl){
+    statusEl.value = subscriptionState.ownerBypass ? 'Owner admin access'
+      : subscriptionState.trialActive ? `Trial (${subscriptionState.trialDaysRemaining} days remaining)`
+      : subscriptionState.active ? 'Active'
+      : (subscriptionState.status||'No active subscription');
+  }
   const detail=document.getElementById('account-subscription-detail');
   if(detail){
     const until=subscriptionState.currentPeriodEnd ? ` Current period ends ${new Date(subscriptionState.currentPeriodEnd).toLocaleDateString('el-GR')}.` : '';
-    detail.innerHTML = subscriptionState.active
-      ? `<strong>Active subscription.</strong>${until}`
-      : `<strong>No active subscription.</strong> Use Checkout to activate this account.`;
+    detail.innerHTML = subscriptionState.ownerBypass
+      ? '<strong>Owner admin access.</strong> Subscription and trial checks are bypassed for this account.'
+      : subscriptionState.trialActive
+        ? `<strong>Free trial active.</strong> ${subscriptionState.trialDaysRemaining} day${subscriptionState.trialDaysRemaining===1?'':'s'} remaining.`
+        : subscriptionState.active
+          ? `<strong>Active subscription.</strong>${until}`
+          : subscriptionState.trialExpired
+            ? '<strong>Your free trial has ended.</strong> Use Checkout to activate this account.'
+            : '<strong>No active subscription.</strong> Use Checkout to activate this account.';
   }
 }
 
@@ -1385,6 +1453,8 @@ sb.auth.onAuthStateChange(async (event, session)=>{
     }
   } else {
     hideSubscriptionScreen();
+    subscriptionState = {status:'signed_out', active:false, currentPeriodEnd:null, trialDaysRemaining:null, trialActive:false, trialExpired:false};
+    updateTrialBanner();
     if(hadSession){
       // Unexpected sign-out mid-session (e.g. token refresh failure) —
       // save current work locally before showing the login screen again,
