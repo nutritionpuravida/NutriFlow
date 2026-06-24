@@ -500,7 +500,7 @@ tr:hover td { background: var(--bg-hover); }
     <div class="subscription-status" id="subscription-message">Checking subscription…</div>
     <div class="subscription-plan">
       <strong>NutriFlow Professional</strong>
-      <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Client profiles, exchange system, 1-day and 7-day plans, blood analysis, tracking, recipes, and reports for your dietetic practice.</div>
+      <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Client profiles, exchange system, 1-day and 7-day plans, blood analysis, tracking, recipes, and reports for your dietetic practice. Start with a 7-day free trial; card required upfront.</div>
       <div style="margin-top:12px;display:grid;gap:8px">
         <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface)">
           <span style="font-weight:700;color:var(--text-primary)">Monthly</span>
@@ -513,7 +513,8 @@ tr:hover td { background: var(--bg-hover); }
         <div style="font-size:12px;color:var(--amber-600);font-weight:700;line-height:1.4">First 10 founding members get 50% off forever</div>
       </div>
     </div>
-    <button class="auth-submit" onclick="startStripeCheckout()">Subscribe to continue</button>
+    <button class="auth-submit" onclick="startStripeCheckout(STRIPE_MONTHLY_PRICE_ID)">Start 7-day trial — Monthly</button>
+    <button class="auth-submit secondary" onclick="startStripeCheckout(STRIPE_YEARLY_PRICE_ID)">Start 7-day trial — Yearly</button>
     <button class="auth-submit secondary" onclick="openBillingPortal()">Manage billing</button>
     <button class="auth-submit secondary" onclick="handleSignOut()">Sign out</button>
   </div>
@@ -1169,7 +1170,8 @@ tr:hover td { background: var(--bg-hover); }
           <div class="form-field"><label>Subscription status</label><input type="text" id="acct-subscription" readonly style="background:var(--bg-page);cursor:not-allowed"></div>
         </div>
         <div id="account-subscription-detail" class="subscription-status">Subscription status will appear here after sign in.</div>
-        <button class="btn primary" onclick="startStripeCheckout()">Subscribe / renew</button>
+        <button class="btn primary" onclick="startStripeCheckout(STRIPE_MONTHLY_PRICE_ID)">Start monthly trial</button>
+        <button class="btn primary" onclick="startStripeCheckout(STRIPE_YEARLY_PRICE_ID)">Start yearly trial</button>
         <button class="btn" onclick="openBillingPortal()">Manage billing</button>
       </div>
     </div>
@@ -1215,6 +1217,10 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 const SUBSCRIPTION_REQUIRED = true;
 const STRIPE_CHECKOUT_FUNCTION = 'create-checkout-session';
 const STRIPE_PORTAL_FUNCTION = 'create-customer-portal-session';
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_51TlSKUDNJLDjyxXC07W13XtWXCCSjYARC9jegc9ebgliYtkRz6Nb0PAbBDuhNdvUA2smLvquauWEMvvfwke7UlTO00S7Okr26D';
+const STRIPE_MONTHLY_PRICE_ID = 'price_1TlSadDNJLDjyxXC5Vf1x8ya';
+const STRIPE_YEARLY_PRICE_ID = 'price_1TlSadDNJLDjyxXCwfLWoGH5';
+const STRIPE_TRIAL_DAYS = 7;
 const AUTH_EMAIL_REDIRECT_URL = 'https://nutritionpuravida.github.io/NutriFlow';
 
 let currentUser = null;
@@ -1311,14 +1317,14 @@ function trialDaysRemaining(trialStart){
   const start=new Date(trialStart).getTime();
   if(!Number.isFinite(start)) return 0;
   const elapsed=Date.now()-start;
-  return Math.max(0, Math.ceil((14*24*60*60*1000 - elapsed)/(24*60*60*1000)));
+  return Math.max(0, Math.ceil((STRIPE_TRIAL_DAYS*24*60*60*1000 - elapsed)/(24*60*60*1000)));
 }
 function subscriptionIsActive(row){
   if(!row) return false;
   const status=(row.subscription_status || row.status || '').toLowerCase();
-  const periodEnd=row.current_period_end || row.current_period_end_at || null;
+  const periodEnd=row.current_period_end || row.current_period_end_at || row.trial_end || null;
   const dateOk=!periodEnd || new Date(periodEnd).getTime() > Date.now();
-  return status==='active' && dateOk;
+  return (status==='active' || status==='trialing') && dateOk;
 }
 const OWNER_ADMIN_EMAIL = 'nutrition.puravida@gmail.com';
 function isOwnerAdminUser(){
@@ -1327,14 +1333,14 @@ function isOwnerAdminUser(){
 async function ensureUserProfile(){
   if(!currentUser) return {data:null,error:null};
   let {data,error}=await sb.from('profiles')
-    .select('id,email,trial_start,subscription_status')
+    .select('id,email,trial_start,trial_end,subscription_status,current_period_end,stripe_customer_id,stripe_subscription_id')
     .eq('id', currentUser.id)
     .maybeSingle();
   if(error) return {data:null,error};
   if(!data){
     const insert=await sb.from('profiles')
-      .insert({id:currentUser.id,email:currentUser.email,subscription_status:'trial'})
-      .select('id,email,trial_start,subscription_status')
+      .insert({id:currentUser.id,email:currentUser.email,subscription_status:'none'})
+      .select('id,email,trial_start,trial_end,subscription_status,current_period_end,stripe_customer_id,stripe_subscription_id')
       .maybeSingle();
     data=insert.data;
     error=insert.error;
@@ -1349,24 +1355,28 @@ async function fetchSubscriptionStatus(){
   let {data, error} = await ensureUserProfile();
   if(error){
     const alt = await sb.from('subscriptions')
-      .select('status,subscription_status,current_period_end,current_period_end_at,stripe_customer_id')
+      .select('status,subscription_status,current_period_end,current_period_end_at,trial_end,stripe_customer_id,stripe_subscription_id')
       .eq('user_id', currentUser.id)
       .maybeSingle();
     if(!alt.error) { data=alt.data; error=null; }
   }
   if(error) return {status:'No active subscription', active:false, missingTable:true};
-  const status=(data&&(data.subscription_status||data.status))||'trial';
-  const days=status.toLowerCase()==='trial' ? trialDaysRemaining(data.trial_start) : null;
-  const isTrialActive=status.toLowerCase()==='trial' && days>0;
+  const status=(data&&(data.subscription_status||data.status))||'none';
+  const statusLower=status.toLowerCase();
+  const trialEnd=data&&(data.trial_end||data.current_period_end||data.current_period_end_at);
+  const days=statusLower==='trialing'
+    ? Math.max(0, Math.ceil((new Date(trialEnd).getTime()-Date.now())/(24*60*60*1000)))
+    : null;
+  const isTrialActive=statusLower==='trialing' && days>0;
   const active=subscriptionIsActive(data) || isTrialActive;
   return {
     status,
     active,
     trialActive:isTrialActive,
-    trialExpired:status.toLowerCase()==='trial' && days<=0,
+    trialExpired:statusLower==='trialing' && days<=0,
     trialDaysRemaining:days,
     trialStart:data&&data.trial_start,
-    currentPeriodEnd:data&&(data.current_period_end||data.current_period_end_at),
+    currentPeriodEnd:data&&(data.current_period_end||data.current_period_end_at||data.trial_end),
     stripeCustomerId:data&&data.stripe_customer_id,
   };
 }
@@ -1400,11 +1410,16 @@ async function refreshSubscriptionGate(){
   }
   updateTrialBanner();
 }
-async function startStripeCheckout(){
+async function startStripeCheckout(priceId){
   if(!currentUser){ showAuthScreen(); return; }
+  const selectedPriceId = priceId || STRIPE_MONTHLY_PRICE_ID;
   setEl('subscription-message','Creating secure checkout…');
   const {data, error} = await sb.functions.invoke(STRIPE_CHECKOUT_FUNCTION, {
-    body:{returnUrl:window.location.href}
+    body:{
+      price_id:selectedPriceId,
+      user_id:currentUser.id,
+      email:currentUser.email
+    }
   });
   if(error){ setEl('subscription-message','Checkout unavailable: '+error.message); return; }
   if(data && data.url){ window.location.href=data.url; return; }
@@ -1414,7 +1429,7 @@ async function openBillingPortal(){
   if(!currentUser){ showAuthScreen(); return; }
   setEl('subscription-message','Opening billing portal…');
   const {data, error} = await sb.functions.invoke(STRIPE_PORTAL_FUNCTION, {
-    body:{returnUrl:window.location.href}
+    body:{user_id:currentUser.id}
   });
   if(error){ setEl('subscription-message','Billing portal unavailable: '+error.message); return; }
   if(data && data.url){ window.location.href=data.url; return; }
