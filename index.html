@@ -1290,6 +1290,7 @@ async function resendConfirmationEmail(){
 }
 
 async function handleSignOut(){
+  console.log('[NutriFlow auth] handleSignOut called');
   if(!confirm('Sign out?')) return;
   intentionalSignOut = true;
   console.log('[NutriFlow auth] Sign out requested');
@@ -1304,6 +1305,7 @@ async function handleSignOut(){
   completeSignedOutUi(true);
   intentionalSignOut = false;
 }
+window.handleSignOut = handleSignOut;
 
 function clearLocalStorageAfterSignOut(){
   try{
@@ -1325,6 +1327,40 @@ function completeSignedOutUi(wasIntentionalSignOut=false){
   if(wasIntentionalSignOut) recoveringSession=false;
   showAuthScreen();
   if(wasIntentionalSignOut) setAuthMessage('You have been signed out successfully.','success');
+}
+
+async function restoreExistingSessionOnLoad(){
+  console.log('[NutriFlow auth] restoreExistingSessionOnLoad called');
+  try{
+    const {data, error}=await supabaseClient.auth.getSession();
+    if(error){
+      console.error('[NutriFlow auth] page-load getSession failed', error);
+      return;
+    }
+    const session=data&&data.session;
+    console.log('[NutriFlow auth] page-load session check', {hasSession:!!session, email:session?.user?.email || null});
+    if(!session){
+      updateAccountPage();
+      return;
+    }
+    currentUser=session.user;
+    hadSession=true;
+    hideAuthScreen();
+    const userChip=document.getElementById('user-chip');
+    if(userChip) userChip.style.display='flex';
+    setEl('user-email', currentUser.email || '');
+    await refreshSubscriptionGate();
+    updateAccountPage();
+    requestAnimationFrame(updateAccountPage);
+    setTimeout(updateAccountPage, 50);
+    appointmentsLoadedFor=null;
+    loadAppointments(true).then(()=>{
+      renderDashboardAppointments();
+      if(document.getElementById('page-appointments')?.classList.contains('active')) renderAppointments();
+    }).catch(err=>console.error('[NutriFlow appointments] page-load refresh failed', err));
+  }catch(err){
+    console.error('[NutriFlow auth] restoreExistingSessionOnLoad failed', err);
+  }
 }
 
 function showAuthScreen(){
@@ -5336,6 +5372,7 @@ window.onload=function(){
   document.getElementById('s-snack2').innerHTML=snackExtrasHtml();
   document.getElementById('s-sleep').innerHTML=snackExtrasHtml();
   calcAll(); calcMacros(); renderDashboard();
+  restoreExistingSessionOnLoad();
   loadAppointments().then(renderDashboardAppointments);
   tryRestoreAutosave();
   // Auto-save on any input/change anywhere in the form
