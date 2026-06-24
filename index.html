@@ -1332,13 +1332,18 @@ function completeSignedOutUi(wasIntentionalSignOut=false){
 async function restoreExistingSessionOnLoad(){
   console.log('[NutriFlow auth] restoreExistingSessionOnLoad called');
   try{
+    console.log('[NutriFlow auth] restoreExistingSessionOnLoad entered try block');
     let authKeys=[];
     try{
-      authKeys=Object.keys(localStorage).filter(key=>key.startsWith('sb-') || key.startsWith('supabase'));
+      const storage = (typeof window !== 'undefined' && window.localStorage) ? window.localStorage : null;
+      authKeys = storage
+        ? Object.keys(storage).filter(key=>String(key).startsWith('sb-') || String(key).startsWith('supabase'))
+        : [];
     }catch(e){
       console.warn('[NutriFlow auth] Could not inspect localStorage auth keys', e);
     }
     console.log('[NutriFlow auth] localStorage auth keys', authKeys);
+    console.log('[NutriFlow auth] calling getSession');
     const {data, error}=await supabaseClient.auth.getSession();
     if(error){
       console.error('[NutriFlow auth] page-load getSession failed', error);
@@ -1347,6 +1352,7 @@ async function restoreExistingSessionOnLoad(){
     console.log('[NutriFlow auth] page-load session check', {hasSession:!!session, email:session?.user?.email || null});
     let restoredUser=session?.user || null;
     if(!restoredUser){
+      console.log('[NutriFlow auth] calling getUser fallback');
       const {data:userData, error:userError}=await supabaseClient.auth.getUser();
       if(userError) console.error('[NutriFlow auth] page-load getUser fallback failed', userError);
       restoredUser=userData?.user || null;
@@ -5385,7 +5391,7 @@ window.onload=function(){
   document.getElementById('s-snack2').innerHTML=snackExtrasHtml();
   document.getElementById('s-sleep').innerHTML=snackExtrasHtml();
   calcAll(); calcMacros(); renderDashboard();
-  restoreExistingSessionOnLoad();
+  restoreExistingSessionOnLoad().catch(err=>console.error('[NutriFlow auth] restoreExistingSessionOnLoad rejected', err));
   loadAppointments().then(renderDashboardAppointments);
   tryRestoreAutosave();
   // Auto-save on any input/change anywhere in the form
