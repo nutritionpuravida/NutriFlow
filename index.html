@@ -1207,8 +1207,8 @@ const S = {
 //  AUTH / SUPABASE
 // ═══════════════════════════════════════════
 const SUPABASE_URL = 'https://xlskjhhijpiwdkfpkezo.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable__km2VfBDcp-QlAerdkRAZA__2V2e-eG';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhsc2tqaGhpanBpd2RrZnBrZXpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyMDMyMDQsImV4cCI6MjA5Nzc3OTIwNH0.2Ykw4oeln1pa3SvrftB-BXiP8AFmyPVzVcq_1KFS8ao';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
 });
 
@@ -1254,11 +1254,11 @@ async function handleAuthSubmit(){
   if(password.length<6){ setAuthMessage('Password must be at least 6 characters.','error'); return; }
   btn.disabled=true; btn.textContent='Please wait…';
   if(authTab==='signin'){
-    const {error} = await sb.auth.signInWithPassword({email, password});
+    const {error} = await supabaseClient.auth.signInWithPassword({email, password});
     if(error){ setAuthMessage(friendlyAuthError(error),'error'); btn.disabled=false; btn.textContent='Sign In'; return; }
     // onAuthStateChange handles hiding the auth screen
   } else {
-    const {error} = await sb.auth.signUp({
+    const {error} = await supabaseClient.auth.signUp({
       email,
       password,
       options:{emailRedirectTo:AUTH_EMAIL_REDIRECT_URL}
@@ -1276,7 +1276,7 @@ async function resendConfirmationEmail(){
   const btn=document.getElementById('resend-confirmation-btn');
   if(!email){ setAuthMessage('Please enter your email first.','error'); return; }
   if(btn){ btn.disabled=true; btn.textContent='Sending…'; }
-  const {error}=await sb.auth.resend({
+  const {error}=await supabaseClient.auth.resend({
     type:'signup',
     email,
     options:{emailRedirectTo:AUTH_EMAIL_REDIRECT_URL}
@@ -1291,7 +1291,7 @@ async function resendConfirmationEmail(){
 
 async function handleSignOut(){
   if(!confirm('Sign out?')) return;
-  await sb.auth.signOut();
+  await supabaseClient.auth.signOut();
 }
 
 function showAuthScreen(){
@@ -1330,13 +1330,13 @@ function isOwnerAdminUser(){
 }
 async function ensureUserProfile(){
   if(!currentUser) return {data:null,error:null};
-  let {data,error}=await sb.from('profiles')
+  let {data,error}=await supabaseClient.from('profiles')
     .select('id,email,trial_start,trial_end,subscription_status,current_period_end,stripe_customer_id,stripe_subscription_id')
     .eq('id', currentUser.id)
     .maybeSingle();
   if(error) return {data:null,error};
   if(!data){
-    const insert=await sb.from('profiles')
+    const insert=await supabaseClient.from('profiles')
       .insert({id:currentUser.id,email:currentUser.email,subscription_status:'none'})
       .select('id,email,trial_start,trial_end,subscription_status,current_period_end,stripe_customer_id,stripe_subscription_id')
       .maybeSingle();
@@ -1352,7 +1352,7 @@ async function fetchSubscriptionStatus(){
   }
   let {data, error} = await ensureUserProfile();
   if(error){
-    const alt = await sb.from('subscriptions')
+    const alt = await supabaseClient.from('subscriptions')
       .select('status,subscription_status,current_period_end,current_period_end_at,trial_end,stripe_customer_id,stripe_subscription_id')
       .eq('user_id', currentUser.id)
       .maybeSingle();
@@ -1420,7 +1420,7 @@ async function startStripeCheckout(priceId){
   try{
     const payload={price_id:selectedPriceId,user_id:currentUser.id,email:currentUser.email};
     console.log('[NutriFlow checkout] invoking Edge Function', STRIPE_CHECKOUT_FUNCTION, payload);
-    const {data, error} = await sb.functions.invoke(STRIPE_CHECKOUT_FUNCTION, {body:payload});
+    const {data, error} = await supabaseClient.functions.invoke(STRIPE_CHECKOUT_FUNCTION, {body:payload});
     console.log('[NutriFlow checkout] Edge Function response', {data,error});
     if(error){
       console.error('[NutriFlow checkout] Edge Function error', error);
@@ -1442,7 +1442,7 @@ async function startStripeCheckout(priceId){
 async function openBillingPortal(){
   if(!currentUser){ showAuthScreen(); return; }
   setEl('subscription-message','Opening billing portal…');
-  const {data, error} = await sb.functions.invoke(STRIPE_PORTAL_FUNCTION, {
+  const {data, error} = await supabaseClient.functions.invoke(STRIPE_PORTAL_FUNCTION, {
     body:{user_id:currentUser.id}
   });
   if(error){ setEl('subscription-message','Billing portal unavailable: '+error.message); return; }
@@ -1477,7 +1477,7 @@ function updateAccountPage(){
 
 let hadSession = false; // tracks whether a session existed before, to detect unexpected sign-outs
 let recoveringSession = false; // true if we just had an unexpected sign-out and need to restore on next sign-in
-sb.auth.onAuthStateChange(async (event, session)=>{
+supabaseClient.auth.onAuthStateChange(async (event, session)=>{
   currentUser = session ? session.user : null;
   if(currentUser){
     hadSession = true;
@@ -4394,7 +4394,7 @@ async function loadRecipes(options={}){
   const localRecipes=mergeLocal ? loadRecipesLocal() : [];
   if(currentUser){
     try{
-      const {data,error}=await sb.from('recipes').select('*').eq('user_id',currentUser.id).order('updated_at',{ascending:false});
+      const {data,error}=await supabaseClient.from('recipes').select('*').eq('user_id',currentUser.id).order('updated_at',{ascending:false});
       if(error) throw error;
       if(data){
         const remote=data.map(r=>({id:r.id,name:r.name,servings:r.servings||1,ingredients:r.ingredients||[],nutrition:r.nutrition||recipeTotals(r.ingredients||[]),updated_at:r.updated_at}));
@@ -4424,11 +4424,11 @@ async function saveRecipe(){
     try{
       const row={user_id:currentUser.id,name:recipe.name,servings:recipe.servings,ingredients:recipe.ingredients,nutrition:recipe.nutrition,updated_at:recipe.updated_at};
       if(editingId && !String(editingId).startsWith('recipe_')){
-        const {data,error}=await sb.from('recipes').update(row).eq('id',editingId).eq('user_id',currentUser.id).select().maybeSingle();
+        const {data,error}=await supabaseClient.from('recipes').update(row).eq('id',editingId).eq('user_id',currentUser.id).select().maybeSingle();
         if(error) throw error;
         if(data){ recipe.id=data.id; savedToCloud=true; }
       } else if(!editingId){
-        const {data,error}=await sb.from('recipes').insert(row).select().maybeSingle();
+        const {data,error}=await supabaseClient.from('recipes').insert(row).select().maybeSingle();
         if(error) throw error;
         if(data){ recipe.id=data.id; savedToCloud=true; }
       }
@@ -4448,7 +4448,7 @@ async function saveRecipe(){
 }
 async function deleteRecipe(id){
   if(!confirm('Delete this recipe?')) return;
-  if(currentUser && !String(id).startsWith('recipe_')) await sb.from('recipes').delete().eq('id',id);
+  if(currentUser && !String(id).startsWith('recipe_')) await supabaseClient.from('recipes').delete().eq('id',id);
   S.recipes=(S.recipes||[]).filter(r=>r.id!==id);
   persistRecipesLocal();
   renderRecipesList();
@@ -4598,7 +4598,7 @@ async function loadAppointments(force=false){
   renderDashboardAppointments();
   if(currentUser){
     try{
-      const {data,error}=await sb.from('appointments').select('id,user_id,client_name,date,time,duration,type,notes,updated_at').eq('user_id',currentUser.id).order('date',{ascending:true}).order('time',{ascending:true});
+      const {data,error}=await supabaseClient.from('appointments').select('id,user_id,client_name,date,time,duration,type,notes,updated_at').eq('user_id',currentUser.id).order('date',{ascending:true}).order('time',{ascending:true});
       if(!error && data){
         const remote=data.map(normalizeAppointment);
         const localOnly=(S.appointments||[]).filter(a=>a.localOnly || String(a.id).startsWith('appt_'));
@@ -4721,9 +4721,9 @@ async function saveAppointmentFromForm(){
     try{
       let result;
       if(String(id).startsWith('appt_')){
-        result=await sb.from('appointments').insert(row).select().maybeSingle();
+        result=await supabaseClient.from('appointments').insert(row).select().maybeSingle();
       } else {
-        result=await sb.from('appointments').update(row).eq('id',id).eq('user_id',currentUser.id).select().maybeSingle();
+        result=await supabaseClient.from('appointments').update(row).eq('id',id).eq('user_id',currentUser.id).select().maybeSingle();
       }
       if(!result.error && result.data) saved=normalizeAppointment(result.data);
       else {
@@ -4752,7 +4752,7 @@ async function deleteAppointment(id){
   const appt=(S.appointments||[]).find(a=>String(a.id)===String(id));
   if(!appt) return;
   if(!confirm('Delete this appointment?')) return;
-  if(currentUser && !String(id).startsWith('appt_')) await sb.from('appointments').delete().eq('id',id).eq('user_id',currentUser.id);
+  if(currentUser && !String(id).startsWith('appt_')) await supabaseClient.from('appointments').delete().eq('id',id).eq('user_id',currentUser.id);
   S.appointments=(S.appointments||[]).filter(a=>String(a.id)!==String(id));
   persistAppointmentsLocal();
   clearAppointmentForm();
@@ -4956,14 +4956,14 @@ async function saveCurrentClient(){
   let error=null;
   let savedRemote=null;
   try{
-    const existingResult = await sb.from('clients').select('id').eq('user_id',currentUser.id).eq('client_ref',id).maybeSingle();
+    const existingResult = await supabaseClient.from('clients').select('id').eq('user_id',currentUser.id).eq('client_ref',id).maybeSingle();
     if(existingResult.error) throw existingResult.error;
     const existing=existingResult.data;
     if(existing){
-      const result = await sb.from('clients').update({name, data:state, updated_at:new Date().toISOString()}).eq('id',existing.id).select().maybeSingle();
+      const result = await supabaseClient.from('clients').update({name, data:state, updated_at:new Date().toISOString()}).eq('id',existing.id).select().maybeSingle();
       error=result.error; savedRemote=result.data;
     } else {
-      const result = await sb.from('clients').insert({user_id:currentUser.id, client_ref:id, name, data:state}).select().maybeSingle();
+      const result = await supabaseClient.from('clients').insert({user_id:currentUser.id, client_ref:id, name, data:state}).select().maybeSingle();
       error=result.error; savedRemote=result.data;
     }
   }catch(e){
@@ -4994,7 +4994,7 @@ async function loadClientById(rowId){
     data=loadLocalClients().find(c=>String(c.id)===String(rowId));
   } else {
     try{
-      const result = await sb.from('clients').select('*').eq('id',rowId).single();
+      const result = await supabaseClient.from('clients').select('*').eq('id',rowId).single();
       if(result.error) throw result.error;
       data=result.data;
     }catch(e){
@@ -5013,7 +5013,7 @@ async function deleteClientById(rowId){
   saveLocalClients(loadLocalClients().filter(c=>String(c.id)!==String(rowId)));
   if(currentUser && !String(rowId).startsWith('local_')){
     try{
-      const {error}=await sb.from('clients').delete().eq('id',rowId).eq('user_id',currentUser.id);
+      const {error}=await supabaseClient.from('clients').delete().eq('id',rowId).eq('user_id',currentUser.id);
       if(error) console.error('[NutriFlow clients] Supabase delete failed', error);
     }catch(e){
       console.error('[NutriFlow clients] Supabase delete exception', e);
@@ -5034,7 +5034,7 @@ async function renderClientList(){
   renderClientListRows(S.clientListCache);
   if(!currentUser) return;
   try{
-    const {data:clients, error} = await sb.from('clients').select('*').eq('user_id',currentUser.id).order('updated_at',{ascending:false});
+    const {data:clients, error} = await supabaseClient.from('clients').select('*').eq('user_id',currentUser.id).order('updated_at',{ascending:false});
     if(error) throw error;
     const remote=(clients||[]).map(normalizeClientRow);
     const remoteRefs=new Set(remote.map(c=>c.client_ref||c.id));
@@ -5090,7 +5090,7 @@ function filterClientList(){
 // body comp, exchanges, meal plans, notes, labs, tracking history)
 async function exportAllClients(){
   if(!currentUser){ alert('Please sign in first.'); return; }
-  const {data:clients, error} = await sb.from('clients').select('*').eq('user_id',currentUser.id);
+  const {data:clients, error} = await supabaseClient.from('clients').select('*').eq('user_id',currentUser.id);
   if(error){ alert('⚠️ Could not fetch clients: '+error.message); return; }
   if(!clients || !clients.length){
     alert('No saved clients to back up yet. Save at least one client first ("💾 Save Client" on Client Profile).');
@@ -5126,12 +5126,12 @@ function importClientsFile(input){
         const ref=c.client_ref || c.id;
         const name=c.name||'Unnamed client';
         const state=c.state||c.data;
-        const {data:existing} = await sb.from('clients').select('id').eq('user_id',currentUser.id).eq('client_ref',ref).maybeSingle();
+        const {data:existing} = await supabaseClient.from('clients').select('id').eq('user_id',currentUser.id).eq('client_ref',ref).maybeSingle();
         if(existing){
-          await sb.from('clients').update({name, data:state, updated_at:new Date().toISOString()}).eq('id',existing.id);
+          await supabaseClient.from('clients').update({name, data:state, updated_at:new Date().toISOString()}).eq('id',existing.id);
           updated++;
         } else {
-          await sb.from('clients').insert({user_id:currentUser.id, client_ref:ref, name, data:state});
+          await supabaseClient.from('clients').insert({user_id:currentUser.id, client_ref:ref, name, data:state});
           added++;
         }
       }
@@ -5500,6 +5500,7 @@ updateOnlineStatus();
 
 </body>
 </html>
+
 
 
 
