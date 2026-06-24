@@ -1168,8 +1168,8 @@ tr:hover td { background: var(--bg-hover); }
           <div class="form-field"><label>Subscription status</label><input type="text" id="acct-subscription" readonly style="background:var(--bg-page);cursor:not-allowed"></div>
         </div>
         <div id="account-subscription-detail" class="subscription-status">Subscription status will appear here after sign in.</div>
-        <button class="btn primary" onclick="startStripeCheckout('price_1TlSadDNJLDjyxXC5Vf1x8ya')">Start monthly trial</button>
-        <button class="btn primary" onclick="startStripeCheckout('price_1TlSadDNJLDjyxXCwfLWoGH5')">Start yearly trial</button>
+        <button class="btn primary" onclick="startStripeCheckout('price_1TlSadDNJLDjyxXC5Vf1x8ya')" id="account-monthly-trial-btn">Start monthly trial</button>
+        <button class="btn primary" onclick="startStripeCheckout('price_1TlSadDNJLDjyxXCwfLWoGH5')" id="account-yearly-trial-btn">Start yearly trial</button>
         <button class="btn" onclick="openBillingPortal()" id="account-manage-billing-btn" style="display:none">Manage billing</button>
       </div>
     </div>
@@ -1408,6 +1408,29 @@ async function refreshSubscriptionGate(){
   }
   updateTrialBanner();
 }
+async function refreshAccountSubscriptionPage(){
+  try{
+    const {data, error}=await supabaseClient.auth.getSession();
+    if(error) console.error('[NutriFlow account] getSession failed', error);
+    const session=data&&data.session;
+    currentUser = session ? session.user : currentUser;
+    if(!currentUser){
+      subscriptionState = {status:'signed_out', active:false, currentPeriodEnd:null, trialDaysRemaining:null, trialActive:false, trialExpired:false};
+      updateAccountPage();
+      showAuthScreen();
+      return;
+    }
+    setEl('user-email', currentUser.email || '');
+    const userChip=document.getElementById('user-chip');
+    if(userChip) userChip.style.display='flex';
+    subscriptionState = await fetchSubscriptionStatus();
+    updateAccountPage();
+    updateTrialBanner();
+  }catch(err){
+    console.error('[NutriFlow account] refresh failed', err);
+    updateAccountPage();
+  }
+}
 async function startStripeCheckout(priceId){
   console.log('[NutriFlow checkout] startStripeCheckout clicked', {priceId, currentUser: currentUser ? {id:currentUser.id,email:currentUser.email} : null});
   if(!currentUser){
@@ -1471,8 +1494,13 @@ function updateAccountPage(){
             ? '<strong>Your free trial has ended.</strong> Use Checkout to activate this account.'
             : '<strong>No active subscription.</strong> Use Checkout to activate this account.';
   }
+  const hasActiveAccess=!!(subscriptionState.active || subscriptionState.ownerBypass);
+  const monthlyBtn=document.getElementById('account-monthly-trial-btn');
+  const yearlyBtn=document.getElementById('account-yearly-trial-btn');
+  if(monthlyBtn) monthlyBtn.style.display = hasActiveAccess ? 'none' : '';
+  if(yearlyBtn) yearlyBtn.style.display = hasActiveAccess ? 'none' : '';
   const billingBtn=document.getElementById('account-manage-billing-btn');
-  if(billingBtn) billingBtn.style.display = (subscriptionState.active || subscriptionState.ownerBypass) ? '' : 'none';
+  if(billingBtn) billingBtn.style.display = hasActiveAccess ? '' : 'none';
 }
 
 let hadSession = false; // tracks whether a session existed before, to detect unexpected sign-outs
@@ -2756,7 +2784,7 @@ function nav(id) {
   if(id==='fooddb') { loadRecipes({render:false, mergeLocal:true}); }
   if(id==='recipes') { renderRecipeDraft(); loadRecipes(); }
   if(id==='appointments') { loadAppointments(true).then(renderAppointments); }
-  if(id==='account') { currentUser ? refreshSubscriptionGate() : updateAccountPage(); }
+  if(id==='account') { refreshAccountSubscriptionPage(); }
   if(id==='profile') calcBodyComp();
   if(id==='exchanges') renderExchanges();
   // Always sync exchange inputs → S.ex before building meal plans
