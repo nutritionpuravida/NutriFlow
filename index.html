@@ -510,12 +510,10 @@ tr:hover td { background: var(--bg-hover); }
           <span style="font-weight:700;color:var(--text-primary)">Yearly</span>
           <span style="font-weight:800;color:var(--teal-800)">€249/year <span style="font-size:11px;color:var(--teal-600);font-weight:700">(save €99)</span></span>
         </div>
-        <div style="font-size:12px;color:var(--amber-600);font-weight:700;line-height:1.4">First 10 founding members get 50% off forever</div>
       </div>
     </div>
-    <button class="auth-submit" onclick="startStripeCheckout(STRIPE_MONTHLY_PRICE_ID)">Start 7-day trial — Monthly</button>
-    <button class="auth-submit secondary" onclick="startStripeCheckout(STRIPE_YEARLY_PRICE_ID)">Start 7-day trial — Yearly</button>
-    <button class="auth-submit secondary" onclick="openBillingPortal()">Manage billing</button>
+    <button class="auth-submit" onclick="startStripeCheckout('price_1TlSadDNJLDjyxXC5Vf1x8ya')">Start 7-day trial — Monthly</button>
+    <button class="auth-submit secondary" onclick="startStripeCheckout('price_1TlSadDNJLDjyxXCwfLWoGH5')">Start 7-day trial — Yearly</button>
     <button class="auth-submit secondary" onclick="handleSignOut()">Sign out</button>
   </div>
 </div>
@@ -1170,9 +1168,9 @@ tr:hover td { background: var(--bg-hover); }
           <div class="form-field"><label>Subscription status</label><input type="text" id="acct-subscription" readonly style="background:var(--bg-page);cursor:not-allowed"></div>
         </div>
         <div id="account-subscription-detail" class="subscription-status">Subscription status will appear here after sign in.</div>
-        <button class="btn primary" onclick="startStripeCheckout(STRIPE_MONTHLY_PRICE_ID)">Start monthly trial</button>
-        <button class="btn primary" onclick="startStripeCheckout(STRIPE_YEARLY_PRICE_ID)">Start yearly trial</button>
-        <button class="btn" onclick="openBillingPortal()">Manage billing</button>
+        <button class="btn primary" onclick="startStripeCheckout('price_1TlSadDNJLDjyxXC5Vf1x8ya')">Start monthly trial</button>
+        <button class="btn primary" onclick="startStripeCheckout('price_1TlSadDNJLDjyxXCwfLWoGH5')">Start yearly trial</button>
+        <button class="btn" onclick="openBillingPortal()" id="account-manage-billing-btn" style="display:none">Manage billing</button>
       </div>
     </div>
   </div>
@@ -1411,19 +1409,35 @@ async function refreshSubscriptionGate(){
   updateTrialBanner();
 }
 async function startStripeCheckout(priceId){
-  if(!currentUser){ showAuthScreen(); return; }
+  console.log('[NutriFlow checkout] startStripeCheckout clicked', {priceId, currentUser: currentUser ? {id:currentUser.id,email:currentUser.email} : null});
+  if(!currentUser){
+    console.warn('[NutriFlow checkout] No signed-in user; showing auth screen.');
+    showAuthScreen();
+    return;
+  }
   const selectedPriceId = priceId || STRIPE_MONTHLY_PRICE_ID;
   setEl('subscription-message','Creating secure checkout…');
-  const {data, error} = await sb.functions.invoke(STRIPE_CHECKOUT_FUNCTION, {
-    body:{
-      price_id:selectedPriceId,
-      user_id:currentUser.id,
-      email:currentUser.email
+  try{
+    const payload={price_id:selectedPriceId,user_id:currentUser.id,email:currentUser.email};
+    console.log('[NutriFlow checkout] invoking Edge Function', STRIPE_CHECKOUT_FUNCTION, payload);
+    const {data, error} = await sb.functions.invoke(STRIPE_CHECKOUT_FUNCTION, {body:payload});
+    console.log('[NutriFlow checkout] Edge Function response', {data,error});
+    if(error){
+      console.error('[NutriFlow checkout] Edge Function error', error);
+      setEl('subscription-message','Checkout unavailable: '+(error.message || 'Edge Function error. Check browser console and Supabase function logs.'));
+      return;
     }
-  });
-  if(error){ setEl('subscription-message','Checkout unavailable: '+error.message); return; }
-  if(data && data.url){ window.location.href=data.url; return; }
-  setEl('subscription-message','Checkout function did not return a URL.');
+    if(data && data.url){
+      console.log('[NutriFlow checkout] redirecting to Stripe Checkout', data.url);
+      window.location.href=data.url;
+      return;
+    }
+    console.error('[NutriFlow checkout] Missing checkout URL', data);
+    setEl('subscription-message','Checkout function did not return a URL. Check Supabase function logs.');
+  }catch(err){
+    console.error('[NutriFlow checkout] Unexpected checkout failure', err);
+    setEl('subscription-message','Checkout failed: '+(err.message || 'Unexpected error. Check browser console.'));
+  }
 }
 async function openBillingPortal(){
   if(!currentUser){ showAuthScreen(); return; }
@@ -1457,6 +1471,8 @@ function updateAccountPage(){
             ? '<strong>Your free trial has ended.</strong> Use Checkout to activate this account.'
             : '<strong>No active subscription.</strong> Use Checkout to activate this account.';
   }
+  const billingBtn=document.getElementById('account-manage-billing-btn');
+  if(billingBtn) billingBtn.style.display = (subscriptionState.active || subscriptionState.ownerBypass) ? '' : 'none';
 }
 
 let hadSession = false; // tracks whether a session existed before, to detect unexpected sign-outs
