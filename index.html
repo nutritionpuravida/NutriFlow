@@ -1295,31 +1295,29 @@ async function handleSignOut(){
   if(!confirm('Sign out?')) return;
   intentionalSignOut = true;
   console.log('[NutriFlow auth] Sign out requested');
-  const { error } = await supabaseClient.auth.signOut();
-  if(error){
-    intentionalSignOut = false;
-    setAuthMessage(friendlyAuthError(error), 'error');
-    console.error('[NutriFlow auth] Sign out failed', error);
-    return;
+  try{
+    supabaseClient.auth.signOut().catch(err=>console.error('[NutriFlow auth] Fire-and-forget signOut failed', err));
+  }catch(err){
+    console.error('[NutriFlow auth] Fire-and-forget signOut threw synchronously', err);
   }
-  setTimeout(()=>{
-    if(intentionalSignOut){
-      console.warn('[NutriFlow auth] SIGNED_OUT event did not arrive; applying sign-out UI fallback');
-      clearLocalStorageAfterSignOut();
-      intentionalSignOut=false;
-      completeSignedOutUi(true);
-    }
-  }, 1500);
+  clearLocalStorageAfterSignOut();
+  intentionalSignOut = false;
+  completeSignedOutUi(true);
 }
 window.handleSignOut = handleSignOut;
 
 function clearLocalStorageAfterSignOut(){
   try{
-    Object.keys(localStorage).forEach(key=>{
-      if(key.startsWith('nutriflow_') || key.startsWith('sb-')) localStorage.removeItem(key);
+    Object.keys(window.localStorage || {}).forEach(key=>{
+      if(key.startsWith('nutriflow_') || key.startsWith('sb-') || key.startsWith('supabase')) localStorage.removeItem(key);
     });
   }catch(e){
     console.warn('[NutriFlow auth] Could not clear local storage after sign out', e);
+  }
+  try{
+    if(window.sessionStorage) window.sessionStorage.clear();
+  }catch(e){
+    console.warn('[NutriFlow auth] Could not clear session storage after sign out', e);
   }
 }
 
