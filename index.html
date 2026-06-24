@@ -1580,7 +1580,16 @@ supabaseClient.auth.onAuthStateChange(async (event, session)=>{
     const userChip=document.getElementById('user-chip');
     if(userChip) userChip.style.display='flex';
     setEl('user-email', currentUser.email || '');
-    await refreshSubscriptionGate();
+    try{
+      await refreshSubscriptionGate();
+      updateTrialBanner();
+      updateAccountPage();
+      console.log('[NutriFlow auth] subscriptionState after refreshSubscriptionGate', subscriptionState);
+    }catch(err){
+      console.error('[NutriFlow auth] refreshSubscriptionGate failed during auth event', err);
+      updateTrialBanner();
+      updateAccountPage();
+    }
     if(subscriptionState.active && document.getElementById('page-clients')?.classList.contains('active')) renderClientList();
     if(currentUser){
       appointmentsLoadedFor=null;
