@@ -1332,18 +1332,31 @@ function completeSignedOutUi(wasIntentionalSignOut=false){
 async function restoreExistingSessionOnLoad(){
   console.log('[NutriFlow auth] restoreExistingSessionOnLoad called');
   try{
+    let authKeys=[];
+    try{
+      authKeys=Object.keys(localStorage).filter(key=>key.startsWith('sb-') || key.startsWith('supabase'));
+    }catch(e){
+      console.warn('[NutriFlow auth] Could not inspect localStorage auth keys', e);
+    }
+    console.log('[NutriFlow auth] localStorage auth keys', authKeys);
     const {data, error}=await supabaseClient.auth.getSession();
     if(error){
       console.error('[NutriFlow auth] page-load getSession failed', error);
-      return;
     }
     const session=data&&data.session;
     console.log('[NutriFlow auth] page-load session check', {hasSession:!!session, email:session?.user?.email || null});
-    if(!session){
+    let restoredUser=session?.user || null;
+    if(!restoredUser){
+      const {data:userData, error:userError}=await supabaseClient.auth.getUser();
+      if(userError) console.error('[NutriFlow auth] page-load getUser fallback failed', userError);
+      restoredUser=userData?.user || null;
+      console.log('[NutriFlow auth] page-load getUser fallback', {hasUser:!!restoredUser, email:restoredUser?.email || null});
+    }
+    if(!restoredUser){
       updateAccountPage();
       return;
     }
-    currentUser=session.user;
+    currentUser=restoredUser;
     hadSession=true;
     hideAuthScreen();
     const userChip=document.getElementById('user-chip');
