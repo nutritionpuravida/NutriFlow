@@ -1304,9 +1304,9 @@ async function handleAuthSubmit(){
     }
     const {error} = signUpResult || {};
     if(error){ setAuthMessage(friendlyAuthError(error, 'Sign up failed. Please try again.'),'error'); btn.disabled=false; btn.textContent='Create Account'; return; }
-    setAuthMessage('✅ Account created! Check your email to confirm, then sign in.','success');
+    setAuthMessage('✅ Account created! You can now sign in.','success');
     const resendBtn=document.getElementById('resend-confirmation-btn');
-    if(resendBtn) resendBtn.style.display='block';
+    if(resendBtn) resendBtn.style.display='none';
     btn.disabled=false; btn.textContent='Create Account';
   }
 }
