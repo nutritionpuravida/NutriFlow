@@ -1473,9 +1473,28 @@ function openTrialSubscribe(){
     : 'Your free trial has ended. Subscribe to continue.';
   showSubscriptionScreen(msg);
 }
+function withTimeout(promise, ms, label){
+  return Promise.race([
+    promise,
+    new Promise((_, reject)=>setTimeout(()=>reject(new Error(`${label} timeout`)), ms))
+  ]);
+}
+async function fetchSubscriptionStatusWithRetry(){
+  try{
+    return await withTimeout(fetchSubscriptionStatus(), 8000, 'fetchSubscriptionStatus');
+  }catch(err){
+    console.warn('[NutriFlow subscription] fetchSubscriptionStatus timed out/failed; retrying once', err);
+    return await withTimeout(fetchSubscriptionStatus(), 8000, 'fetchSubscriptionStatus retry');
+  }
+}
 async function refreshSubscriptionGate(){
   if(!SUBSCRIPTION_REQUIRED){ subscriptionState={status:'disabled',active:true}; hideSubscriptionScreen(); updateTrialBanner(); updateAccountPage(); return; }
-  subscriptionState = await fetchSubscriptionStatus();
+  try{
+    subscriptionState = await fetchSubscriptionStatusWithRetry();
+  }catch(err){
+    console.error('[NutriFlow subscription] refreshSubscriptionGate failed after retry', err);
+    subscriptionState = subscriptionState || {status:'Unable to refresh subscription', active:false};
+  }
   updateAccountPage();
   if(subscriptionState.active){
     hideSubscriptionScreen();
@@ -1490,6 +1509,28 @@ async function refreshSubscriptionGate(){
     requestAnimationFrame(updateAccountPage);
     setTimeout(updateAccountPage, 50);
   }
+}
+function isStripeCheckoutReturn(){
+  try{
+    const params=new URLSearchParams(window.location.search || '');
+    return params.get('checkout') === 'success' || params.has('session_id') || params.get('success') === 'true';
+  }catch(e){
+    return false;
+  }
+}
+function handleStripeReturnRefresh(){
+  if(!isStripeCheckoutReturn()) return;
+  console.log('[NutriFlow checkout] Stripe return detected; refreshing subscription after webhook delay');
+  setEl('subscription-message','Checkout complete. Refreshing subscription status…');
+  setTimeout(()=>{
+    refreshSubscriptionGate()
+      .then(()=>{
+        updateTrialBanner();
+        updateAccountPage();
+        console.log('[NutriFlow checkout] subscriptionState after Stripe return refresh', subscriptionState);
+      })
+      .catch(err=>console.error('[NutriFlow checkout] Stripe return refresh failed', err));
+  }, 2000);
 }
 async function refreshAccountSubscriptionPage(){
   console.log('[NutriFlow account] refreshAccountSubscriptionPage called');
@@ -5394,6 +5435,7 @@ window.onload=function(){
   document.getElementById('s-snack2').innerHTML=snackExtrasHtml();
   document.getElementById('s-sleep').innerHTML=snackExtrasHtml();
   calcAll(); calcMacros(); renderDashboard();
+  handleStripeReturnRefresh();
   loadAppointments().then(renderDashboardAppointments);
   tryRestoreAutosave();
   // Auto-save on any input/change anywhere in the form
