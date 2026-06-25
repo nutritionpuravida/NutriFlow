@@ -1239,12 +1239,22 @@ function setAuthTab(tab){
 function setAuthMessage(text, type){
   setEl('auth-message', text ? `<div class="auth-msg ${type}">${text}</div>` : '');
 }
-function friendlyAuthError(error){
-  const msg=(error?.message || String(error || '')).toLowerCase();
+function friendlyAuthError(error, fallback='Authentication error.'){
+  const candidates=[
+    error?.message,
+    error?.error_description,
+    error?.description,
+    error?.details,
+    error?.hint,
+    typeof error === 'string' ? error : ''
+  ];
+  let message=(candidates.find(v=>typeof v === 'string' && v.trim()) || '').trim();
+  if(!message || message === '{}' || message === '[object Object]') message=fallback;
+  const msg=message.toLowerCase();
   if(msg.includes('rate limit') || msg.includes('too many') || msg.includes('email rate limit')){
     return 'Too many attempts. Please wait a few minutes and try again.';
   }
-  return error?.message || String(error || 'Authentication error.');
+  return message;
 }
 
 async function handleAuthSubmit(){
@@ -1280,12 +1290,20 @@ async function handleAuthSubmit(){
     }
     // onAuthStateChange handles hiding the auth screen
   } else {
-    const {error} = await supabaseClient.auth.signUp({
-      email,
-      password,
-      options:{emailRedirectTo:AUTH_EMAIL_REDIRECT_URL}
-    });
-    if(error){ setAuthMessage(friendlyAuthError(error),'error'); btn.disabled=false; btn.textContent='Create Account'; return; }
+    let signUpResult;
+    try{
+      signUpResult = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options:{emailRedirectTo:AUTH_EMAIL_REDIRECT_URL}
+      });
+    }catch(err){
+      console.error('[NutriFlow auth] signUp failed unexpectedly', err);
+      setAuthMessage(friendlyAuthError(err, 'Sign up failed. Please try again.'),'error');
+      btn.disabled=false; btn.textContent='Create Account'; return;
+    }
+    const {error} = signUpResult || {};
+    if(error){ setAuthMessage(friendlyAuthError(error, 'Sign up failed. Please try again.'),'error'); btn.disabled=false; btn.textContent='Create Account'; return; }
     setAuthMessage('✅ Account created! Check your email to confirm, then sign in.','success');
     const resendBtn=document.getElementById('resend-confirmation-btn');
     if(resendBtn) resendBtn.style.display='block';
