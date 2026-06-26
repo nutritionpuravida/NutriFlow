@@ -1892,9 +1892,9 @@ function getFruitDistribution(){
 // then the remainder is split evenly across snack1/snack2/sleep, with
 // "before sleep" given the first priority serving (clinically common to
 // place dairy before bed) when the total doesn't divide evenly.
-function getDairyDistribution(){
+function getDairyDistribution(breakfastKey=(S.mealSel && S.mealSel.breakfast) || 'BRK_TOAST'){
   const total = S.ex ? (S.ex.dairy||0) : 0;
-  const brkUsesDairy = (S.mealSel && S.mealSel.breakfast==='BRK_CEREAL') ? 1 : 0;
+  const brkUsesDairy = (breakfastKey==='BRK_CEREAL' || breakfastKey==='BRK_OATS_VEGAN') ? 1 : 0;
   const remaining = Math.max(0, total - brkUsesDairy);
   const base = Math.floor(remaining/3);
   let rem = remaining - base*3;
@@ -1914,7 +1914,7 @@ const MEALS = {
   BRK_OATS_VEGAN:  (ex,p) => `Βρώμη (5 κ.σ. / ~40g) – 1 φλ. εμπλουτισμένο φυτικό γάλα (αμύγδαλο/σόγια)`,
   LUN_CHICKEN_RICE:   (ex,p) => 'Κοτόπουλο + ρύζι' + mealSuffix(ex,p,'σαλάτα',null,'ρύζι'),
   LUN_FISH_POTATO:    (ex,p) => 'Ψάρι + πατάτα' + mealSuffix(ex,p,'σαλάτα',null,'πατάτα','ψάρι',true),
-  LUN_LOUVI_TUNA:     (ex,p) => 'Λουβί + τόνος' + mealSuffix(ex,p,'σαλάτα / χόρτα',null,'ψωμί','τόνο',true),
+  LUN_LOUVI_TUNA:     (ex,p) => 'Λουβί + τόνος' + mealSuffix(ex,p,'σαλάτα / χόρτα',null,'λουβί','τόνο',true),
   LUN_FASOLAKIA_PORK: (ex,p) => 'Φασολάκια + χοιρινό' + mealSuffix(ex,p,'φασολάκια + σαλάτα',null,'πατάτα','χοιρινό'),
   LUN_TUNA_POTATO:    (ex,p) => 'Τόνος + πατάτα' + mealSuffix(ex,p,'σαλάτα',null,'πατάτα','τόνο',true),
   LUN_PASTA_MINCE:    (ex,p) => 'Μακαρόνια + κιμάς' + mealSuffix(ex,p,'σαλάτα',null,'ζυμαρικά','κιμά'),
@@ -1947,7 +1947,7 @@ const MEALS_EN = {
   BRK_OATS_VEGAN:  (ex,p) => `Oats (5 tbsp / ~40g) - 1 cup fortified plant milk (almond/soy)`,
   LUN_CHICKEN_RICE:   (ex,p) => 'Chicken + rice' + mealSuffixEn(ex,p,'salad',null,'rice'),
   LUN_FISH_POTATO:    (ex,p) => 'Fish + potato' + mealSuffixEn(ex,p,'salad',null,'potato','fish',true),
-  LUN_LOUVI_TUNA:     (ex,p) => 'Black-eyed beans + tuna' + mealSuffixEn(ex,p,'salad / greens',null,'bread','tuna',true),
+  LUN_LOUVI_TUNA:     (ex,p) => 'Black-eyed beans + tuna' + mealSuffixEn(ex,p,'salad / greens',null,'black-eyed beans','tuna',true),
   LUN_FASOLAKIA_PORK: (ex,p) => 'Green beans + pork' + mealSuffixEn(ex,p,'green beans + salad',null,'potato','pork'),
   LUN_TUNA_POTATO:    (ex,p) => 'Tuna + potato' + mealSuffixEn(ex,p,'salad',null,'potato','tuna',true),
   LUN_PASTA_MINCE:    (ex,p) => 'Pasta + mince' + mealSuffixEn(ex,p,'salad',null,'pasta','mince'),
@@ -2140,15 +2140,16 @@ function refreshMealPlanViews(){
   if(document.getElementById('page-report')?.classList.contains('active')) buildReport();
 }
 function calcDayTotals(){
-  const portions = getMealPortions();
   const ms = S.mealSel;
+  const allocation = getDayMealAllocation(ms);
+  const portions = allocation.portions;
   const brkComp  = MEAL_EXCHANGES[ms.breakfast] || {};
   const lunComp  = MEAL_EXCHANGES[ms.lunch]     || {};
   const dinComp  = MEAL_EXCHANGES[ms.dinner]    || {};
 
-  const snk1Built = buildSlotSnack('snk1', ms.snack1Extras || []);
-  const snk2Built = buildSlotSnack('snk2', ms.snack2Extras || []);
-  const sleepBuilt = buildSlotSnack('sleep', ms.sleepExtras || []);
+  const snk1Built = allocation.snacks.snk1Built;
+  const snk2Built = allocation.snacks.snk2Built;
+  const sleepBuilt = allocation.snacks.sleepBuilt;
 
   const brkKcal  = exchangesToKcal(brkComp, null) + extraKcal('brk', null);
   const lunKcal  = exchangesToKcal(lunComp, FIXED_COMPOSITION_MEALS.has(ms.lunch) ? null : portions.lunch) + extraKcal('lun', null);
@@ -2160,7 +2161,7 @@ function calcDayTotals(){
   const target = Math.round(S.goalKcal||0);
   const gap = totalKcal - target;
 
-  return {brkKcal, lunKcal, dinKcal, snk1Kcal, snk2Kcal, slpKcal, totalKcal, target, gap};
+  return {brkKcal, lunKcal, dinKcal, snk1Kcal, snk2Kcal, slpKcal, totalKcal, target, gap, warnings:allocation.warnings};
 }
 
 // Builds the portion suffix for a main meal using clinically-capped
@@ -2674,9 +2675,9 @@ function getSnackExtras(elId){
 // for this slot. The fruit/dairy base is ALWAYS included when the
 // distribution assigns a non-zero count to this slot — completely
 // independent of which extras are ticked, so it can never be silently lost.
-function buildSlotSnack(slot, extras, lang='GR'){
+function buildSlotSnack(slot, extras, lang='GR', breakfastKey){
   const fruitDist=getFruitDistribution();
-  const dairyDist=getDairyDistribution();
+  const dairyDist=getDairyDistribution(breakfastKey);
   const fruitCount=fruitDist[slot]||0;
   const dairyCount=dairyDist[slot]||0;
   const useDriedFruit = (extras||[]).includes('driedfruit');
@@ -2806,22 +2807,96 @@ function splitAcrossMeals(total, numMeals, perMealMax) {
   return arr;
 }
 
-// Returns {lunch:{prot,starch,fat}, dinner:{prot,starch,fat}} portions
-// distributed from S.ex with per-meal caps applied
-function getMealPortions() {
-  const ex = S.ex;
-  const caps = S.effCaps || getEffectiveCaps(S.conditions);
-  const starchSplit  = splitAcrossMeals(ex.starch,  2, caps.starchPerMealMax);
-  const proteinSplit = splitAcrossMeals(ex.protein, 2, caps.proteinPerMealMax);
-  const fatSplit     = splitAcrossMeals(ex.fat,     2, caps.fatPerMealMax);
-  // Veg has no clinical per-meal cap (encouraged food group) — split evenly
-  // across lunch+dinner so the FULL S.ex.veg amount is always reflected,
-  // never silently lost like the old fixed veg:1 in MEAL_EXCHANGES used to do
-  const vegSplit = splitAcrossMeals(ex.veg, 2, 99);
+function normalizeMealPlan(plan){
+  plan=plan||{};
   return {
-    lunch:  { prot: proteinSplit[0], starch: starchSplit[0], fat: fatSplit[0], veg: vegSplit[0] },
-    dinner: { prot: proteinSplit[1], starch: starchSplit[1], fat: fatSplit[1], veg: vegSplit[1] },
+    breakfast: plan.brk || plan.breakfast || 'BRK_TOAST',
+    lunch: plan.lun || plan.lunch || 'LUN_CHICKEN_RICE',
+    dinner: plan.din || plan.dinner || 'DIN_FISH_POTATO',
+    snack1Extras: plan.snk1Extras || plan.snack1Extras || [],
+    snack2Extras: plan.snk2Extras || plan.snack2Extras || [],
+    sleepExtras: plan.sleepExtras || [],
   };
+}
+function zeroExchangeUse(){ return {fruit:0,veg:0,dairy:0,starch:0,protein:0,fat:0}; }
+function addExchangeUse(target, comp){
+  Object.keys(target).forEach(k=>{ target[k]+=Number(comp?.[k]||0); });
+}
+function addMainMealFixedUse(target, comp, mealScales){
+  if(!mealScales){
+    addExchangeUse(target, comp);
+    return;
+  }
+  // For scalable meals, protein/starch/fat already declared in the template
+  // are fixed and count against the daily budget. Veg is allocated dynamically
+  // because exchangesToKcal() replaces composition.veg when portions.veg exists.
+  target.protein += Number(comp?.protein||0);
+  target.starch  += Number(comp?.starch||0);
+  target.fat     += Number(comp?.fat||0);
+  target.fruit   += Number(comp?.fruit||0);
+  target.dairy   += Number(comp?.dairy||0);
+}
+function allocateRemainingExchange(exKey, portionKey, ex, fixed, scalableSlots, portions, perMealMax, warnings){
+  const target=Number(ex?.[exKey]||0);
+  const alreadyUsed=Number(fixed?.[exKey]||0);
+  const remaining=target-alreadyUsed;
+  if(remaining<0){
+    warnings.push(`${exKey} fixed meals exceed daily exchange target by ${Math.abs(remaining)} exchange(s).`);
+    return;
+  }
+  if(remaining>0 && !scalableSlots.length){
+    warnings.push(`${remaining} ${exKey} exchange(s) cannot be allocated because both main meals are fixed.`);
+    return;
+  }
+  const split=splitAcrossMeals(remaining, scalableSlots.length, perMealMax);
+  scalableSlots.forEach((slot,i)=>{
+    portions[slot][portionKey]=split[i]||0;
+    if((split[i]||0)>perMealMax && perMealMax<99){
+      warnings.push(`${slot} ${exKey} exceeds per-meal cap (${split[i]} > ${perMealMax}).`);
+    }
+  });
+}
+
+// Daily exchange ledger: subtract fixed breakfast/snack/fixed-meal exchanges
+// first, then distribute only the remainder to scalable lunch/dinner meals.
+function getDayMealAllocation(plan=S.mealSel, lang=S.mealLanguage||'GR'){
+  const p=normalizeMealPlan(plan);
+  const ex=S.ex||{};
+  const caps=S.effCaps || getEffectiveCaps(S.conditions);
+  const brkComp=MEAL_EXCHANGES[p.breakfast]||{};
+  const lunComp=MEAL_EXCHANGES[p.lunch]||{};
+  const dinComp=MEAL_EXCHANGES[p.dinner]||{};
+  const snk1Built=buildSlotSnack('snk1', p.snack1Extras||[], lang, p.breakfast);
+  const snk2Built=buildSlotSnack('snk2', p.snack2Extras||[], lang, p.breakfast);
+  const sleepBuilt=buildSlotSnack('sleep', p.sleepExtras||[], lang, p.breakfast);
+  const lunchScales=!FIXED_COMPOSITION_MEALS.has(p.lunch);
+  const dinnerScales=!FIXED_COMPOSITION_MEALS.has(p.dinner);
+  const fixed=zeroExchangeUse();
+  addExchangeUse(fixed, brkComp);
+  addExchangeUse(fixed, snk1Built.exch);
+  addExchangeUse(fixed, snk2Built.exch);
+  addExchangeUse(fixed, sleepBuilt.exch);
+  addMainMealFixedUse(fixed, lunComp, lunchScales);
+  addMainMealFixedUse(fixed, dinComp, dinnerScales);
+
+  const portions={
+    lunch:{prot:0,starch:0,fat:0,veg:0},
+    dinner:{prot:0,starch:0,fat:0,veg:0},
+  };
+  const scalableSlots=[];
+  if(lunchScales) scalableSlots.push('lunch');
+  if(dinnerScales) scalableSlots.push('dinner');
+  const warnings=[];
+  allocateRemainingExchange('starch','starch',ex,fixed,scalableSlots,portions,caps.starchPerMealMax,warnings);
+  allocateRemainingExchange('protein','prot',ex,fixed,scalableSlots,portions,caps.proteinPerMealMax,warnings);
+  allocateRemainingExchange('fat','fat',ex,fixed,scalableSlots,portions,caps.fatPerMealMax,warnings);
+  allocateRemainingExchange('veg','veg',ex,fixed,scalableSlots,portions,99,warnings);
+  return {plan:p,portions,snacks:{snk1Built,snk2Built,sleepBuilt},fixed,warnings};
+}
+
+// Backwards-compatible wrapper for older callers.
+function getMealPortions(plan=S.mealSel, lang=S.mealLanguage||'GR') {
+  return getDayMealAllocation(plan, lang).portions;
 }
 
 // Guidance updated against current evidence (2024-2025): ADA Standards of Care
@@ -3649,11 +3724,12 @@ function buildOneDayPlan(){
   const snk1Extras=getSnackExtras('s-snack1'), snk2Extras=getSnackExtras('s-snack2'), sleepExtras=getSnackExtras('s-sleep');
   S.mealSel={breakfast:brk,lunch:lun,dinner:din,snack1Extras:snk1Extras,snack2Extras:snk2Extras,sleepExtras:sleepExtras};
   const ex=S.ex;
-  const portions=getMealPortions();
+  const allocation=getDayMealAllocation(S.mealSel, lang);
+  const portions=allocation.portions;
   const day=calcDayTotals();
-  const snk1Built=buildSlotSnack('snk1', snk1Extras, lang);
-  const snk2Built=buildSlotSnack('snk2', snk2Extras, lang);
-  const sleepBuilt=buildSlotSnack('sleep', sleepExtras, lang);
+  const snk1Built=allocation.snacks.snk1Built;
+  const snk2Built=allocation.snacks.snk2Built;
+  const sleepBuilt=allocation.snacks.sleepBuilt;
   const meals=[
     {slot:'brk', time:lang==='EN'?'Breakfast':'Πρωινό',      en:'Breakfast',     text:mealText(brk,null,lang),              kcal:day.brkKcal},
     {slot:'snk1', time:lang==='EN'?'Snack 1':'Σνακ 1',        en:'Snack 1',       text:snk1Built.text,                       kcal:day.snk1Kcal},
@@ -3677,6 +3753,11 @@ function buildOneDayPlan(){
   // removed — it's now structurally impossible for that to happen, since
   // fruit/dairy servings assigned to a slot are ALWAYS included automatically
   // (see buildSlotSnack()), independent of which extras checkboxes are ticked.
+  if(day.warnings&&day.warnings.length){
+    gapAdvice+=`<div style="margin-top:8px;padding:8px 12px;background:var(--amber-bg);border-radius:6px;font-size:12px;color:var(--amber-text)">
+      ⚠️ <strong>Exchange allocation warning:</strong> ${day.warnings.map(safeHtml).join(' · ')}
+    </div>`;
+  }
   if(!gapOk && day.gap<0){
     const starchNeeded=Math.round(Math.abs(day.gap)/81);
     const fatNeeded=Math.round(Math.abs(day.gap)/45);
@@ -3710,9 +3791,10 @@ function buildOneDayPlan(){
     </tbody></table>`;
   const dashMeals=document.getElementById('dash-meals');
   if(dashMeals){
-    const dashSnack1=buildSlotSnack('snk1', snk1Extras, 'GR');
-    const dashSnack2=buildSlotSnack('snk2', snk2Extras, 'GR');
-    const dashSleep=buildSlotSnack('sleep', sleepExtras, 'GR');
+    const dashAllocation=getDayMealAllocation(S.mealSel, 'GR');
+    const dashSnack1=dashAllocation.snacks.snk1Built;
+    const dashSnack2=dashAllocation.snacks.snk2Built;
+    const dashSleep=dashAllocation.snacks.sleepBuilt;
     const dashList=[
       {time:'Πρωινό', text:MEALS[brk]?MEALS[brk](ex,null):'', kcal:day.brkKcal},
       {time:'Σνακ 1', text:dashSnack1.text, kcal:day.snk1Kcal},
@@ -3730,13 +3812,14 @@ function buildOneDayPlan(){
 // dinner AND its own snack1/snack2/sleep selection — true per-day variety,
 // per dietitian feedback after real client testing).
 function calcDayTotalsForPlan(dayPlan, lang='GR', dayIndex=0){
-  const portions=getMealPortions();
+  const allocation=getDayMealAllocation(dayPlan, lang);
+  const portions=allocation.portions;
   const brkComp  = MEAL_EXCHANGES[dayPlan.brk] || {};
   const lunComp  = MEAL_EXCHANGES[dayPlan.lun] || {};
   const dinComp  = MEAL_EXCHANGES[dayPlan.din] || {};
-  const snk1Built = buildSlotSnack('snk1', dayPlan.snk1Extras || [], lang);
-  const snk2Built = buildSlotSnack('snk2', dayPlan.snk2Extras || [], lang);
-  const sleepBuilt = buildSlotSnack('sleep', dayPlan.sleepExtras || [], lang);
+  const snk1Built = allocation.snacks.snk1Built;
+  const snk2Built = allocation.snacks.snk2Built;
+  const sleepBuilt = allocation.snacks.sleepBuilt;
 
   const brkKcal  = exchangesToKcal(brkComp, null) + extraKcal('brk', dayIndex);
   const lunKcal  = exchangesToKcal(lunComp, FIXED_COMPOSITION_MEALS.has(dayPlan.lun) ? null : portions.lunch) + extraKcal('lun', dayIndex);
@@ -3748,7 +3831,8 @@ function calcDayTotalsForPlan(dayPlan, lang='GR', dayIndex=0){
   const target   = Math.round(S.goalKcal||0);
   const gap      = totalKcal-target;
   return {brkKcal,lunKcal,dinKcal,snk1Kcal,snk2Kcal,slpKcal,totalKcal,target,gap,
-          snk1Text:snk1Built.text, snk2Text:snk2Built.text, slpText:sleepBuilt.text};
+          snk1Text:snk1Built.text, snk2Text:snk2Built.text, slpText:sleepBuilt.text,
+          portions, warnings:allocation.warnings};
 }
 
 function buildSevenDay(){
@@ -3776,7 +3860,6 @@ function buildSevenDay(){
     if(!p.sleepExtras) p.sleepExtras=[];
   });
   const ex=S.ex;
-  const portions=getMealPortions();
   const sel=(key,di,opts,cur)=>`<select style="width:100%;font-size:10px;padding:2px 4px;border:1px solid var(--border);border-radius:4px;background:var(--bg-page);color:var(--text-secondary);margin-bottom:3px" onchange="updateWeekPlan(${di},'${key}',this.value)">${mealOptionsHtml(opts,cur)}</select>`;
   // Compact checkbox-extras group for a snack slot on a given day
   const extrasGroup=(slotKey,di,checked)=>`<div class="snack-extras-group" style="display:flex;flex-direction:column;gap:1px;margin-bottom:3px">${SNACK_EXTRAS.map(e=>`<label style="display:flex;align-items:center;gap:3px;font-size:9px;cursor:pointer;white-space:nowrap"><input type="checkbox" style="width:auto;transform:scale(0.8)" ${checked.includes(e.v)?'checked':''} onchange="toggleWeekPlanExtra(${di},'${slotKey}','${e.v}',this.checked)"> ${snackExtraLabel(e, lang)}</label>`).join('')}</div>`;
@@ -3815,17 +3898,18 @@ function buildSevenDay(){
       } else if(row.key==='snk1'){
         cell=extrasGroup('snk1Extras',di,p.snk1Extras)+`<div style="color:var(--text-primary);font-size:11px;font-weight:500">${dt.snk1Text}${renderExtraFoodsForSlot('snk1', di)}</div><div style="font-size:10px;color:var(--teal-600)">${dt.snk1Kcal} kcal</div>`;
       } else if(row.key==='lun'){
-        cell=sel('lun',di,filteredLun,p.lun)+`<div style="color:var(--text-primary);font-size:11px;font-weight:500">${mealText(p.lun,portions.lunch,lang)}${renderExtraFoodsForSlot('lun', di)}</div><div style="font-size:10px;color:var(--teal-600)">${dt.lunKcal} kcal</div>`;
+        cell=sel('lun',di,filteredLun,p.lun)+`<div style="color:var(--text-primary);font-size:11px;font-weight:500">${mealText(p.lun,dt.portions.lunch,lang)}${renderExtraFoodsForSlot('lun', di)}</div><div style="font-size:10px;color:var(--teal-600)">${dt.lunKcal} kcal</div>`;
       } else if(row.key==='snk2'){
         cell=extrasGroup('snk2Extras',di,p.snk2Extras)+`<div style="color:var(--text-primary);font-size:11px;font-weight:500">${dt.snk2Text}${renderExtraFoodsForSlot('snk2', di)}</div><div style="font-size:10px;color:var(--teal-600)">${dt.snk2Kcal} kcal</div>`;
       } else if(row.key==='din'){
-        cell=sel('din',di,filteredDin,p.din)+`<div style="color:var(--text-primary);font-size:11px;font-weight:500">${mealText(p.din,portions.dinner,lang)}${renderExtraFoodsForSlot('din', di)}</div><div style="font-size:10px;color:var(--teal-600)">${dt.dinKcal} kcal</div>`;
+        cell=sel('din',di,filteredDin,p.din)+`<div style="color:var(--text-primary);font-size:11px;font-weight:500">${mealText(p.din,dt.portions.dinner,lang)}${renderExtraFoodsForSlot('din', di)}</div><div style="font-size:10px;color:var(--teal-600)">${dt.dinKcal} kcal</div>`;
       } else if(row.key==='sleep'){
         cell=extrasGroup('sleepExtras',di,p.sleepExtras)+`<div style="color:var(--text-primary);font-size:11px;font-weight:500">${dt.slpText}${renderExtraFoodsForSlot('sleep', di)}</div><div style="font-size:10px;color:var(--teal-600)">${dt.slpKcal} kcal</div>`;
       } else if(row.key==='kcal'){
         cell=`<div style="font-weight:700;font-size:12px">${dt.totalKcal} kcal</div>
           <div style="font-size:10px;color:var(--text-muted)">Target: ${dt.target}</div>
-          <div style="font-size:10px;color:${gapOk?'var(--teal-600)':Math.abs(dt.gap)<=200?'var(--warn)':'var(--err)'}">${dt.gap>0?'+':''}${dt.gap} ${gapOk?'✅':'⚠'}</div>`;
+          <div style="font-size:10px;color:${gapOk?'var(--teal-600)':Math.abs(dt.gap)<=200?'var(--warn)':'var(--err)'}">${dt.gap>0?'+':''}${dt.gap} ${gapOk?'✅':'⚠'}</div>
+          ${dt.warnings&&dt.warnings.length?`<div style="font-size:9px;color:var(--warn);margin-top:3px">${dt.warnings.map(safeHtml).join(' · ')}</div>`:''}`;
       }
       html+=`<td style="padding:6px;border:1px solid var(--border);color:var(--text-primary);vertical-align:top">${cell}</td>`;
     });
@@ -3885,7 +3969,6 @@ function buildReport(){
   updateMealLanguageButtons();
   syncReportModeControls();
   const ex=S.ex;
-  const portions=getMealPortions();
   const lang=S.mealLanguage||'GR';
   const isEn=lang==='EN';
   const condList=(S.conditions&&S.conditions.length)?S.conditions:['General'];
@@ -3896,15 +3979,18 @@ function buildReport(){
   const today=new Date().toLocaleDateString('el-GR');
   const n=S.notes, intake=S.intake;
   const reportExtraOpts={showRemove:false,hideTitle:true,showDbNote:false,reportMode:true};
+  const dayAllocation=getDayMealAllocation(S.mealSel, lang);
+  const portions=dayAllocation.portions;
   const brkText=(mealText(S.mealSel.breakfast,null,lang)||'—')+renderExtraFoodsForSlot('brk', null, reportExtraOpts);
   const lunText=(mealText(S.mealSel.lunch,portions.lunch,lang)||'—')+renderExtraFoodsForSlot('lun', null, reportExtraOpts);
   const dinText=(mealText(S.mealSel.dinner,portions.dinner,lang)||'—')+renderExtraFoodsForSlot('din', null, reportExtraOpts);
-  const snk1Text=buildSlotSnack('snk1', S.mealSel.snack1Extras||[], lang).text+renderExtraFoodsForSlot('snk1', null, reportExtraOpts);
-  const snk2Text=buildSlotSnack('snk2', S.mealSel.snack2Extras||[], lang).text+renderExtraFoodsForSlot('snk2', null, reportExtraOpts);
-  const sleepText=buildSlotSnack('sleep', S.mealSel.sleepExtras||[], lang).text+renderExtraFoodsForSlot('sleep', null, reportExtraOpts);
+  const snk1Text=dayAllocation.snacks.snk1Built.text+renderExtraFoodsForSlot('snk1', null, reportExtraOpts);
+  const snk2Text=dayAllocation.snacks.snk2Built.text+renderExtraFoodsForSlot('snk2', null, reportExtraOpts);
+  const sleepText=dayAllocation.snacks.sleepBuilt.text+renderExtraFoodsForSlot('sleep', null, reportExtraOpts);
   const day=calcDayTotals();
   const gapOk=Math.abs(day.gap)<=100;
-  const reportRules=isEn ? GENERAL_HEALTH_RULES_EN : GENERAL_HEALTH_RULES;
+  const baseReportRules=isEn ? GENERAL_HEALTH_RULES_EN : GENERAL_HEALTH_RULES;
+  const reportRules=baseReportRules.filter(rule=>condList.includes('Pregnancy') || !/pregnancy|εγκυμοσύνη|κύηση/i.test(rule));
   const goalLabel=isEn?'Goal':'Στόχος';
   const dayUnit=isEn?'kcal/day':'kcal/ημέρα';
   const abnormalLabsHtml=S.reportOptions?.includeBlood!==false ? reportAbnormalLabsHtml(isEn) : '';
@@ -3998,9 +4084,9 @@ function buildReport(){
           <td style="padding:4px;font-weight:700;word-wrap:break-word">${dayLabel}</td>
           <td style="padding:4px;word-wrap:break-word">${mealText(p.brk,null,lang)}${renderExtraFoodsForSlot('brk', i, reportExtraOpts)}</td>
           <td style="padding:4px;word-wrap:break-word">${dt.snk1Text}${renderExtraFoodsForSlot('snk1', i, reportExtraOpts)}</td>
-          <td style="padding:4px;word-wrap:break-word">${mealText(p.lun,portions.lunch,lang)}${renderExtraFoodsForSlot('lun', i, reportExtraOpts)}</td>
+          <td style="padding:4px;word-wrap:break-word">${mealText(p.lun,dt.portions.lunch,lang)}${renderExtraFoodsForSlot('lun', i, reportExtraOpts)}</td>
           <td style="padding:4px;word-wrap:break-word">${dt.snk2Text}${renderExtraFoodsForSlot('snk2', i, reportExtraOpts)}</td>
-          <td style="padding:4px;word-wrap:break-word">${mealText(p.din,portions.dinner,lang)}${renderExtraFoodsForSlot('din', i, reportExtraOpts)}</td>
+          <td style="padding:4px;word-wrap:break-word">${mealText(p.din,dt.portions.dinner,lang)}${renderExtraFoodsForSlot('din', i, reportExtraOpts)}</td>
           <td style="padding:4px;word-wrap:break-word">${dt.slpText}${renderExtraFoodsForSlot('sleep', i, reportExtraOpts)}</td>
           <td style="padding:4px;text-align:right;font-weight:700;white-space:nowrap;color:${ok?'#0f6e56':'#b45309'}">${dt.totalKcal}</td>
         </tr>`;
