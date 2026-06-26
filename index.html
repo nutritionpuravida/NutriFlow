@@ -834,7 +834,8 @@ tr:hover td { background: var(--bg-hover); }
           <div class="form-field"><label>⚖ Body Fat %</label><input type="number" id="bc-bf" placeholder="Men: 10–20%, Women: 18–28%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-bf-note"></div></div>
           <div class="form-field"><label>💧 Body Water %</label><input type="number" id="bc-water" placeholder="Men: 50–65%, Women: 45–60%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-water-note"></div></div>
           <div class="form-field"><label>⚖ Fat Mass kg (auto)</label><input type="number" id="bc-fatmass" placeholder="Auto = Weight × BF%" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('fatmass')"></div>
-          <div class="form-field"><label>🦾 Muscle Mass (kg)</label><input type="number" id="bc-muscle" placeholder="Auto = Weight − Fat mass" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('muscle')"></div>
+          <div class="form-field"><label>🧬 Fat-Free Mass kg (auto)</label><input type="number" id="bc-ffm" placeholder="Auto = Weight − Fat mass" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('ffm')"></div>
+          <div class="form-field"><label>🦾 Muscle Mass (kg)</label><input type="number" id="bc-muscle" placeholder="Manual Tanita/device value" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('muscle')"></div>
           <div class="form-field"><label>⏱ Metabolic Age</label><input type="number" id="bc-metage" placeholder="—" oninput="calcBodyComp()"><div class="field-note" id="bc-metage-note"></div></div>
           <div class="form-field"><label>🔥 Visceral Fat Score</label><input type="number" id="bc-visceral" placeholder="1–12 healthy, 13+ excess" oninput="calcBodyComp()"><div class="field-note" id="bc-visceral-note"></div></div>
           <div class="form-field"><label>🏃 Physique Rating (1–9)</label><input type="number" id="bc-physique" placeholder="Tanita 1–9" min="1" max="9"></div>
@@ -1242,8 +1243,8 @@ const S = {
   carbPct:45,protPct:20,fatPct:35,carbG:0,protG:0,fatG:0,
   ex:{fruit:2,veg:5,dairy:2,starch:0,protein:0,fat:0},
   exAuto:{starch:true,protein:true,fat:true},
-  exMeta:null, lastDairyType:'Moderate-fat', lastMeatType:'Lean', weightSuggestionLocked:false, bcManual:{fatmass:false,muscle:false},
-  bc:{bf:null,water:null,fatmass:null,muscle:null,metage:null,visceral:null},
+  exMeta:null, lastDairyType:'Moderate-fat', lastMeatType:'Lean', weightSuggestionLocked:false, bcManual:{fatmass:false,ffm:false,muscle:false},
+  bc:{bf:null,water:null,fatmass:null,ffm:null,muscle:null,metage:null,visceral:null},
   tracking:[],intake:{},notes:{},labValues:{},foodResults:[],recipes:[],recipeDraft:[],editingRecipeId:null,extraFoods:[],appointments:[],mealLanguage:'GR',reportOptions:{oneDay:false,sevenDay:true,includeBlood:true},
   mealSel:{breakfast:'BRK_TOAST',lunch:'LUN_CHICKEN_RICE',dinner:'DIN_FISH_POTATO',snack1Extras:[],snack2Extras:[],sleepExtras:[]}
 };
@@ -3583,16 +3584,20 @@ function calcBodyComp(){
   const w=S.weight||0, isMale=S.sex==='M';
   const bf=parseFloat(v('bc-bf'))||null, water=parseFloat(v('bc-water'))||null;
   const visceral=parseFloat(v('bc-visceral'))||null, metage=parseFloat(v('bc-metage'))||null;
-  S.bc={bf,water,fatmass:bf&&w?w*bf/100:null,muscle:bf&&w?w*(1-bf/100):null,metage,visceral};
-  if(bf&&w&&!S.bcManual?.fatmass&&!v('bc-fatmass')) document.getElementById('bc-fatmass').value=(w*bf/100).toFixed(1);
-  if(bf&&w&&!S.bcManual?.muscle&&!v('bc-muscle')) document.getElementById('bc-muscle').value=(w*(1-bf/100)).toFixed(1);
+  const fatmass=bf&&w ? w*bf/100 : null;
+  const ffm=fatmass!==null ? w-fatmass : null;
+  const muscle=parseFloat(v('bc-muscle'))||null;
+  S.bc={bf,water,fatmass,ffm,muscle,metage,visceral};
+  if(fatmass!==null&&!S.bcManual?.fatmass&&!v('bc-fatmass')) document.getElementById('bc-fatmass').value=fatmass.toFixed(1);
+  if(ffm!==null&&!S.bcManual?.ffm&&!v('bc-ffm')) document.getElementById('bc-ffm').value=ffm.toFixed(1);
   if(bf!==null){const lo=isMale?10:18,hi=isMale?20:28; setEl('bc-bf-note',bf<lo?'⚠ Low — review energy availability':bf>hi?'⚠ High — metabolic risk':'✅ Within normal range');}
   if(water!==null){const lo=isMale?50:45,hi=isMale?65:60; setEl('bc-water-note',water<lo?'⚠ May indicate dehydration':water>hi?'⚠ Review clinically':'✅ Adequate');}
   if(visceral!==null) setEl('bc-visceral-note',visceral<=12?'✅ Healthy level':'⚠ Elevated — cardiometabolic risk');
   if(metage!==null&&S.age) setEl('bc-metage-note',metage<=S.age?'✅ Favorable':'⚠ Metabolic age above chronological');
 
   const fields=[['Body Fat',bf,'%',isMale?'10–20%':'18–28%'],['Body Water',water,'%',isMale?'50–65%':'45–60%'],
-    ['Fat Mass',bf&&w?(w*bf/100).toFixed(1):null,'kg','Auto'],['Muscle Mass',bf&&w?(w*(1-bf/100)).toFixed(1):null,'kg','Auto estimate'],
+    ['Fat Mass',fatmass!==null?fatmass.toFixed(1):null,'kg','Auto'],['Fat-Free Mass',ffm!==null?ffm.toFixed(1):null,'kg','Weight − fat mass'],
+    ['Muscle Mass',muscle!==null?muscle.toFixed(1):null,'kg','Measured / manual'],
     ['Visceral Fat',visceral,'score','1–12 healthy'],['Metabolic Age',metage,'y','≤ chronological age']];
   setEl('bc-interpretation','<div class="metrics-grid">'+fields.map(([l,val,u,ref])=>
     `<div class="metric"><div class="m-label">${l}</div><div class="m-value" style="font-size:20px">${val!=null?val+u:'—'}</div><div class="m-sub">Ref: ${ref}</div></div>`
@@ -3604,8 +3609,8 @@ function calcBodyComp(){
 }
 
 function onBodyCompManualInput(field){
-  S.bcManual={fatmass:false,muscle:false,...(S.bcManual||{})};
-  if(field==='fatmass' || field==='muscle') S.bcManual[field]=true;
+  S.bcManual={fatmass:false,ffm:false,muscle:false,...(S.bcManual||{})};
+  if(field==='fatmass' || field==='ffm' || field==='muscle') S.bcManual[field]=true;
   calcBodyComp();
 }
 
@@ -5160,7 +5165,7 @@ function renderDashboardAppointments(){
 // ═══════════════════════════════════════════
 const SAVE_FIELD_IDS = [
   'p-id','p-name','p-date','p-age','p-sex','p-activity','p-height','p-weight','p-cal-adj','p-goal','p-meat','p-dairy','p-diet','p-trimester',
-  'bc-bf','bc-water','bc-fatmass','bc-muscle','bc-metage','bc-visceral','bc-physique','bc-bone',
+  'bc-bf','bc-water','bc-fatmass','bc-ffm','bc-muscle','bc-metage','bc-visceral','bc-physique','bc-bone',
   'm-carb','m-protein',
   's-breakfast','s-lunch','s-dinner',
   'i-goal','i-goal-why','i-goal-tried','i-lifestyle','i-exercise','i-steps','i-sleep','i-stress','i-typical-diet','i-skip-meals','i-cravings','i-intolerances','i-digestion','i-coach-notes',
@@ -5190,7 +5195,7 @@ function applyState(state){
   Object.entries(state.fields||{}).forEach(([id,val])=>{const el=document.getElementById(id); if(el) el.value=val;});
   S.weightSuggestionLocked=state.weightSuggestionLocked!==undefined ? !!state.weightSuggestionLocked : !!(state.fields&&state.fields['p-weight']);
   S.calAdjAutoValue=state.calAdjAutoValue;
-  S.bcManual={fatmass:false,muscle:false,...(state.bcManual||{})};
+  S.bcManual={fatmass:false,ffm:false,muscle:false,...(state.bcManual||{})};
   if(state.fields&&state.fields['bc-fatmass']&&state.bcManual===undefined) S.bcManual.fatmass=true;
   if(state.fields&&state.fields['bc-muscle']&&state.bcManual===undefined) S.bcManual.muscle=true;
   setPrimaryCondition(state.primaryCondition || (state.conditions&&state.conditions[0]) || '');
@@ -5235,7 +5240,7 @@ function applyState(state){
 function resetForm(){
   S.calAdjAutoValue = undefined;
   S.weightSuggestionLocked = false;
-  S.bcManual = {fatmass:false,muscle:false};
+  S.bcManual = {fatmass:false,ffm:false,muscle:false};
   SAVE_FIELD_IDS.forEach(id=>{
     const el=document.getElementById(id);
     if(!el) return;
@@ -5326,7 +5331,7 @@ function isRichExistingClientState(state){
   if(!state) return false;
   const fields=state.fields||{};
   const hasCore = stateHasValue(state,'p-age') || stateHasValue(state,'p-weight') || stateHasValue(state,'p-height');
-  const hasBodyComp = ['bc-bf','bc-water','bc-fatmass','bc-muscle','bc-metage','bc-visceral'].some(id=>stateHasValue(state,id));
+  const hasBodyComp = ['bc-bf','bc-water','bc-fatmass','bc-ffm','bc-muscle','bc-metage','bc-visceral'].some(id=>stateHasValue(state,id));
   const hasClinical = !!(state.primaryCondition || (state.conditions&&state.conditions.length) || state.notes&&Object.values(state.notes).some(Boolean) || state.intake&&Object.values(state.intake).some(Boolean));
   const hasLabs = state.labValues && Object.values(state.labValues).some(v=>v!==undefined && v!==null && String(v).trim()!=='');
   const hasNonDefaultEx = state.ex && ['starch','protein','fat'].some(k=>Number(state.ex[k]||0)>0);
