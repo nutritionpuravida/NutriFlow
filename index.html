@@ -736,7 +736,7 @@ tr:hover td { background: var(--bg-hover); }
         <div class="form-grid three">
           <div class="form-field"><label>Height (cm)</label><input type="number" id="p-height" placeholder="170" oninput="calcAll()"></div>
           <div class="form-field"><label>Weight (kg)</label><input type="number" id="p-weight" placeholder="70" step="0.1" oninput="onWeightInput()"><div class="field-note suggested" id="weight-suggestion-note"></div></div>
-          <div class="form-field"><label>Calorie Adjustment (kcal)</label><input type="number" id="p-cal-adj" placeholder="Auto (0)" step="50" oninput="calcAll()">
+          <div class="form-field"><label>Calorie Adjustment (kcal)</label><input type="number" id="p-cal-adj" placeholder="Auto (0)" step="50" inputmode="decimal" oninput="calcAll()" onblur="calcAll()">
             <div class="field-note" id="cal-adj-note" style="margin-top:4px"></div>
           </div>
         </div>
@@ -824,8 +824,8 @@ tr:hover td { background: var(--bg-hover); }
         <div class="form-grid three">
           <div class="form-field"><label>⚖ Body Fat %</label><input type="number" id="bc-bf" placeholder="Men: 10–20%, Women: 18–28%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-bf-note"></div></div>
           <div class="form-field"><label>💧 Body Water %</label><input type="number" id="bc-water" placeholder="Men: 50–65%, Women: 45–60%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-water-note"></div></div>
-          <div class="form-field"><label>⚖ Fat Mass kg (auto)</label><input type="number" id="bc-fatmass" placeholder="Auto = Weight × BF%" step="0.1"></div>
-          <div class="form-field"><label>🦾 Muscle Mass (kg)</label><input type="number" id="bc-muscle" placeholder="Auto = Weight − Fat mass" step="0.1" oninput="calcBodyComp()"></div>
+          <div class="form-field"><label>⚖ Fat Mass kg (auto)</label><input type="number" id="bc-fatmass" placeholder="Auto = Weight × BF%" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('fatmass')"></div>
+          <div class="form-field"><label>🦾 Muscle Mass (kg)</label><input type="number" id="bc-muscle" placeholder="Auto = Weight − Fat mass" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('muscle')"></div>
           <div class="form-field"><label>⏱ Metabolic Age</label><input type="number" id="bc-metage" placeholder="—" oninput="calcBodyComp()"><div class="field-note" id="bc-metage-note"></div></div>
           <div class="form-field"><label>🔥 Visceral Fat Score</label><input type="number" id="bc-visceral" placeholder="1–12 healthy, 13+ excess" oninput="calcBodyComp()"><div class="field-note" id="bc-visceral-note"></div></div>
           <div class="form-field"><label>🏃 Physique Rating (1–9)</label><input type="number" id="bc-physique" placeholder="Tanita 1–9" min="1" max="9"></div>
@@ -1233,7 +1233,7 @@ const S = {
   carbPct:45,protPct:20,fatPct:35,carbG:0,protG:0,fatG:0,
   ex:{fruit:2,veg:5,dairy:2,starch:0,protein:0,fat:0},
   exAuto:{starch:true,protein:true,fat:true},
-  exMeta:null, lastDairyType:'Moderate-fat', lastMeatType:'Lean', weightSuggestionLocked:false,
+  exMeta:null, lastDairyType:'Moderate-fat', lastMeatType:'Lean', weightSuggestionLocked:false, bcManual:{fatmass:false,muscle:false},
   bc:{bf:null,water:null,fatmass:null,muscle:null,metage:null,visceral:null},
   tracking:[],intake:{},notes:{},labValues:{},foodResults:[],recipes:[],recipeDraft:[],editingRecipeId:null,extraFoods:[],appointments:[],mealLanguage:'GR',reportOptions:{oneDay:false,sevenDay:true,includeBlood:true},
   mealSel:{breakfast:'BRK_TOAST',lunch:'LUN_CHICKEN_RICE',dinner:'DIN_FISH_POTATO',snack1Extras:[],snack2Extras:[],sleepExtras:[]}
@@ -2907,18 +2907,35 @@ const PREGNANCY_TRIMESTER_NOTES = {
 };
 
 let lastConditionRadio = null;
+function getSelectedPrimaryCondition(){
+  return document.querySelector('#p-conditions input[name="p-condition"]:checked')?.value || '';
+}
+function syncPrimaryConditionState(){
+  const selected=getSelectedPrimaryCondition();
+  S.conditions = selected ? [selected] : [];
+  S.condition = selected || 'General';
+  lastConditionRadio = selected ? document.querySelector(`#p-conditions input[name="p-condition"][value="${selected}"]`) : null;
+  const triField=document.getElementById('pregnancy-trimester-field');
+  if(triField) triField.style.display = selected==='Pregnancy' ? 'block' : 'none';
+  return selected;
+}
+function setPrimaryCondition(condition){
+  const selected=condition || '';
+  document.querySelectorAll('#p-conditions input[name="p-condition"]').forEach(radio=>{
+    radio.checked = radio.value===selected;
+  });
+  syncPrimaryConditionState();
+}
 function onConditionRadioClick(radio){
   if(lastConditionRadio === radio && radio.checked){
     radio.checked = false;
-    lastConditionRadio = null;
-  } else {
-    lastConditionRadio = radio.checked ? radio : null;
   }
-  onPregnancyToggle();
+  syncPrimaryConditionState();
+  scheduleAutosave();
+  calcAll();
 }
 function onPregnancyToggle(){
-  const checked = !!document.querySelector('#p-conditions input[value="Pregnancy"]:checked');
-  document.getElementById('pregnancy-trimester-field').style.display = checked ? 'block' : 'none';
+  syncPrimaryConditionState();
   calcAll();
 }
 
@@ -3175,7 +3192,8 @@ function renderExpectedProgress(goal, tdee, goalKcal){
 function calcAll() {
   const age=parseFloat(v('p-age'))||null, sex=v('p-sex'), h=parseFloat(v('p-height'))||null;
   const w=parseFloat(v('p-weight'))||null, act=parseFloat(v('p-activity'))||1.55;
-  const conditions=Array.from(document.querySelectorAll('#p-conditions input[name="p-condition"]:checked')).map(cb=>cb.value);
+  const selectedCondition=syncPrimaryConditionState();
+  const conditions=selectedCondition ? [selectedCondition] : [];
   const goal=v('p-goal'), meatType=v('p-meat'), dairyType=v('p-dairy');
   const name=v('p-name');
   updateWeightSuggestion(age, sex, h);
@@ -3201,8 +3219,9 @@ function calcAll() {
   const calAdjEl=document.getElementById('p-cal-adj');
   const calAdjFieldRaw=v('p-cal-adj');
   const profileComplete = !!(age && h && w);
+  const calAdjFocused = document.activeElement===calAdjEl;
   const isUntouched = calAdjFieldRaw==='' || parseFloat(calAdjFieldRaw)===S.calAdjAutoValue;
-  if(profileComplete && isUntouched && calAdjEl){
+  if(profileComplete && isUntouched && calAdjEl && !calAdjFocused){
     calAdjEl.value = autoAdj;
     S.calAdjAutoValue = autoAdj;
   }
@@ -3549,8 +3568,8 @@ function calcBodyComp(){
   const bf=parseFloat(v('bc-bf'))||null, water=parseFloat(v('bc-water'))||null;
   const visceral=parseFloat(v('bc-visceral'))||null, metage=parseFloat(v('bc-metage'))||null;
   S.bc={bf,water,fatmass:bf&&w?w*bf/100:null,muscle:bf&&w?w*(1-bf/100):null,metage,visceral};
-  if(bf&&w&&!v('bc-fatmass')) document.getElementById('bc-fatmass').value=(w*bf/100).toFixed(1);
-  if(bf&&w&&!v('bc-muscle')) document.getElementById('bc-muscle').value=(w*(1-bf/100)).toFixed(1);
+  if(bf&&w&&!S.bcManual?.fatmass&&!v('bc-fatmass')) document.getElementById('bc-fatmass').value=(w*bf/100).toFixed(1);
+  if(bf&&w&&!S.bcManual?.muscle&&!v('bc-muscle')) document.getElementById('bc-muscle').value=(w*(1-bf/100)).toFixed(1);
   if(bf!==null){const lo=isMale?10:18,hi=isMale?20:28; setEl('bc-bf-note',bf<lo?'⚠ Low — review energy availability':bf>hi?'⚠ High — metabolic risk':'✅ Within normal range');}
   if(water!==null){const lo=isMale?50:45,hi=isMale?65:60; setEl('bc-water-note',water<lo?'⚠ May indicate dehydration':water>hi?'⚠ Review clinically':'✅ Adequate');}
   if(visceral!==null) setEl('bc-visceral-note',visceral<=12?'✅ Healthy level':'⚠ Elevated — cardiometabolic risk');
@@ -3566,6 +3585,12 @@ function calcBodyComp(){
   const targetWt=(w*0.95).toFixed(1);
   setEl('bc-targets',`<div class="form-grid"><div class="metric"><div class="m-label">Target weight (5% initial)</div><div class="m-value" style="font-size:20px">${targetWt} kg</div></div><div class="metric"><div class="m-label">Target BMI (long-term)</div><div class="m-value" style="font-size:20px">22–27</div><div class="m-sub">Clinical reference zone</div></div></div>`);
   setEl('d-bf',bf?bf.toFixed(1)+'%':'—');
+}
+
+function onBodyCompManualInput(field){
+  S.bcManual={fatmass:false,muscle:false,...(S.bcManual||{})};
+  if(field==='fatmass' || field==='muscle') S.bcManual[field]=true;
+  calcBodyComp();
 }
 
 function saveBodyComp(){
@@ -5131,12 +5156,13 @@ const SAVE_FIELD_IDS = [
 function captureState(){
   const fields={};
   SAVE_FIELD_IDS.forEach(id=>{const el=document.getElementById(id); if(el) fields[id]=el.value;});
-  const conditions=Array.from(document.querySelectorAll('#p-conditions input[name="p-condition"]:checked')).map(cb=>cb.value);
+  const primaryCondition=getSelectedPrimaryCondition();
+  const conditions=primaryCondition ? [primaryCondition] : [];
 return {
-    fields, conditions,
+    fields, conditions, primaryCondition,
     ex:S.ex, exAuto:S.exAuto, exMeta:S.exMeta, tracking:S.tracking, mealSel:S.mealSel,
     weekPlans:S.weekPlans, mealLanguage:S.mealLanguage, reportOptions:S.reportOptions,
-    weightSuggestionLocked:S.weightSuggestionLocked,
+    weightSuggestionLocked:S.weightSuggestionLocked, calAdjAutoValue:S.calAdjAutoValue, bcManual:S.bcManual,
     intake:S.intake, notes:S.notes, labValues:S.labValues, extraFoods:S.extraFoods,
     savedAt:new Date().toISOString()
   };
@@ -5147,9 +5173,11 @@ function applyState(state){
   if(!state) return;
   Object.entries(state.fields||{}).forEach(([id,val])=>{const el=document.getElementById(id); if(el) el.value=val;});
   S.weightSuggestionLocked=state.weightSuggestionLocked!==undefined ? !!state.weightSuggestionLocked : !!(state.fields&&state.fields['p-weight']);
-  document.querySelectorAll('#p-conditions input[name="p-condition"]').forEach(cb=>{cb.checked=(state.conditions||[]).includes(cb.value);});
-  lastConditionRadio = document.querySelector('#p-conditions input[name="p-condition"]:checked') || null;
-  document.getElementById('pregnancy-trimester-field').style.display = (state.conditions||[]).includes('Pregnancy') ? 'block' : 'none';
+  S.calAdjAutoValue=state.calAdjAutoValue;
+  S.bcManual={fatmass:false,muscle:false,...(state.bcManual||{})};
+  if(state.fields&&state.fields['bc-fatmass']&&state.bcManual===undefined) S.bcManual.fatmass=true;
+  if(state.fields&&state.fields['bc-muscle']&&state.bcManual===undefined) S.bcManual.muscle=true;
+  setPrimaryCondition(state.primaryCondition || (state.conditions&&state.conditions[0]) || '');
 // Repopulate breakfast/lunch/dinner dropdowns with the CORRECT diet-filtered
   // option list BEFORE restoring their saved value — otherwise setting .value
   // to an option not present in the (possibly stale/filtered) <select> silently
@@ -5191,15 +5219,14 @@ function applyState(state){
 function resetForm(){
   S.calAdjAutoValue = undefined;
   S.weightSuggestionLocked = false;
+  S.bcManual = {fatmass:false,muscle:false};
   SAVE_FIELD_IDS.forEach(id=>{
     const el=document.getElementById(id);
     if(!el) return;
     if(el.tagName==='SELECT') el.selectedIndex=0;
     else el.value='';
   });
-  document.querySelectorAll('#p-conditions input[name="p-condition"]').forEach(cb=>cb.checked=false);
-  lastConditionRadio = null;
-  document.getElementById('pregnancy-trimester-field').style.display='none';
+  setPrimaryCondition('');
   document.getElementById('p-id').value='001';
   document.getElementById('p-date').value=new Date().toISOString().split('T')[0];
   document.getElementById('m-carb').value=45;
