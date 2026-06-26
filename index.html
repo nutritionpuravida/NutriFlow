@@ -1428,12 +1428,23 @@ function hideSubscriptionScreen(){
   const el=document.getElementById('subscription-screen');
   if(el) el.classList.add('hidden');
 }
+function calendarDayNumber(dateValue){
+  const d=new Date(dateValue);
+  if(!Number.isFinite(d.getTime())) return null;
+  return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())/(24*60*60*1000));
+}
+function daysUntilDate(dateValue){
+  const endDay=calendarDayNumber(dateValue);
+  const todayDay=calendarDayNumber(new Date());
+  if(endDay===null || todayDay===null) return 0;
+  return Math.max(0, endDay - todayDay);
+}
 function trialDaysRemaining(trialStart){
   if(!trialStart) return 0;
-  const start=new Date(trialStart).getTime();
-  if(!Number.isFinite(start)) return 0;
-  const elapsed=Date.now()-start;
-  return Math.max(0, Math.ceil((STRIPE_TRIAL_DAYS*24*60*60*1000 - elapsed)/(24*60*60*1000)));
+  const end=new Date(trialStart);
+  if(!Number.isFinite(end.getTime())) return 0;
+  end.setDate(end.getDate()+STRIPE_TRIAL_DAYS);
+  return daysUntilDate(end);
 }
 function subscriptionIsActive(row){
   if(!row) return false;
@@ -1480,9 +1491,8 @@ async function fetchSubscriptionStatus(){
   const status=(data&&(data.subscription_status||data.status))||'none';
   const statusLower=status.toLowerCase();
   const trialEnd=data&&(data.trial_end||data.current_period_end||data.current_period_end_at);
-  const trialEndMs=trialEnd ? new Date(trialEnd).getTime() : NaN;
-  const days=statusLower==='trialing' && Number.isFinite(trialEndMs)
-    ? Math.max(0, Math.ceil((trialEndMs-Date.now())/(24*60*60*1000)))
+  const days=statusLower==='trialing' && trialEnd
+    ? daysUntilDate(trialEnd)
     : null;
   const isTrialActive=statusLower==='trialing' && days>0;
   const active=subscriptionIsActive(data) || isTrialActive;
@@ -1505,6 +1515,37 @@ function updateTrialBanner(){
   const show=subscriptionState.trialActive && days<=10 && !subscriptionState.ownerBypass;
   banner.style.display=show ? 'flex' : 'none';
   if(show && text) text.textContent=`🎁 Free trial — ${days} day${days===1?'':'s'} remaining. Subscribe to continue after your trial.`;
+}
+function subscriptionCacheKey(){
+  return currentUser?.id ? `nutriflow_subscription_state_${currentUser.id}` : null;
+}
+function saveSubscriptionCache(){
+  const key=subscriptionCacheKey();
+  if(!key || !subscriptionState) return;
+  try{
+    localStorage.setItem(key, JSON.stringify({...subscriptionState, cachedAt:new Date().toISOString()}));
+  }catch(e){
+    console.warn('[NutriFlow subscription] Could not save subscription cache', e);
+  }
+}
+function loadSubscriptionCache(){
+  const key=subscriptionCacheKey();
+  if(!key) return false;
+  try{
+    const raw=localStorage.getItem(key);
+    if(!raw) return false;
+    const cached=JSON.parse(raw);
+    if(!cached || typeof cached!=='object') return false;
+    const statusLower=String(cached.status || '').toLowerCase();
+    const days=statusLower==='trialing' && cached.currentPeriodEnd ? daysUntilDate(cached.currentPeriodEnd) : cached.trialDaysRemaining;
+    subscriptionState={...cached, trialDaysRemaining:days, trialActive:statusLower==='trialing' && days>0, trialExpired:statusLower==='trialing' && days<=0};
+    updateTrialBanner();
+    updateAccountPage();
+    return true;
+  }catch(e){
+    console.warn('[NutriFlow subscription] Could not load subscription cache', e);
+    return false;
+  }
 }
 function openTrialSubscribe(){
   const days=subscriptionState.trialDaysRemaining;
@@ -1574,16 +1615,17 @@ async function submitFeedback(){
 }
 async function fetchSubscriptionStatusWithRetry(){
   try{
-    return await withTimeout(fetchSubscriptionStatus(), 8000, 'fetchSubscriptionStatus');
+    return await withTimeout(fetchSubscriptionStatus(), 3500, 'fetchSubscriptionStatus');
   }catch(err){
     console.warn('[NutriFlow subscription] fetchSubscriptionStatus timed out/failed; retrying once', err);
-    return await withTimeout(fetchSubscriptionStatus(), 8000, 'fetchSubscriptionStatus retry');
+    return await withTimeout(fetchSubscriptionStatus(), 3500, 'fetchSubscriptionStatus retry');
   }
 }
 async function refreshSubscriptionGate(){
   if(!SUBSCRIPTION_REQUIRED){ subscriptionState={status:'disabled',active:true}; hideSubscriptionScreen(); updateTrialBanner(); updateAccountPage(); return; }
   try{
     subscriptionState = await fetchSubscriptionStatusWithRetry();
+    saveSubscriptionCache();
   }catch(err){
     console.error('[NutriFlow subscription] refreshSubscriptionGate failed after retry', err);
     subscriptionState = subscriptionState || {status:'Unable to refresh subscription', active:false};
@@ -1660,7 +1702,9 @@ async function refreshAccountSubscriptionPage(){
     setEl('user-email', currentUser.email || '');
     const userChip=document.getElementById('user-chip');
     if(userChip) userChip.style.display='flex';
-    subscriptionState = await fetchSubscriptionStatus();
+    loadSubscriptionCache();
+    subscriptionState = await fetchSubscriptionStatusWithRetry();
+    saveSubscriptionCache();
     updateAccountPage();
     requestAnimationFrame(updateAccountPage);
     setTimeout(updateAccountPage, 50);
@@ -1771,6 +1815,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session)=>{
     const userChip=document.getElementById('user-chip');
     if(userChip) userChip.style.display='flex';
     setEl('user-email', currentUser.email || '');
+    loadSubscriptionCache();
     try{
       await refreshSubscriptionGate();
       updateTrialBanner();
