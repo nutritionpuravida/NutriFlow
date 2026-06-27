@@ -1968,7 +1968,7 @@ function getDairyDistribution(breakfastKey=(S.mealSel && S.mealSel.breakfast) ||
     const key=slot==='snk1'?'snack1Extras':slot==='snk2'?'snack2Extras':'sleepExtras';
     return !!snackDairyChoice(p[key]);
   });
-  const backfill=['snk1','snk2','sleep'].filter(slot=>!selected.includes(slot));
+  const backfill=['snk1','sleep','snk2'].filter(slot=>!selected.includes(slot));
   const dist=splitExchangeAcrossSlots(remaining, [...selected, ...backfill]);
   dist.brk=brkUsesDairy;
   return dist;
@@ -2342,6 +2342,16 @@ const WEEK_PLANS = [
   {day:'Σάββατο', brk:'BRK_CEREAL', lun:'LUN_PASTA_MINCE',    din:'DIN_SOUVLAKI_PITA', snk1Extras:['fruit','yogurt'], snk2Extras:['fruit','nuts'], sleepExtras:['fruit']},
   {day:'Κυριακή', brk:'BRK_TOAST',  lun:'LUN_BIFTEKI_BULGUR', din:'DIN_BIFTEKI_BULGUR',snk1Extras:['fruit'], snk2Extras:['fruit'], sleepExtras:['fruit','yogurt']},
 ];
+const WEEK_DAYS_GR=['Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο','Κυριακή'];
+const WEEK_DAYS_EN=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+function weekDayLabel(plan, index, lang='GR'){
+  const gr=plan?.day || WEEK_DAYS_GR[index] || '';
+  if(lang==='EN'){
+    const map={'Δευτέρα':'Monday','Τρίτη':'Tuesday','Τετάρτη':'Wednesday','Πέμπτη':'Thursday','Παρασκευή':'Friday','Σάββατο':'Saturday','Κυριακή':'Sunday'};
+    return map[gr] || WEEK_DAYS_EN[index] || gr;
+  }
+  return gr || WEEK_DAYS_GR[index] || '';
+}
 
 // Smart print: portrait for Client Report (client handout),
 // landscape for all clinical/working pages (more data fits)
@@ -2811,8 +2821,8 @@ function autoSnackExtrasForPlan(plan){
   const p=normalizeMealPlan(plan);
   const slots=[
     {key:'snack1Extras', slot:'snk1'},
-    {key:'snack2Extras', slot:'snk2'},
     {key:'sleepExtras', slot:'sleep'},
+    {key:'snack2Extras', slot:'snk2'},
   ];
   const fruitSlots=Math.min(Math.max(0, Math.round(Number(S.ex?.fruit||0))), slots.length);
   const brkUsesDairy=(p.breakfast==='BRK_CEREAL' || p.breakfast==='BRK_OATS_VEGAN') ? 1 : 0;
@@ -4107,7 +4117,7 @@ function buildSevenDay(){
   S.weekPlans.forEach((p,di)=>{
     const dt=calcDayTotalsForPlan(p, lang, di);
     const gapOk=Math.abs(dt.gap)<=100;
-    const dayLabel=lang==='EN' ? ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'][di] : p.day;
+    const dayLabel=weekDayLabel(p, di, lang);
     html+=`<th style="background:var(--teal-600);color:#fff;padding:8px;min-width:190px;text-align:center">
       ${dayLabel}<div style="font-size:10px;font-weight:400;margin-top:2px;color:${gapOk?'#9FE1CB':'#FFD580'}">${dt.totalKcal} kcal ${gapOk?'✅':dt.gap>0?'▲':'▼'}</div>
       <button type="button" class="btn seven-day-expand-btn" data-day-index="${di}" style="margin-top:5px;padding:3px 7px;font-size:10px;background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.35)">${lang==='EN'?'Expand':'Άνοιγμα'}</button>
@@ -4160,7 +4170,7 @@ function buildSevenDay(){
   if(expandedSevenDayIndex!==null && S.weekPlans[expandedSevenDayIndex]){
     const p=S.weekPlans[expandedSevenDayIndex];
     const dt=calcDayTotalsForPlan(p, lang, expandedSevenDayIndex);
-    const dayLabel=lang==='EN' ? ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'][expandedSevenDayIndex] : p.day;
+    const dayLabel=weekDayLabel(p, expandedSevenDayIndex, lang);
     const detailRows=[
       [lang==='EN'?'Breakfast':'Πρωινό', mealText(p.brk,null,lang), dt.brkKcal],
       [lang==='EN'?'Snack 1':'Σνακ 1', dt.snk1Text, dt.snk1Kcal],
@@ -4206,7 +4216,7 @@ function openSevenDayModal(dayIndex){
   const p=S.weekPlans[dayIndex];
   const dt=calcDayTotalsForPlan(p, lang, dayIndex);
   const fruitDist=dt.fruitDist||{};
-  const dayLabel=lang==='EN' ? ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'][dayIndex] : p.day;
+  const dayLabel=weekDayLabel(p, dayIndex, lang);
   const rows=[
     [lang==='EN'?'Breakfast':'Πρωινό', mealText(p.brk,null,lang)+sideFruitText(fruitDist.brk,lang)+renderExtraFoodsForSlot('brk', dayIndex), dt.brkKcal],
     [lang==='EN'?'Snack 1':'Σνακ 1', dt.snk1Text+renderExtraFoodsForSlot('snk1', dayIndex), dt.snk1Kcal],
@@ -4418,7 +4428,7 @@ function buildReport(){
       ${(S.weekPlans||WEEK_PLANS).map((p,i)=>{
         const dt=calcDayTotalsForPlan(p, lang, i);
         const ok=Math.abs(dt.gap)<=100;
-        const dayLabel=isEn ? ({'Δευτέρα':'Monday','Τρίτη':'Tuesday','Τετάρτη':'Wednesday','Πέμπτη':'Thursday','Παρασκευή':'Friday','Σάββατο':'Saturday','Κυριακή':'Sunday'}[p.day]||p.day) : p.day;
+        const dayLabel=weekDayLabel(p, i, lang);
         return `<tr style="background:${i%2===0?'var(--bg-surface)':'var(--teal-50)'};border-bottom:1px solid var(--border)">
           <td style="padding:4px;font-weight:700;word-wrap:break-word">${dayLabel}</td>
           <td style="padding:4px;word-wrap:break-word">${mealText(p.brk,null,lang)}${renderExtraFoodsForSlot('brk', i, reportExtraOpts)}</td>
