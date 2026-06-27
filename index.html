@@ -965,7 +965,7 @@ tr:hover td { background: var(--bg-hover); }
             <div id="s-sleep" style="display:flex;flex-wrap:wrap;gap:8px;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input)" onchange="buildOneDayPlan()"></div>
           </div>
         </div>
-        <div class="field-note" style="margin-bottom:12px">Fruit/dairy servings come from the Exchange System and are distributed flexibly across snacks. Before sleep is minimal by default; use checkboxes to add nuts/coffee or restyle allocated fruit/dairy where present.</div>
+        <div class="field-note" style="margin-bottom:12px">Fruit and dairy servings are assigned with the snack checkboxes and draw from the Exchange System totals. Choose fresh fruit or dried fruit, and milk or yogurt. Nuts/coffee remain optional add-ons.</div>
         <div id="oneday-plan"></div>
         <div class="section-label">EXCHANGE COVERAGE CHECK</div>
         <div id="oneday-check"></div>
@@ -1902,26 +1902,32 @@ function splitExchangeAcrossSlots(total, slots){
   const out={brk:0,snk1:0,snk2:0,sleep:0};
   const clean=(slots||[]).filter(Boolean);
   if(!clean.length || !total) return out;
-  const base=Math.floor(total/clean.length);
-  let rem=total-base*clean.length;
+  let remaining=total;
   clean.forEach(slot=>{
-    out[slot]=base+(rem>0?1:0);
-    if(rem>0) rem--;
+    if(remaining>0){ out[slot]=1; remaining--; }
   });
   return out;
 }
-function snackFruitSelected(extras){
+function snackFruitChoice(extras){
   const arr=Array.isArray(extras)?extras:[];
-  return !arr.includes('nofruit') && (arr.includes('fruit') || !arr.length || arr.some(v=>['driedfruit','yogurt','nuts','coffee'].includes(v)));
+  if(arr.includes('driedfruit')) return 'driedfruit';
+  if(arr.includes('fruit')) return 'fruit';
+  return '';
+}
+function snackDairyChoice(extras){
+  const arr=Array.isArray(extras)?extras:[];
+  if(arr.includes('yogurt')) return 'yogurt';
+  if(arr.includes('milk')) return 'milk';
+  return '';
 }
 function getFruitDistribution(plan=null){
   const total = S.ex ? (S.ex.fruit||0) : 0;
   const p=plan?normalizeMealPlan(plan):normalizeMealPlan(S.mealSel);
   const selected=['snk1','snk2','sleep'].filter(slot=>{
     const key=slot==='snk1'?'snack1Extras':slot==='snk2'?'snack2Extras':'sleepExtras';
-    return snackFruitSelected(p[key]);
+    return !!snackFruitChoice(p[key]);
   });
-  return splitExchangeAcrossSlots(total, selected.length ? selected : ['snk1','snk2','sleep']);
+  return splitExchangeAcrossSlots(total, selected);
 }
 
 // FIX (2026-06): dairy is now distributed across ALL THREE snack slots
@@ -1936,12 +1942,11 @@ function getDairyDistribution(breakfastKey=(S.mealSel && S.mealSel.breakfast) ||
   const brkUsesDairy = (breakfastKey==='BRK_CEREAL' || breakfastKey==='BRK_OATS_VEGAN') ? 1 : 0;
   const remaining = Math.max(0, total - brkUsesDairy);
   const p=plan?normalizeMealPlan(plan):normalizeMealPlan(S.mealSel);
-  const preferred=['sleep','snk1','snk2'].filter(slot=>{
+  const selected=['snk1','snk2','sleep'].filter(slot=>{
     const key=slot==='snk1'?'snack1Extras':slot==='snk2'?'snack2Extras':'sleepExtras';
-    return (p[key]||[]).includes('yogurt');
+    return !!snackDairyChoice(p[key]);
   });
-  const defaults=['snk1','snk2'].filter(slot=>!preferred.includes(slot));
-  const dist=splitExchangeAcrossSlots(remaining, preferred.length ? [...preferred, ...defaults] : defaults);
+  const dist=splitExchangeAcrossSlots(remaining, selected);
   dist.brk=brkUsesDairy;
   return dist;
 }
@@ -2676,9 +2681,10 @@ function mealOptionsHtml(options, current){
 // the same time — the two are no longer in tension the way they were in
 // either previous version.
 const SNACK_EXTRAS = [
-  {v:'fruit',      gr:'🍎 Φρούτο',                    en:'🍎 Fruit'},                         // controls where allocated fruit servings appear
-  {v:'driedfruit', gr:'🍇 Αποξηραμένα αντί φρέσκα', en:'🍇 Dried fruit instead of fresh'}, // style toggle for the auto fruit serving
-  {v:'yogurt',     gr:'🍦 Γιαούρτι αντί γάλα',        en:'🍦 Yogurt instead of milk'},       // style toggle for the auto dairy serving
+  {v:'fruit',      group:'fruit', gr:'🍎 Φρούτο (1 μερίδα)',         en:'🍎 Fruit (1 serving)'},             // 1 fruit exchange
+  {v:'driedfruit', group:'fruit', gr:'🍇 Αποξηραμένα φρούτα (1 μερίδα)', en:'🍇 Dried fruit (1 serving)'},    // 1 fruit exchange
+  {v:'milk',       group:'dairy', gr:'🥛 Γάλα 1,5% (1 φλ.)',         en:'🥛 Milk 1.5% (1 cup)'},             // 1 dairy exchange
+  {v:'yogurt',     group:'dairy', gr:'🍦 Γιαούρτι 2% (~170g)',       en:'🍦 Yogurt 2% (~170g)'},             // 1 dairy exchange
   {v:'nuts',       gr:'🥜 + Ξηροί καρποί',            en:'🥜 + Nuts'},                       // additive extra
   {v:'coffee',     gr:'☕ + Καφές',                    en:'☕ + Coffee (without sugar)'},      // additive extra
 ];
@@ -2690,7 +2696,18 @@ function snackExtraLabel(extra, lang){
 }
 function snackExtrasHtml(){
   const lang=S.mealLanguage||'GR';
-  return SNACK_EXTRAS.map(e=>`<label style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;white-space:nowrap"><input type="checkbox" value="${e.v}" style="width:auto" ${e.v==='fruit'?'checked':''}> ${snackExtraLabel(e, lang)}</label>`).join('');
+  return SNACK_EXTRAS.map(e=>`<label style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;white-space:nowrap"><input type="checkbox" value="${e.v}" data-group="${e.group||''}" style="width:auto" ${e.v==='fruit'?'checked':''} onchange="handleSnackOptionChange(this)"> ${snackExtraLabel(e, lang)}</label>`).join('');
+}
+
+function handleSnackOptionChange(cb){
+  if(!cb || !cb.checked) return;
+  const group=cb.dataset.group;
+  if(!group) return;
+  const container=cb.closest('#s-snack1,#s-snack2,#s-sleep,.snack-extras-group');
+  if(!container) return;
+  container.querySelectorAll(`input[data-group="${group}"]`).forEach(other=>{
+    if(other!==cb) other.checked=false;
+  });
 }
 
 function refreshSnackExtrasLabels(){
@@ -2701,8 +2718,7 @@ function refreshSnackExtrasLabels(){
     el.innerHTML=snackExtrasHtml();
     const saved=S.mealSel[key]||[];
     el.querySelectorAll('input[type=checkbox]').forEach(cb=>{
-      if(cb.value==='fruit') cb.checked = !saved.includes('nofruit') && (checked.includes('fruit') || saved.includes('fruit') || (!checked.length && !saved.length));
-      else cb.checked = checked.includes(cb.value) || saved.includes(cb.value);
+      cb.checked = checked.includes(cb.value) || saved.includes(cb.value);
     });
   });
 }
@@ -2711,11 +2727,7 @@ function refreshSnackExtrasLabels(){
 function getSnackExtras(elId){
   const el=document.getElementById(elId);
   if(!el) return [];
-  const boxes=Array.from(el.querySelectorAll('input[type=checkbox]'));
-  const out=boxes.filter(cb=>cb.checked).map(cb=>cb.value);
-  const fruitBox=boxes.find(cb=>cb.value==='fruit');
-  if(fruitBox && !fruitBox.checked) out.push('nofruit');
-  return out;
+  return Array.from(el.querySelectorAll('input[type=checkbox]:checked')).map(cb=>cb.value);
 }
 
 // Builds the full display text + exchange composition for a snack slot.
@@ -2728,8 +2740,8 @@ function buildSlotSnack(slot, extras, lang='GR', breakfastKey, plan=null, fruitD
   dairyDist=dairyDist||getDairyDistribution(breakfastKey, plan);
   const fruitCount=fruitDist[slot]||0;
   const dairyCount=dairyDist[slot]||0;
-  const useDriedFruit = (extras||[]).includes('driedfruit');
-  const useYogurt = (extras||[]).includes('yogurt');
+  const fruitChoice = snackFruitChoice(extras||[]);
+  const dairyChoice = snackDairyChoice(extras||[]);
   const addNuts = (extras||[]).includes('nuts');
   const addCoffee = (extras||[]).includes('coffee');
 
@@ -2738,15 +2750,15 @@ function buildSlotSnack(slot, extras, lang='GR', breakfastKey, plan=null, fruitD
 
   if(fruitCount>0){
     exch.fruit += fruitCount;
-    parts.push(useDriedFruit
+    parts.push(fruitChoice==='driedfruit'
       ? (lang==='EN'
         ? `${fruitCount} serving${fruitCount>1?'s':''} dried fruit (see Equivalents Guide)`
-        : `${fruitCount} μερίδ${fruitCount>1?'ες':'α'} αποξηραμένων φρούτων (π.χ. 2 κ.σ. σταφίδες ή 3 αποξηραμένα βερίκοκα ανά μερίδα, βλ. Οδηγό Ισοδυναμιών)`)
+        : `${fruitCount} μερίδ${fruitCount>1?'ες':'α'} αποξηραμένων φρούτων (βλ. Οδηγό Ισοδυναμιών)`)
       : (lang==='EN' ? `${fruitCount} fruit${fruitCount>1?'s':''} (see Equivalents Guide)` : `${fruitCount} φρούτ${fruitCount>1?'α':'ο'} (βλ. Οδηγό Ισοδυναμιών)`));
   }
   if(dairyCount>0){
     exch.dairy += dairyCount;
-    if(useYogurt){
+    if(dairyChoice==='yogurt'){
       parts.push(lang==='EN' ? `${dairyCount===1?'1':dairyCount} yogurt 2% (~${Math.round(170*dairyCount)}g)` : `${dairyCount===1?'1':dairyCount} γιαούρτι 2% (~${Math.round(170*dairyCount)}g)`);
     } else {
       const cup=dairyCount===0.5?'½ φλ.':dairyCount===1?'1 φλ.':dairyCount===1.5?'1½ φλ.':`${dairyCount} φλ.`;
@@ -3956,8 +3968,7 @@ function buildSevenDay(){
   const ex=S.ex;
   const sel=(key,di,opts,cur)=>`<select style="width:100%;font-size:11px;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--bg-page);color:var(--text-secondary);margin-bottom:5px" onchange="updateWeekPlan(${di},'${key}',this.value)">${mealOptionsHtml(opts,cur)}</select>`;
   // Compact checkbox-extras group for a snack slot on a given day
-  const extraChecked=(checked,e)=>e.v==='fruit' ? !checked.includes('nofruit') : checked.includes(e.v);
-  const extrasGroup=(slotKey,di,checked)=>`<div class="snack-extras-group" style="display:flex;flex-direction:column;gap:2px;margin-bottom:5px">${SNACK_EXTRAS.map(e=>`<label style="display:flex;align-items:center;gap:4px;font-size:10px;cursor:pointer;white-space:nowrap"><input type="checkbox" style="width:auto;transform:scale(0.85)" ${extraChecked(checked,e)?'checked':''} onchange="toggleWeekPlanExtra(${di},'${slotKey}','${e.v}',this.checked)"> ${snackExtraLabel(e, lang)}</label>`).join('')}</div>`;
+  const extrasGroup=(slotKey,di,checked)=>`<div class="snack-extras-group" style="display:flex;flex-direction:column;gap:2px;margin-bottom:5px">${SNACK_EXTRAS.map(e=>`<label style="display:flex;align-items:center;gap:4px;font-size:10px;cursor:pointer;white-space:nowrap"><input type="checkbox" data-group="${e.group||''}" style="width:auto;transform:scale(0.85)" ${checked.includes(e.v)?'checked':''} onchange="toggleWeekPlanExtra(${di},'${slotKey}','${e.v}',this.checked)"> ${snackExtraLabel(e, lang)}</label>`).join('')}</div>`;
 
   let html='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr>';
   html+=`<th style="background:var(--teal-600);color:#fff;padding:8px;min-width:90px">${lang==='EN'?'Meal':'Γεύμα'}</th>`;
@@ -4033,7 +4044,7 @@ function buildSevenDay(){
       </div>
     </div>`;
   }
-  html+=`<div class="field-note" style="margin-top:8px">Each day shows kcal per meal and daily total vs target. ✅ = within ±100 kcal. Fruit/dairy servings in each snack are always automatic and correct — the small checkboxes only restyle them (dried fruit / yogurt) or add extras (nuts / coffee). Change any meal dropdown or snack checkbox and kcal updates live, per day.</div>`;
+  html+=`<div class="field-note" style="margin-top:8px">Each day shows kcal per meal and daily total vs target. ✅ = within ±100 kcal. Fruit/dairy snack choices draw from the Exchange System totals. Change any meal dropdown or snack checkbox and kcal updates live, per day.</div>`;
   setEl('sevenday-body',html);
 }
 
@@ -4054,11 +4065,12 @@ function toggleWeekPlanExtra(dayIndex, extrasKey, extraValue, checked){
   if(!S.weekPlans) S.weekPlans = WEEK_PLANS.map(p=>({...p}));
   const day = S.weekPlans[dayIndex];
   if(!day[extrasKey]) day[extrasKey]=[];
-  if(extraValue==='fruit'){
-    day[extrasKey]=day[extrasKey].filter(v=>v!=='fruit' && v!=='nofruit');
-    day[extrasKey].push(checked ? 'fruit' : 'nofruit');
-    buildSevenDay();
-    return;
+  const item=SNACK_EXTRAS.find(e=>e.v===extraValue);
+  if(item?.group && checked){
+    day[extrasKey]=day[extrasKey].filter(v=>{
+      const other=SNACK_EXTRAS.find(e=>e.v===v);
+      return other?.group!==item.group;
+    });
   }
   if(checked){
     if(!day[extrasKey].includes(extraValue)) day[extrasKey].push(extraValue);
