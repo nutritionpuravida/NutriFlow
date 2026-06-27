@@ -5320,7 +5320,10 @@ function clearAppointmentForm(){
   const delBtn=document.getElementById('appt-delete-btn'); if(delBtn) delBtn.style.display='none';
   const card=document.getElementById('appointment-form-card'); if(card) card.style.display='none';
 }
-async function saveAppointmentFromForm(){
+function appointmentClientUuid(){
+  const id=String(v('p-id')||'').trim();
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id) ? id : null;
+}async function saveAppointmentFromForm(){
   const clientName=(v('appt-client')||'').trim();
   if(!clientName){ alert('Enter a client name.'); return; }
   const id=v('appt-id') || ('appt_'+Date.now());
@@ -5337,7 +5340,7 @@ async function saveAppointmentFromForm(){
   });
   let saved=appt;
   if(currentUser){
-    const row={user_id:currentUser.id,client_name:appt.client_name,date:appt.date,time:appt.time,duration:appt.duration,type:appt.type,notes:appt.notes,updated_at:appt.updated_at};
+    const row={user_id:currentUser.id,client_id:appointmentClientUuid(),client_name:appt.client_name,date:appt.date,time:appt.time,duration:appt.duration,type:appt.type,notes:appt.notes,updated_at:appt.updated_at};
     try{
       let result;
       if(String(id).startsWith('appt_')){
@@ -6169,6 +6172,7 @@ updateOnlineStatus();
 
 </body>
 </html>
+
 
 
 
