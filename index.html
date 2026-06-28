@@ -220,6 +220,7 @@ th { text-align: left; padding: 8px 10px; background: var(--bg-page); border-bot
 td { padding: 9px 10px; border-bottom: 1px solid var(--border); color: var(--text-primary); }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--bg-hover); }
+.week-summary-table tr:hover td { background: inherit !important; }
 
 /* ─── BADGES ─── */
 .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
@@ -5141,7 +5142,7 @@ function renderSevenDayMealCard(dayPlan, dt, slot, lang, dayIndex){
 }
 
 function renderSevenDayWeekSummary(lang='GR'){
-  return `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;color:#111827;border:1px solid #d9e2df">
+  return `<div style="overflow-x:auto"><table class="week-summary-table" style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;color:#111827;border:1px solid #d9e2df">
     <thead><tr style="background:#0F6E56;color:#fff">
       <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Day':'Ημέρα'}</th>
       <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Breakfast':'Πρωινό'}</th>
@@ -5179,7 +5180,7 @@ function renderSevenDayWeekSummary(lang='GR'){
     </tbody></table></div>`;
 }
 
-function setSevenDayActive(index){ S.sevenDayActiveIndex=Number(index)||0; buildSevenDay(); }
+function setSevenDayActive(index){ S.sevenDayActiveIndex=Number(index)||0; if(S.sevenDayView==='week') S.sevenDayView='day'; buildSevenDay(); }
 function shiftSevenDay(delta){ S.sevenDayActiveIndex=(Number(S.sevenDayActiveIndex||0)+Number(delta)+7)%7; buildSevenDay(); }
 function setSevenDayView(view){ S.sevenDayView=view==='week'?'week':'day'; buildSevenDay(); }
 
@@ -5480,15 +5481,15 @@ function buildReport(){
   const today=new Date().toLocaleDateString('el-GR');
   const n=S.notes, intake=S.intake;
   const reportExtraOpts={showRemove:false,hideTitle:true,showDbNote:false,reportMode:true};
-  const dayAllocation=getDayMealAllocation(S.mealSel, lang);
-  const portions=dayAllocation.portions;
-  const brkText=(mealText(S.mealSel.breakfast,null,lang)||'—')+renderExtraFoodsForSlot('brk', null, reportExtraOpts);
-  const lunText=(mealText(S.mealSel.lunch,portions.lunch,lang)||'—')+renderExtraFoodsForSlot('lun', null, reportExtraOpts);
-  const dinText=(mealText(S.mealSel.dinner,portions.dinner,lang)||'—')+renderExtraFoodsForSlot('din', null, reportExtraOpts);
-  const snk1Text=dayAllocation.snacks.snk1Built.text+renderExtraFoodsForSlot('snk1', null, reportExtraOpts);
-  const snk2Text=dayAllocation.snacks.snk2Built.text+renderExtraFoodsForSlot('snk2', null, reportExtraOpts);
-  const sleepText=dayAllocation.snacks.sleepBuilt.text+renderExtraFoodsForSlot('sleep', null, reportExtraOpts);
-  const day=calcDayTotals();
+  ensureWeekPlans();
+  const reportDailyPlan=(S.weekPlans&&S.weekPlans[0]) ? S.weekPlans[0] : WEEK_PLANS[0];
+  const day=calcDayTotalsForPlanDisplay(reportDailyPlan, lang, 0);
+  const brkText=reportSevenDaySlotText(reportDailyPlan, day, 'brk', lang, 0, reportExtraOpts);
+  const lunText=reportSevenDaySlotText(reportDailyPlan, day, 'lun', lang, 0, reportExtraOpts);
+  const dinText=reportSevenDaySlotText(reportDailyPlan, day, 'din', lang, 0, reportExtraOpts);
+  const snk1Text=reportSevenDaySlotText(reportDailyPlan, day, 'snk1', lang, 0, reportExtraOpts);
+  const snk2Text=reportSevenDaySlotText(reportDailyPlan, day, 'snk2', lang, 0, reportExtraOpts);
+  const sleepText=reportSevenDaySlotText(reportDailyPlan, day, 'sleep', lang, 0, reportExtraOpts);
   const gapOk=Math.abs(day.gap)<=100;
   const baseReportRules=isEn ? GENERAL_HEALTH_RULES_EN : GENERAL_HEALTH_RULES;
     const reportRules=baseReportRules
