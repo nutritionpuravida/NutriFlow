@@ -703,7 +703,11 @@ tr:hover td { background: var(--bg-hover); }
         </div>
         <div class="section-label">ΣΗΜΕΙΩΣΕΙΣ ΔΙΑΙΤΟΛΟΓΟΥ / CLINICIAN NOTES</div>
         <div class="form-field"><label>Ελεύθερες σημειώσεις / Free notes</label><textarea id="i-coach-notes" rows="4" placeholder="Internal notes, priorities, follow-up…" oninput="saveIntake()" style="resize:vertical;width:100%"></textarea></div>
-        <div style="margin-top:16px"><button class="btn primary" onclick="nav('profile')">Continue to Client Profile →</button></div>
+        <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn primary" onclick="saveClientIntake()">💾 Save Intake</button>
+          <button class="btn" onclick="nav('macros')">Continue to Macro Targets →</button>
+          <span id="intake-save-note" style="font-size:12px;color:var(--text-muted)"></span>
+        </div>
       </div>
     </div>
 
@@ -722,6 +726,10 @@ tr:hover td { background: var(--bg-hover); }
         <div class="section-label">CLINICIAN NOTES</div>
         <div class="form-field"><label>Free text</label><textarea id="n-clinician-notes" rows="5" placeholder="Clinical context, session summary, next steps…" oninput="saveNotes()" style="width:100%;resize:vertical"></textarea></div>
         <div class="alert info" style="margin-top:14px">ℹ️ Blood test results have their own page — <a onclick="nav('labs')" style="color:inherit;text-decoration:underline;cursor:pointer">Blood Analysis →</a></div>
+        <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn primary" onclick="saveClientIntake()">💾 Save Intake & Clinical Notes</button>
+          <button class="btn" onclick="nav('macros')">Continue to Macro Targets →</button>
+        </div>
       </div>
     </div>
   </div>
@@ -871,8 +879,8 @@ tr:hover td { background: var(--bg-hover); }
         <div class="card-body">
           <div class="alert info" style="margin-bottom:14px">ℹ️ Goal calories linked from Client Profile. Enter Carbs % and Protein % — Fat % completes automatically to 100%.</div>
           <div class="form-grid three" style="margin-bottom:16px">
-            <div class="form-field"><label>Carbs % 🌾</label><input type="number" id="m-carb" value="45" min="0" max="100" oninput="calcMacros()"></div>
-            <div class="form-field"><label>Protein % 🥩</label><input type="number" id="m-protein" value="20" min="0" max="100" oninput="calcMacros()"></div>
+            <div class="form-field"><label>Carbs % 🌾</label><input type="number" id="m-carb" value="45" min="0" max="100" oninput="onMacroManualInput()"></div>
+            <div class="form-field"><label>Protein % 🥩</label><input type="number" id="m-protein" value="20" min="0" max="100" oninput="onMacroManualInput()"></div>
             <div class="form-field"><label>Fat % 🫒 (auto)</label><input type="number" id="m-fat" value="35" min="0" max="100" readonly style="background:var(--bg-page);cursor:not-allowed"></div>
           </div>
           <div class="field-note" style="margin:-10px 0 14px">Fat % is calculated automatically so the three always total 100%. To set a specific Fat %, adjust Carbs % and Protein % accordingly.</div>
@@ -882,7 +890,9 @@ tr:hover td { background: var(--bg-hover); }
           <table><thead><tr><th>Macro</th><th>%</th><th>kcal</th><th>grams</th></tr></thead><tbody id="macro-table-body"></tbody></table>
           <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
             <button class="btn" onclick="applyConditionMacros()">Apply suggested for selected condition</button>
+            <button class="btn primary" onclick="saveMacroTargets()">💾 Save Macro Targets</button>
             <span style="font-size:12px;color:var(--text-muted)">← fills the % fields above based on selected conditions</span>
+            <span id="macro-save-note" style="font-size:12px;color:var(--text-muted)"></span>
           </div>
           <div id="macro-explanation" style="display:none;margin-top:10px;padding:10px;background:var(--teal-50);border-radius:8px;font-size:12px;line-height:1.6"></div>
         </div>
@@ -4798,6 +4808,35 @@ function renderTrackingChart(){
 
 function saveIntake(){S.intake={goal:v('i-goal'),goalWhy:v('i-goal-why'),tried:v('i-goal-tried'),lifestyle:v('i-lifestyle'),exercise:v('i-exercise'),steps:v('i-steps'),sleep:v('i-sleep'),stress:v('i-stress'),typicalDiet:v('i-typical-diet'),skipMeals:v('i-skip-meals'),cravings:v('i-cravings'),intolerances:v('i-intolerances'),digestion:v('i-digestion'),coachNotes:v('i-coach-notes')};}
 function saveNotes(){S.notes={diagnoses:v('n-diagnoses'),medication:v('n-medication'),allergies:v('n-allergies'),dislikes:v('n-dislikes'),adherence:v('n-adherence'),clinician_notes:v('n-clinician-notes')};}
+async function saveClientIntake(){
+  saveIntake();
+  saveNotes();
+  const note=document.getElementById('intake-save-note');
+  if(note) note.textContent='Saving...';
+  await saveCurrentClient({source:'intake'});
+  if(note){
+    note.textContent='Intake saved';
+    setTimeout(()=>{ if(note.textContent==='Intake saved') note.textContent=''; }, 2500);
+  }
+}
+function onMacroManualInput(){
+  calcMacros();
+  const el=document.getElementById('macro-explanation');
+  if(el && el.style.display!=='none'){
+    el.style.display='block';
+    el.innerHTML='<strong>Why these values?</strong><br>Custom values — manually set by dietitian.';
+  }
+}
+async function saveMacroTargets(){
+  calcMacros();
+  const note=document.getElementById('macro-save-note');
+  if(note) note.textContent='Saving...';
+  await saveCurrentClient({source:'macros'});
+  if(note){
+    note.textContent='Macro targets saved';
+    setTimeout(()=>{ if(note.textContent==='Macro targets saved') note.textContent=''; }, 2500);
+  }
+}
 function applyConditionMacros(){
   const m=getCombinedMacroSuggestion(S.conditions);
   document.getElementById('m-carb').value=m.c;
@@ -6052,7 +6091,9 @@ function newClient(){
 
 // Saves (or updates) the current client into the cloud (Supabase),
 // scoped to the signed-in user via Row Level Security
-async function saveCurrentClient(){
+async function saveCurrentClient(options={}){
+  saveIntake();
+  saveNotes();
   const name=(v('p-name')||'').trim();
   if(!name){
     alert('Please enter a client name before saving.');
