@@ -2854,7 +2854,26 @@ function autoPopulateSnacksFromExchanges(){
   syncSnackCheckboxUiFromMealSel();
   if(S.weekPlans){
     S.weekPlans=S.weekPlans.map(plan=>autoSnackExtrasForPlan(plan));
+    syncWeekPlanSnackExtraFromOneDay('nuts');
   }
+}
+
+function syncWeekPlanSnackExtraFromOneDay(extraValue){
+  if(!S.weekPlans) return;
+  const slotKeys=['snack1Extras','snack2Extras','sleepExtras'];
+  const oneDay=S.mealSel||{};
+  S.weekPlans=S.weekPlans.map(plan=>{
+    const p={...plan};
+    slotKeys.forEach(key=>{
+      const source=Array.isArray(oneDay[key]) ? oneDay[key] : [];
+      const current=Array.isArray(p[key]) ? p[key] : [];
+      const withoutExtra=current.filter(v=>v!==extraValue);
+      p[key]=source.includes(extraValue) ? [...withoutExtra, extraValue] : withoutExtra;
+      const shortKey=key==='snack1Extras'?'snk1Extras':key==='snack2Extras'?'snk2Extras':key;
+      if(shortKey!==key) p[shortKey]=p[key];
+    });
+    return p;
+  });
 }
 
 function setMealLanguage(lang){
