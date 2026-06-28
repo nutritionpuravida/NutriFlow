@@ -975,7 +975,7 @@ tr:hover td { background: var(--bg-hover); }
             <div id="s-sleep" style="display:flex;flex-wrap:wrap;gap:8px;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input)" onchange="buildOneDayPlan()"></div>
           </div>
         </div>
-        <div class="field-note" style="margin-bottom:12px">Fruit and dairy servings are assigned with the snack checkboxes and draw from the Exchange System totals. Choose fresh fruit or dried fruit, and milk or yogurt. Nuts/coffee remain optional add-ons.</div>
+        <div class="field-note" style="margin-bottom:12px">Fruit and dairy servings are assigned with the snack checkboxes and draw from the Exchange System totals. Choose fresh fruit or dried fruit, and milk or yogurt. Nuts count as a fat exchange and replace olive oil from main meals; coffee remains optional.</div>
         <div id="oneday-plan"></div>
         <div class="section-label">EXCHANGE COVERAGE CHECK</div>
         <div id="oneday-check"></div>
@@ -2239,6 +2239,22 @@ function formatCups(exCount) {
   if (rem===0) return `${whole}`;
   return `${whole} ${fracMap[rem]}`;
 }
+function formatPotatoPortion(exCount, lang='GR') {
+  const n=Number(exCount||0);
+  if(n<=0) return '';
+  const units=[
+    {max:1, gr:'1 μικρή πατάτα (~80g)', en:'1 small potato (~80g)'},
+    {max:2, gr:'1 μέτρια πατάτα (~150g)', en:'1 medium potato (~150g)'},
+    {max:3, gr:'1 μεγάλη πατάτα (~200g)', en:'1 large potato (~200g)'}
+  ];
+  if(n<=3) return (units.find(u=>n<=u.max)||units[2])[lang==='EN'?'en':'gr'];
+  const large=Math.floor(n/3);
+  const rem=n%3;
+  const remTxt=rem ? ' + ' + formatPotatoPortion(rem, lang) : '';
+  return lang==='EN'
+    ? `${large} large potato${large>1?'es':''} (~${large*200}g)${remTxt}`
+    : `${large} μεγάλες πατάτες (~${large*200}g)${remTxt}`;
+}
 
 function mealSuffix(ex, p, veg, proteinSource, carbName, proteinLabel, isFishProtein) {
   p = p || {prot:0, starch:0, fat:0, veg:undefined};
@@ -2258,7 +2274,7 @@ function mealSuffix(ex, p, veg, proteinSource, carbName, proteinLabel, isFishPro
       // Fish-equivalent weight, rounded to the nearest 10g for a clean,
       // kitchen-usable number (e.g. 138g → 140g) instead of an oddly
       // precise computed value — per dietitian feedback.
-      const fishGrams = Math.round(totalGrams*1.15/10)*10;
+      const fishGrams = Math.min(150, Math.round(totalGrams*1.15/10)*10);
       if(isFishProtein){
         // This dish's own named protein IS fish/tuna — show that single
         // weight directly (no "or meat" alternative needed).
@@ -2279,7 +2295,7 @@ function mealSuffix(ex, p, veg, proteinSource, carbName, proteinLabel, isFishPro
   // matching the actual dish (rice for a rice dish, potato for a potato
   // dish, etc.) — alternatives are something the clinician advises
   // separately, not something the printed plan needs to spell out.
-  if (p.starch > 0) parts.push(`${formatCups(p.starch)} φλ. ${carbName||'ρύζι'}`);
+  if (p.starch > 0) parts.push(carbName==='πατάτα' ? formatPotatoPortion(p.starch, 'GR') : `${formatCups(p.starch)} φλ. ${carbName||'ρύζι'}`);
   if (p.fat > 0)    parts.push(`${p.fat} κ.γ. ελαιόλαδο`);
   const portionTxt = parts.length ? ' (' + parts.join(' + ') + ')' : '';
   // 1 veg exchange = 1 cup raw vegetables (per Equivalents Guide) — direct
@@ -2300,7 +2316,7 @@ function mealSuffixEn(ex, p, veg, proteinSource, carbName, proteinLabel, isFishP
       const proPerEx = (S.exMeta && S.exMeta.protein.pro) || 7;
       const gramsPerEx = Math.round(30 * (proPerEx/7));
       const totalGrams = p.prot * gramsPerEx;
-      const fishGrams = Math.round(totalGrams*1.15/10)*10;
+      const fishGrams = Math.min(150, Math.round(totalGrams*1.15/10)*10);
       if(isFishProtein){
         parts.push(`${fishGrams}g cooked ${proteinLabel||'fish'}`);
       } else if(proteinLabel){
@@ -2310,7 +2326,7 @@ function mealSuffixEn(ex, p, veg, proteinSource, carbName, proteinLabel, isFishP
       }
     }
   }
-  if (p.starch > 0) parts.push(`${formatCups(p.starch)} cup ${carbName||'rice'}`);
+  if (p.starch > 0) parts.push(carbName==='potato' ? formatPotatoPortion(p.starch, 'EN') : `${formatCups(p.starch)} cup ${carbName||'rice'}`);
   if (p.fat > 0)    parts.push(`${p.fat} tsp olive oil`);
   const portionTxt = parts.length ? ' (' + parts.join(' + ') + ')' : '';
   const vegForThisMeal = (p && p.veg!==undefined) ? p.veg : (ex.veg||0);
@@ -2704,7 +2720,8 @@ function mealOptionsHtml(options, current){
 // be silently dropped just because a box wasn't ticked. Checkboxes are now
 // used ONLY for two things: (1) restyling the automatic fruit/dairy serving
 // — dried instead of fresh, yogurt instead of milk; (2) adding extra items
-// on top — nuts, coffee. Starch options (crackers, oat bar) remain removed
+// on top — coffee. Nuts are a fat exchange and replace olive oil from main
+// meals via the exchange ledger. Starch options (crackers, oat bar) remain removed
 // per the original feedback. This combination is what makes "choose
 // multiple snack items" and "the numbers are always correct" both true at
 // the same time — the two are no longer in tension the way they were in
@@ -2714,7 +2731,7 @@ const SNACK_EXTRAS = [
   {v:'driedfruit', group:'fruit', gr:'🍇 Αποξηραμένα φρούτα (1 μερίδα)', en:'🍇 Dried fruit (1 serving)'},    // 1 fruit exchange
   {v:'milk',       group:'dairy', gr:'🥛 Γάλα 1,5% (1 φλ.)',         en:'🥛 Milk 1.5% (1 cup)'},             // 1 dairy exchange
   {v:'yogurt',     group:'dairy', gr:'🍦 Γιαούρτι 2% (~170g)',       en:'🍦 Yogurt 2% (~170g)'},             // 1 dairy exchange
-  {v:'nuts',       gr:'🥜 + Ξηροί καρποί',            en:'🥜 + Nuts'},                       // additive extra
+  {v:'nuts',       gr:'🥜 Ξηροί καρποί (1 λίπος)',     en:'🥜 Nuts (1 fat exchange)'},        // 1 fat exchange
   {v:'coffee',     gr:'☕ + Καφές',                    en:'☕ + Coffee (without sugar)'},      // additive extra
 ];
 
@@ -2822,7 +2839,7 @@ function buildSlotSnack(slot, extras, lang='GR', breakfastKey, plan=null, fruitD
     }
   }
   if(addNuts){
-    addOnKcal += 45;
+    exch.fat += 1;
     parts.push(lang==='EN' ? '6 almonds or 4 walnuts' : '6 αμύγδαλα ή 4 καρύδια');
   }
   if(addCoffee){ parts.push(lang==='EN' ? 'Coffee (without sugar)' : 'Καφές (χωρίς ζάχαρη)'); }
@@ -3073,6 +3090,47 @@ function allocateRemainingExchange(exKey, portionKey, ex, fixed, scalableSlots, 
     }
   });
 }
+function fishProteinExchangeCap(){
+  const proPerEx = (S.exMeta && S.exMeta.protein && S.exMeta.protein.pro) || 7;
+  const fishGramsPerEx = 30 * (proPerEx/7) * 1.15;
+  return Math.max(1, Math.floor(150 / fishGramsPerEx));
+}
+function mealUsesFishProtein(mealKey){
+  return /FISH|TUNA/.test(String(mealKey||''));
+}
+function allocateProteinRemaining(ex, fixed, scalableSlots, portions, p, caps, warnings){
+  const target=Number(ex?.protein||0);
+  const alreadyUsed=Number(fixed?.protein||0);
+  let remaining=target-alreadyUsed;
+  if(remaining<0){
+    warnings.push(`protein fixed meals exceed daily exchange target by ${Math.abs(remaining)} exchange(s).`);
+    return;
+  }
+  if(remaining>0 && !scalableSlots.length){
+    warnings.push(`${remaining} protein exchange(s) cannot be allocated because both main meals are fixed.`);
+    return;
+  }
+  const slotCaps={};
+  scalableSlots.forEach(slot=>{
+    const mealKey=slot==='lunch'?p.lunch:p.dinner;
+    slotCaps[slot]=mealUsesFishProtein(mealKey) ? Math.min(caps.proteinPerMealMax, fishProteinExchangeCap()) : caps.proteinPerMealMax;
+  });
+  while(remaining>0){
+    const available=scalableSlots.filter(slot=>Number(portions[slot]?.prot||0)<slotCaps[slot]);
+    const targets=available.length ? available : scalableSlots;
+    if(!available.length){
+      warnings.push(`Protein target exceeds realistic per-meal caps; review meal combination or add another protein occasion.`);
+    }
+    for(const slot of targets){
+      if(remaining<=0) break;
+      portions[slot].prot += 1;
+      remaining--;
+      if(portions[slot].prot>slotCaps[slot]){
+        warnings.push(`${slot} protein exceeds realistic per-meal cap (${portions[slot].prot} > ${slotCaps[slot]}).`);
+      }
+    }
+  }
+}
 
 // Daily exchange ledger: subtract fixed breakfast/snack/fixed-meal exchanges
 // first, then distribute only the remainder to scalable lunch/dinner meals.
@@ -3115,7 +3173,7 @@ function getDayMealAllocation(plan=S.mealSel, lang=S.mealLanguage||'GR'){
     warnings.push(`${dairyGap} dairy serving(s) unallocated — add Milk/Yogurt to another snack slot or adjust Exchange System.`);
   }
   allocateRemainingExchange('starch','starch',ex,fixed,scalableSlots,portions,caps.starchPerMealMax,warnings);
-  allocateRemainingExchange('protein','prot',ex,fixed,scalableSlots,portions,caps.proteinPerMealMax,warnings);
+  allocateProteinRemaining(ex,fixed,scalableSlots,portions,p,caps,warnings);
   allocateRemainingExchange('fat','fat',ex,fixed,scalableSlots,portions,caps.fatPerMealMax,warnings);
   allocateRemainingExchange('veg','veg',ex,fixed,scalableSlots,portions,99,warnings);
   const allocated=zeroExchangeUse();
@@ -4119,13 +4177,13 @@ function buildOneDayPlan(){
       <ul style="margin:4px 0 0 16px;line-height:1.8">
         <li>Starch by <strong>+${starchNeeded} exchange${starchNeeded>1?'s':''}</strong> (+${starchNeeded*81} kcal) — e.g. add ${starchNeeded} more slice${starchNeeded>1?'s':''} of bread or ⅓ cup rice per serving</li>
         <li>OR Fat by <strong>+${fatNeeded} exchange${fatNeeded>1?'s':''}</strong> (+${fatNeeded*45} kcal) — e.g. add ${fatNeeded} more tsp olive oil</li>
-        <li>OR Tick "+ Ξηροί καρποί" on a snack for extra kcal</li>
+        <li>OR review the Exchange System servings; nuts replace one fat exchange rather than adding extra kcal.</li>
       </ul>
       Use the <strong>↻ button</strong> in Exchange System to unlock manual override per category, then click "🔄 Apply to Meal Plans".
     </div>`;
   } else if(!gapOk && displayedGap>0){
     gapAdvice+=`<div style="margin-top:8px;padding:8px 12px;background:var(--amber-bg);border-radius:6px;font-size:12px;color:var(--amber-text)">
-      💡 <strong>Slightly over target:</strong> Reduce fat by 1–2 exchanges or untick a "+" extra on a snack.
+      💡 <strong>Slightly over target:</strong> Reduce starch/fat exchanges or review any added foods from the Food Database.
     </div>`;
   }
   const chkEl=document.getElementById('oneday-check');
