@@ -4634,7 +4634,7 @@ const STRICT_WEEK_MEALS=[
   {brk:'BRK_CEREAL', lun:'LUN_FISH_POTATO',  din:'DIN_CHICKEN_RICE'},
   {brk:'BRK_TOAST',  lun:'LUN_TUNA_POTATO',  din:'DIN_OMELETTE'},
   {brk:'BRK_CEREAL', lun:'LUN_FASOLAKIA_PORK',din:'DIN_CHICKEN_RICE'},
-  {brk:'BRK_TOAST',  lun:'LUN_PASTA_MINCE',  din:'DIN_PASTA_MINCE'},
+  {brk:'BRK_TOAST',  lun:'LUN_PASTA_MINCE',  din:'DIN_FISH_POTATO'},
   {brk:'BRK_CEREAL', lun:'LUN_PASTA_MINCE',  din:'DIN_SOUVLAKI_PITA'},
   {brk:'BRK_TOAST',  lun:'LUN_CHICKEN_RICE', din:'DIN_BIFTEKI_BULGUR'},
 ];
@@ -4732,12 +4732,41 @@ function strictSnackDescription(exch, extras, lang='GR'){
 
 function strictMainDescription(mealKey, exch, lang='GR'){
   const portions={starch:Number(exch.starch||0), prot:Number(exch.protein||0), fat:Number(exch.fat||0), veg:Number(exch.veg||0)};
-  if(mealKey==='DIN_SOUVLAKI_PITA'){
-    return lang==='EN'
-      ? `Chicken souvlaki + Cypriot pita - ${portions.prot*30}g chicken + salad (${portions.veg} cups) + ${portions.fat} tsp olive oil`
-      : `Σουβλάκι κοτόπουλο + κυπριακή πίτα – ${portions.prot*30}g κοτόπουλο + σαλάτα (${portions.veg} φλ.) + ${portions.fat} κ.γ. ελαιόλαδο`;
-  }
-  return mealText(mealKey, portions, lang);
+  const proteinGr=portions.prot===4 ? 140 : portions.prot*30;
+  const starchGR=portions.starch>0 ? (mealKey.includes('SOUVLAKI') ? '1 μικρή κυπριακή πίτα' : mealKey.includes('POTATO') ? formatPotatoPortion(portions.starch,'GR') : `${formatCups(portions.starch)} φλ. ${mealKey.includes('PASTA')?'ζυμαρικά':mealKey.includes('BIFTEKI')?'πλιγούρι':'ρύζι'}`) : '';
+  const starchEN=portions.starch>0 ? (mealKey.includes('SOUVLAKI') ? '1 small Cypriot pita' : mealKey.includes('POTATO') ? formatPotatoPortion(portions.starch,'EN') : `${formatCups(portions.starch)} cup ${mealKey.includes('PASTA')?'pasta':mealKey.includes('BIFTEKI')?'bulgur':'rice'}`) : '';
+  const fatGR=portions.fat>0 ? `${portions.fat} κ.γ. ελαιόλαδο` : '';
+  const fatEN=portions.fat>0 ? `${portions.fat} tsp olive oil` : '';
+  const vegGR=`σαλάτα (${portions.veg} φλ.)`;
+  const vegEN=`salad (${portions.veg} cups)`;
+  const joinParts=parts=>parts.filter(Boolean).join(' + ');
+  const grMap={
+    LUN_CHICKEN_RICE:`Κοτόπουλο + ρύζι (${joinParts([`${proteinGr}g μαγειρεμένο κοτόπουλο`,starchGR,fatGR])}) – ${vegGR}`,
+    DIN_CHICKEN_RICE:`Κοτόπουλο + ρύζι (${joinParts([`${proteinGr}g μαγειρεμένο κοτόπουλο`,starchGR,fatGR])}) – ${vegGR}`,
+    LUN_FISH_POTATO:`Ψάρι + πατάτα (${joinParts([`${proteinGr}g μαγειρεμένο ψάρι`,starchGR,fatGR])}) – ${vegGR}`,
+    DIN_FISH_POTATO:`Ψάρι + πατάτα (${joinParts([`${proteinGr}g μαγειρεμένο ψάρι`,starchGR,fatGR])}) – ${vegGR}`,
+    LUN_TUNA_POTATO:`Τόνος + πατάτα (${joinParts([`${proteinGr}g τόνο`,starchGR,fatGR])}) – ${vegGR}`,
+    LUN_FASOLAKIA_PORK:`Φασολάκια + χοιρινό (${joinParts([`${proteinGr}g μαγειρεμένο χοιρινό`,starchGR,fatGR])}) – φασολάκια + ${vegGR}`,
+    LUN_PASTA_MINCE:`Μακαρόνια + κιμάς (${joinParts([`${proteinGr}g μαγειρεμένο κιμά`,starchGR,fatGR])}) – ${vegGR}`,
+    DIN_PASTA_MINCE:`Μακαρόνια + κιμάς (${joinParts([`${proteinGr}g μαγειρεμένο κιμά`,starchGR,fatGR])}) – ${vegGR}`,
+    DIN_BIFTEKI_BULGUR:`Μπιφτέκι + πλιγούρι (${joinParts([`${proteinGr}g μπιφτέκι`,starchGR,fatGR])}) – ${vegGR}`,
+    DIN_OMELETTE:`Ομελέτα + ψωμί (${joinParts(['2 αυγά','60g γαλοπούλα light',starchGR,fatGR])}) – βραστά λαχανικά (${portions.veg} φλ.)`,
+    DIN_SOUVLAKI_PITA:`Σουβλάκι κοτόπουλο + κυπριακή πίτα (${joinParts([`${proteinGr}g κοτόπουλο`,starchGR||'1 μικρή κυπριακή πίτα',fatGR])}) – ${vegGR}`,
+  };
+  const enMap={
+    LUN_CHICKEN_RICE:`Chicken + rice (${joinParts([`${proteinGr}g cooked chicken`,starchEN,fatEN])}) - ${vegEN}`,
+    DIN_CHICKEN_RICE:`Chicken + rice (${joinParts([`${proteinGr}g cooked chicken`,starchEN,fatEN])}) - ${vegEN}`,
+    LUN_FISH_POTATO:`Fish + potato (${joinParts([`${proteinGr}g cooked fish`,starchEN,fatEN])}) - ${vegEN}`,
+    DIN_FISH_POTATO:`Fish + potato (${joinParts([`${proteinGr}g cooked fish`,starchEN,fatEN])}) - ${vegEN}`,
+    LUN_TUNA_POTATO:`Tuna + potato (${joinParts([`${proteinGr}g tuna`,starchEN,fatEN])}) - ${vegEN}`,
+    LUN_FASOLAKIA_PORK:`Green beans + pork (${joinParts([`${proteinGr}g cooked pork`,starchEN,fatEN])}) - green beans + ${vegEN}`,
+    LUN_PASTA_MINCE:`Pasta + mince (${joinParts([`${proteinGr}g cooked mince`,starchEN,fatEN])}) - ${vegEN}`,
+    DIN_PASTA_MINCE:`Pasta + mince (${joinParts([`${proteinGr}g cooked mince`,starchEN,fatEN])}) - ${vegEN}`,
+    DIN_BIFTEKI_BULGUR:`Burger + bulgur (${joinParts([`${proteinGr}g burger`,starchEN,fatEN])}) - ${vegEN}`,
+    DIN_OMELETTE:`Omelette + bread (${joinParts(['2 eggs','60g light turkey',starchEN,fatEN])}) - boiled vegetables (${portions.veg} cups)`,
+    DIN_SOUVLAKI_PITA:`Chicken souvlaki + Cypriot pita (${joinParts([`${proteinGr}g chicken`,starchEN||'1 small Cypriot pita',fatEN])}) - ${vegEN}`,
+  };
+  return (lang==='EN' ? enMap[mealKey] : grMap[mealKey]) || mealText(mealKey, portions, lang);
 }
 
 function strictSlotText(dayPlan, slotKey, lang='GR', dayIndex=0){
@@ -4987,27 +5016,42 @@ function renderSevenDayMealCard(dayPlan, dt, slot, lang, dayIndex){
 }
 
 function renderSevenDayWeekSummary(lang='GR'){
-  return `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-surface);border:1px solid var(--border)">
-    <thead><tr style="background:var(--teal-600);color:#fff">
-      <th style="padding:9px;text-align:left;border-bottom:1px solid var(--border)">${lang==='EN'?'Day':'Ημέρα'}</th>
-      <th style="padding:9px;text-align:left;border-bottom:1px solid var(--border)">${lang==='EN'?'Breakfast':'Πρωινό'}</th>
-      <th style="padding:9px;text-align:left;border-bottom:1px solid var(--border)">${lang==='EN'?'Lunch':'Μεσημεριανό'}</th>
-      <th style="padding:9px;text-align:left;border-bottom:1px solid var(--border)">${lang==='EN'?'Dinner':'Βραδινό'}</th>
-      <th style="padding:9px;text-align:right;border-bottom:1px solid var(--border)">Kcal</th>
+  return `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;color:#111827;border:1px solid #d9e2df">
+    <thead><tr style="background:#0F6E56;color:#fff">
+      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Day':'Ημέρα'}</th>
+      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Breakfast':'Πρωινό'}</th>
+      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Snack 1':'Σνακ 1'}</th>
+      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Lunch':'Μεσημεριανό'}</th>
+      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Snack 2':'Σνακ 2'}</th>
+      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Dinner':'Βραδινό'}</th>
+      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Before sleep':'Πριν τον ύπνο'}</th>
+      <th style="padding:9px;text-align:right;border-bottom:1px solid #d9e2df">Kcal</th>
     </tr></thead><tbody>
     ${S.weekPlans.map((p,i)=>{
       const dt=calcDayTotalsForPlanDisplay(p, lang, i);
       const brk=getSevenDaySlotData(p, dt, 'brk', lang, i);
+      const snk1=getSevenDaySlotData(p, dt, 'snk1', lang, i);
       const lun=getSevenDaySlotData(p, dt, 'lun', lang, i);
+      const snk2=getSevenDaySlotData(p, dt, 'snk2', lang, i);
       const din=getSevenDaySlotData(p, dt, 'din', lang, i);
-      return `<tr style="border-bottom:1px solid var(--border);background:${i%2===0?'var(--bg-surface)':'var(--teal-50)'}">
-        <td style="padding:9px;font-weight:900;color:var(--text-primary)">${safeHtml(weekDayLabel(p,i,lang))}</td>
-        <td style="padding:9px;color:var(--text-secondary)">${safeHtml(brk.name||'—')}</td>
-        <td style="padding:9px;color:var(--text-secondary)">${safeHtml(lun.name||'—')}</td>
-        <td style="padding:9px;color:var(--text-secondary)">${safeHtml(din.name||'—')}</td>
-        <td style="padding:9px;text-align:right;font-weight:900;color:var(--teal-600)">${dt.totalKcal}</td>
+      const sleep=getSevenDaySlotData(p, dt, 'sleep', lang, i);
+      return `<tr style="border-bottom:1px solid #d9e2df;background:${i%2===0?'#ffffff':'#f4fbf8'}">
+        <td style="padding:9px;font-weight:900;color:#111827;vertical-align:top">${safeHtml(weekDayLabel(p,i,lang))}</td>
+        <td style="padding:9px;color:#374151;line-height:1.45;vertical-align:top">${safeHtml(brk.text||'—')}</td>
+        <td style="padding:9px;color:#374151;line-height:1.45;vertical-align:top">${safeHtml(snk1.text||'—')}</td>
+        <td style="padding:9px;color:#374151;line-height:1.45;vertical-align:top">${safeHtml(lun.text||'—')}</td>
+        <td style="padding:9px;color:#374151;line-height:1.45;vertical-align:top">${safeHtml(snk2.text||'—')}</td>
+        <td style="padding:9px;color:#374151;line-height:1.45;vertical-align:top">${safeHtml(din.text||'—')}</td>
+        <td style="padding:9px;color:#374151;line-height:1.45;vertical-align:top">${safeHtml(sleep.text||'—')}</td>
+        <td style="padding:9px;text-align:right;font-weight:900;color:#0F6E56;vertical-align:top">${dt.totalKcal}</td>
       </tr>`;
-    }).join('')}</tbody></table></div>`;
+    }).join('')}
+      <tr style="background:#eef8f4;border-top:2px solid #0F6E56">
+        <td style="padding:9px;font-weight:900;color:#111827">${lang==='EN'?'Target/day':'Στόχος/ημέρα'}</td>
+        <td colspan="6" style="padding:9px;color:#374151"></td>
+        <td style="padding:9px;text-align:right;font-weight:900;color:#0F6E56">1585 kcal</td>
+      </tr>
+    </tbody></table></div>`;
 }
 
 function setSevenDayActive(index){ S.sevenDayActiveIndex=Number(index)||0; buildSevenDay(); }
