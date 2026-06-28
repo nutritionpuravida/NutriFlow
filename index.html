@@ -2207,8 +2207,16 @@ function calcDayTotals(){
   const totalKcal = brkKcal + lunKcal + dinKcal + snk1Kcal + snk2Kcal + slpKcal;
   const target = Math.round(S.goalKcal||0);
   const gap = totalKcal - target;
+  const addOnKcal = (snk1Built.addOnKcal||0) + (snk2Built.addOnKcal||0) + (sleepBuilt.addOnKcal||0);
+  const extraFoodKcal = extraKcal('brk', null) + extraKcal('lun', null) + extraKcal('din', null) + extraKcal('snk1', null) + extraKcal('snk2', null) + extraKcal('sleep', null);
+  const exchangeGap = totalKcal - (allocation.exchangeTotalKcal||0);
 
-  return {brkKcal, lunKcal, dinKcal, snk1Kcal, snk2Kcal, slpKcal, totalKcal, target, gap, warnings:allocation.warnings};
+  return {brkKcal, lunKcal, dinKcal, snk1Kcal, snk2Kcal, slpKcal, totalKcal, target, gap,
+          exchangeTotalKcal:allocation.exchangeTotalKcal||0,
+          allocatedExchangeKcal:allocation.allocatedExchangeKcal||0,
+          exchangeGap, addOnKcal, extraFoodKcal,
+          exchangeTarget:allocation.exchangeTarget, allocatedExchanges:allocation.allocated,
+          exchangeDiff:allocation.exchangeDiff, warnings:allocation.warnings};
 }
 
 // Builds the portion suffix for a main meal using clinically-capped
@@ -2948,6 +2956,27 @@ function makeExMeta() {
   return m;
 }
 function exKcal(m) { return m.cho*4 + m.pro*4 + m.fat*9; }
+function exchangeSystemTotalKcal(ex=S.ex, m=S.exMeta||makeExMeta()){
+  return Math.round(
+    Number(ex?.fruit||0)   * Number(m.fruit?.kcal||0) +
+    Number(ex?.veg||0)     * Number(m.veg?.kcal||0) +
+    Number(ex?.dairy||0)   * Number(m.dairy?.kcal||0) +
+    Number(ex?.starch||0)  * Number(m.starch?.kcal||0) +
+    Number(ex?.protein||0) * Number(m.protein?.kcal||0) +
+    Number(ex?.fat||0)     * Number(m.fat?.kcal||0)
+  );
+}
+function exchangeUseTotalKcal(use, m=S.exMeta||makeExMeta()){
+  return exchangeSystemTotalKcal(use, m);
+}
+function exchangeUseDiff(target=S.ex, used={}, keys=['fruit','veg','dairy','starch','protein','fat']){
+  const diff={};
+  keys.forEach(k=>{
+    const v=Number(target?.[k]||0)-Number(used?.[k]||0);
+    if(Math.abs(v)>0.001) diff[k]=v;
+  });
+  return diff;
+}
 
 // ── CLINICAL REALISM CAPS ──
 // Hard ceilings so the engine never auto-generates unrealistic portions
@@ -3079,7 +3108,26 @@ function getDayMealAllocation(plan=S.mealSel, lang=S.mealLanguage||'GR'){
   allocateRemainingExchange('protein','prot',ex,fixed,scalableSlots,portions,caps.proteinPerMealMax,warnings);
   allocateRemainingExchange('fat','fat',ex,fixed,scalableSlots,portions,caps.fatPerMealMax,warnings);
   allocateRemainingExchange('veg','veg',ex,fixed,scalableSlots,portions,99,warnings);
-  return {plan:p,portions,snacks:{snk1Built,snk2Built,sleepBuilt},fruitDist,dairyDist,fixed,warnings};
+  const allocated=zeroExchangeUse();
+  addExchangeUse(allocated, fixed);
+  scalableSlots.forEach(slot=>{
+    allocated.protein += Number(portions[slot]?.prot||0);
+    allocated.starch  += Number(portions[slot]?.starch||0);
+    allocated.fat     += Number(portions[slot]?.fat||0);
+    allocated.veg     += Number(portions[slot]?.veg||0);
+  });
+  const exchangeTarget={
+    fruit:Number(ex?.fruit||0), veg:Number(ex?.veg||0), dairy:Number(ex?.dairy||0),
+    starch:Number(ex?.starch||0), protein:Number(ex?.protein||0), fat:Number(ex?.fat||0)
+  };
+  const exchangeDiff=exchangeUseDiff(exchangeTarget, allocated);
+  Object.entries(exchangeDiff).forEach(([key,val])=>{
+    if(val>0) warnings.push(`${val} ${key} exchange(s) remain unallocated.`);
+    if(val<0) warnings.push(`${Math.abs(val)} ${key} exchange(s) are over-allocated.`);
+  });
+  const exchangeTotalKcal=exchangeSystemTotalKcal(exchangeTarget);
+  const allocatedExchangeKcal=exchangeUseTotalKcal(allocated);
+  return {plan:p,portions,snacks:{snk1Built,snk2Built,sleepBuilt},fruitDist,dairyDist,fixed,allocated,exchangeTarget,exchangeDiff,exchangeTotalKcal,allocatedExchangeKcal,warnings};
 }
 
 // Backwards-compatible wrapper for older callers.
@@ -4045,6 +4093,14 @@ function buildOneDayPlan(){
       ⚠️ <strong>Exchange allocation warning:</strong> ${day.warnings.map(safeHtml).join(' · ')}
     </div>`;
   }
+  if(Math.abs(day.exchangeGap||0)>5){
+    const explained=(day.addOnKcal||0)+(day.extraFoodKcal||0);
+    const unexplained=(day.exchangeGap||0)-explained;
+    gapAdvice+=`<div style="margin-top:8px;padding:8px 12px;background:var(--amber-bg);border-radius:6px;font-size:12px;color:var(--amber-text)">
+      ⚠️ <strong>Exchange reconciliation:</strong> Exchange System total is <strong>${day.exchangeTotalKcal} kcal</strong>, meal-plan total is <strong>${day.totalKcal} kcal</strong> (${day.exchangeGap>0?'+':''}${day.exchangeGap} kcal).
+      ${explained?`Extras/add-ons explain ${explained} kcal. `:''}${Math.abs(unexplained)>5?`Unexplained difference: ${unexplained>0?'+':''}${unexplained} kcal — review exchange allocation before giving this plan to a client.`:'No hidden exchange loss detected.'}
+    </div>`;
+  }
   if(!gapOk && displayedGap<0){
     const starchNeeded=Math.round(Math.abs(displayedGap)/81);
     const fatNeeded=Math.round(Math.abs(displayedGap)/45);
@@ -4067,6 +4123,7 @@ function buildOneDayPlan(){
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px">
       <div style="font-size:13px"><strong>Daily total: ${displayedTotalKcal} kcal</strong></div>
       <div style="font-size:13px;color:var(--text-muted)">Target: ${day.target} kcal</div>
+      <div style="font-size:13px;color:var(--text-muted)">Exchange System: ${day.exchangeTotalKcal} kcal</div>
       <span class="badge ${gapBadge}">${displayedGap>0?'+':''}${displayedGap} kcal</span>
       ${gapOk?'<span style="font-size:12px;color:var(--teal-600)">✅ Within ±100 kcal of target</span>':'<span style="font-size:12px;color:'+gapColor+'">'+(displayedGap<0?'Below':'Above')+' target</span>'}
     </div>
@@ -4074,6 +4131,7 @@ function buildOneDayPlan(){
     <table><thead><tr><th>Meal</th><th>kcal</th><th>% of day</th></tr></thead><tbody>
       ${visibleMeals.map(m=>`<tr><td>${m.time}</td><td>${m.kcal}</td><td>${displayedTotalKcal?Math.round(m.kcal/displayedTotalKcal*100):'—'}%</td></tr>`).join('')}
       <tr style="font-weight:700;border-top:2px solid var(--border-strong)"><td>Total</td><td>${displayedTotalKcal}</td><td>100%</td></tr>
+      <tr><td style="color:var(--text-muted)">Exchange System</td><td style="color:var(--text-muted)">${day.exchangeTotalKcal}</td><td style="color:${Math.abs(day.exchangeGap||0)<=5?'var(--teal-600)':'var(--warn)'}">${(day.exchangeGap||0)>0?'+':''}${day.exchangeGap||0}</td></tr>
       <tr><td style="color:var(--text-muted)">Target</td><td style="color:var(--text-muted)">${day.target}</td><td style="color:${gapColor}">${displayedGap>0?'+':''}${displayedGap}</td></tr>
     </tbody></table>`;
   const dashMeals=document.getElementById('dash-meals');
@@ -4117,9 +4175,16 @@ function calcDayTotalsForPlan(dayPlan, lang='GR', dayIndex=0){
   const totalKcal= brkKcal+lunKcal+dinKcal+snk1Kcal+snk2Kcal+slpKcal;
   const target   = Math.round(S.goalKcal||0);
   const gap      = totalKcal-target;
+  const addOnKcal = (snk1Built.addOnKcal||0) + (snk2Built.addOnKcal||0) + (sleepBuilt.addOnKcal||0);
+  const extraFoodKcal = extraKcal('brk', dayIndex) + extraKcal('lun', dayIndex) + extraKcal('din', dayIndex) + extraKcal('snk1', dayIndex) + extraKcal('snk2', dayIndex) + extraKcal('sleep', dayIndex);
+  const exchangeGap = totalKcal - (allocation.exchangeTotalKcal||0);
   return {brkKcal,lunKcal,dinKcal,snk1Kcal,snk2Kcal,slpKcal,totalKcal,target,gap,
           snk1Text:snk1Built.text, snk2Text:snk2Built.text, slpText:sleepBuilt.text,
-          portions, warnings:allocation.warnings};
+          portions, exchangeTotalKcal:allocation.exchangeTotalKcal||0,
+          allocatedExchangeKcal:allocation.allocatedExchangeKcal||0,
+          exchangeGap, addOnKcal, extraFoodKcal,
+          exchangeTarget:allocation.exchangeTarget, allocatedExchanges:allocation.allocated,
+          exchangeDiff:allocation.exchangeDiff, warnings:allocation.warnings};
 }
 
 function buildSevenDay(){
@@ -4196,7 +4261,9 @@ function buildSevenDay(){
       } else if(row.key==='kcal'){
         cell=`<div style="font-weight:700;font-size:12px">${dt.totalKcal} kcal</div>
           <div style="font-size:10px;color:var(--text-muted)">Target: ${dt.target}</div>
+          <div style="font-size:10px;color:var(--text-muted)">Exchange: ${dt.exchangeTotalKcal}</div>
           <div style="font-size:10px;color:${gapOk?'var(--teal-600)':Math.abs(dt.gap)<=200?'var(--warn)':'var(--err)'}">${dt.gap>0?'+':''}${dt.gap} ${gapOk?'✅':'⚠'}</div>
+          ${Math.abs(dt.exchangeGap||0)>5?`<div style="font-size:10px;color:var(--err);margin-top:2px">Exchange gap: ${dt.exchangeGap>0?'+':''}${dt.exchangeGap} kcal</div>`:''}
           ${dt.warnings&&dt.warnings.length?`<div style="font-size:9px;color:var(--warn);margin-top:3px">${dt.warnings.map(safeHtml).join(' · ')}</div>`:''}`;
       }
       html+=`<td style="padding:6px;border:1px solid var(--border);color:var(--text-primary);vertical-align:top">${cell}</td>`;
@@ -4222,6 +4289,7 @@ function buildSevenDay(){
       <div class="card-body">
         ${detailRows.map(([label,text,kcal])=>`<div class="meal-row"><div class="meal-time">${label}<div style="font-size:11px;color:var(--text-muted)">${kcal} kcal</div></div><div class="meal-desc" style="font-size:14px;line-height:1.5">${text}</div></div>`).join('')}
         <div style="margin-top:10px;font-weight:800;color:${Math.abs(dt.gap)<=100?'var(--teal-600)':'var(--amber-text)'}">${lang==='EN'?'Daily total':'Σύνολο ημέρας'}: ${dt.totalKcal} kcal · ${lang==='EN'?'Target':'Στόχος'}: ${dt.target} · ${dt.gap>0?'+':''}${dt.gap}</div>
+        <div style="margin-top:4px;font-size:12px;color:${Math.abs(dt.exchangeGap||0)<=5?'var(--teal-600)':'var(--err)'}">Exchange System: ${dt.exchangeTotalKcal} kcal · Gap: ${(dt.exchangeGap||0)>0?'+':''}${dt.exchangeGap||0} kcal</div>
       </div>
     </div>`;
   }
