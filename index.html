@@ -4627,9 +4627,139 @@ const SEVEN_DAY_SLOTS=[
   {key:'sleep', ai:'before_sleep', labelGR:'Πριν τον ύπνο', labelEN:'Before sleep', icon:'😴'},
 ];
 
+const STRICT_CASE1_EXCHANGES={starch:5,protein:8,fat:8,veg:6,fruit:2,dairy:2};
+const STRICT_EXCHANGE_KCAL={starch:81,protein:46,fat:45,veg:28,fruit:60,dairy:80};
+const STRICT_WEEK_MEALS=[
+  {brk:'BRK_TOAST',  lun:'LUN_CHICKEN_RICE', din:'DIN_FISH_POTATO'},
+  {brk:'BRK_CEREAL', lun:'LUN_FISH_POTATO',  din:'DIN_CHICKEN_RICE'},
+  {brk:'BRK_TOAST',  lun:'LUN_TUNA_POTATO',  din:'DIN_OMELETTE'},
+  {brk:'BRK_CEREAL', lun:'LUN_FASOLAKIA_PORK',din:'DIN_CHICKEN_RICE'},
+  {brk:'BRK_TOAST',  lun:'LUN_PASTA_MINCE',  din:'DIN_PASTA_MINCE'},
+  {brk:'BRK_CEREAL', lun:'LUN_PASTA_MINCE',  din:'DIN_SOUVLAKI_PITA'},
+  {brk:'BRK_TOAST',  lun:'LUN_CHICKEN_RICE', din:'DIN_BIFTEKI_BULGUR'},
+];
+
+function strictCase1BudgetActive(){
+  const ex=S.ex||{};
+  return Object.entries(STRICT_CASE1_EXCHANGES).every(([key,val])=>Number(ex[key]||0)===val);
+}
+
+function strictSlotKcal(exch){
+  return Object.entries(STRICT_EXCHANGE_KCAL).reduce((sum,[key,kcal])=>sum+Number(exch?.[key]||0)*kcal,0);
+}
+
+function strictZeroUse(){ return {starch:0,protein:0,fat:0,veg:0,fruit:0,dairy:0}; }
+
+function strictAddUse(total, exch){
+  Object.keys(total).forEach(key=>{ total[key]+=Number(exch?.[key]||0); });
+}
+
+function strictApplyNutsReplacement(slots, plan){
+  const snackMap=[
+    ['snk1','snk1Extras'],
+    ['snk2','snk2Extras'],
+    ['sleep','sleepExtras'],
+  ];
+  let nutsCount=0;
+  snackMap.forEach(([slot,key])=>{
+    if((plan?.[key]||[]).includes('nuts')){
+      slots[slot].fat=(slots[slot].fat||0)+1;
+      nutsCount++;
+    }
+  });
+  while(nutsCount>0){
+    if((slots.lun.fat||0)>0) slots.lun.fat--;
+    else if((slots.din.fat||0)>0) slots.din.fat--;
+    else break;
+    nutsCount--;
+  }
+}
+
+function strictFallbackLedger(dayPlan, dayIndex){
+  if(!strictCase1BudgetActive()) return null;
+  const isToast=[0,2,4,6].includes(Number(dayIndex));
+  const slots=isToast ? {
+    brk:{starch:2,protein:1,veg:1},
+    snk1:{fruit:1,dairy:1},
+    lun:{starch:2,protein:3,fat:4,veg:3},
+    snk2:{fruit:1},
+    din:{starch:1,protein:4,fat:4,veg:2},
+    sleep:{dairy:1},
+  } : {
+    brk:{starch:2,dairy:1},
+    snk1:{fruit:1},
+    lun:{starch:2,protein:4,fat:4,veg:3},
+    snk2:{fruit:1},
+    din:{starch:1,protein:4,fat:4,veg:3},
+    sleep:{dairy:1},
+  };
+  strictApplyNutsReplacement(slots, dayPlan);
+  const totals=strictZeroUse();
+  Object.values(slots).forEach(exch=>strictAddUse(totals, exch));
+  const diff={};
+  Object.keys(STRICT_CASE1_EXCHANGES).forEach(key=>{
+    const d=Number(STRICT_CASE1_EXCHANGES[key])-Number(totals[key]||0);
+    if(d!==0) diff[key]=d;
+  });
+  const totalKcal=Object.values(slots).reduce((sum,exch)=>sum+strictSlotKcal(exch),0);
+  if(Object.keys(diff).length || totalKcal!==1581){
+    console.error('[NutriFlow strict ledger] 7-day fallback ledger failed', {dayIndex, day:dayPlan?.day, totals, diff, totalKcal, slots});
+    return {valid:false, slots, totals, diff, totalKcal};
+  }
+  return {valid:true, slots, totals, diff, totalKcal};
+}
+
+function strictSnackDescription(exch, extras, lang='GR'){
+  const parts=[];
+  if(exch.fruit){
+    const dried=(extras||[]).includes('driedfruit');
+    parts.push(dried
+      ? (lang==='EN' ? `${exch.fruit} serving${exch.fruit>1?'s':''} dried fruit (see Equivalents Guide)` : `${exch.fruit} μερίδ${exch.fruit>1?'ες':'α'} αποξηραμένων φρούτων (βλ. Οδηγό Ισοδυναμιών)`)
+      : (lang==='EN' ? `${exch.fruit} fruit${exch.fruit>1?'s':''} (see Equivalents Guide)` : `${exch.fruit} φρούτ${exch.fruit>1?'α':'ο'} (βλ. Οδηγό Ισοδυναμιών)`));
+  }
+  if(exch.dairy){
+    const yogurt=(extras||[]).includes('yogurt');
+    parts.push(yogurt
+      ? (lang==='EN' ? `${exch.dairy} yogurt 2% (~${Math.round(170*exch.dairy)}g)` : `${exch.dairy} γιαούρτι 2% (~${Math.round(170*exch.dairy)}g)`)
+      : (lang==='EN' ? `${exch.dairy} cup${exch.dairy>1?'s':''} 1.5% milk` : `${exch.dairy} φλ. γάλα 1,5%`));
+  }
+  if(exch.fat){
+    parts.push(lang==='EN' ? `${exch.fat*6} almonds or ${exch.fat*4} walnuts` : `${exch.fat*6} αμύγδαλα ή ${exch.fat*4} καρύδια`);
+  }
+  if((extras||[]).includes('coffee')) parts.push(lang==='EN'?'Coffee (without sugar)':'Καφές (χωρίς ζάχαρη)');
+  return parts.length ? parts.join(' + ') : '—';
+}
+
+function strictMainDescription(mealKey, exch, lang='GR'){
+  const portions={starch:Number(exch.starch||0), prot:Number(exch.protein||0), fat:Number(exch.fat||0), veg:Number(exch.veg||0)};
+  if(mealKey==='DIN_SOUVLAKI_PITA'){
+    return lang==='EN'
+      ? `Chicken souvlaki + Cypriot pita - ${portions.prot*30}g chicken + salad (${portions.veg} cups) + ${portions.fat} tsp olive oil`
+      : `Σουβλάκι κοτόπουλο + κυπριακή πίτα – ${portions.prot*30}g κοτόπουλο + σαλάτα (${portions.veg} φλ.) + ${portions.fat} κ.γ. ελαιόλαδο`;
+  }
+  return mealText(mealKey, portions, lang);
+}
+
+function strictSlotText(dayPlan, slotKey, lang='GR', dayIndex=0){
+  const ledger=strictFallbackLedger(dayPlan, dayIndex);
+  if(!ledger?.valid) return null;
+  const exch=ledger.slots[slotKey]||{};
+  if(slotKey==='brk') return mealText(dayPlan.brk, null, lang);
+  if(slotKey==='lun') return strictMainDescription(dayPlan.lun, exch, lang);
+  if(slotKey==='din') return strictMainDescription(dayPlan.din, exch, lang);
+  const extrasKey=slotKey==='snk1'?'snk1Extras':slotKey==='snk2'?'snk2Extras':'sleepExtras';
+  return strictSnackDescription(exch, dayPlan[extrasKey]||[], lang);
+}
+
 function ensureWeekPlans(){
   if(!S.weekPlans) S.weekPlans = WEEK_PLANS.map(p=>({...p}));
   S.weekPlans.forEach((p,index)=>{
+    const strict=STRICT_WEEK_MEALS[index];
+    if(strict){
+      p.brk=strict.brk;
+      p.lun=strict.lun;
+      p.din=strict.din;
+    }
     p.snk1Extras=[...new Set([...(Array.isArray(p.snk1Extras)?p.snk1Extras:[]), ...(Array.isArray(p.snack1Extras)?p.snack1Extras:[])])];
     p.snk2Extras=[...new Set([...(Array.isArray(p.snk2Extras)?p.snk2Extras:[]), ...(Array.isArray(p.snack2Extras)?p.snack2Extras:[])])];
     p.snack1Extras=p.snk1Extras;
@@ -4667,6 +4797,22 @@ function slotExtraKey(slotKey){
 }
 
 function fallbackSlotData(dayPlan, dt, slotKey, lang, dayIndex){
+  if(dt?.strictSlots){
+    const kcalMap={brk:'brkKcal',snk1:'snk1Kcal',lun:'lunKcal',snk2:'snk2Kcal',din:'dinKcal',sleep:'slpKcal'};
+    const nameMap={
+      brk:mealOptionLabel(dayPlan.brk, lang),
+      snk1:lang==='EN'?'Snack 1':'Σνακ 1',
+      lun:mealOptionLabel(dayPlan.lun, lang),
+      snk2:lang==='EN'?'Snack 2':'Σνακ 2',
+      din:mealOptionLabel(dayPlan.din, lang),
+      sleep:lang==='EN'?'Before sleep':'Πριν τον ύπνο'
+    };
+    return {
+      name:nameMap[slotKey]||'',
+      text:(strictSlotText(dayPlan, slotKey, lang, dayIndex)||'—')+renderExtraFoodsForSlot(slotKey, dayIndex),
+      kcal:Number(dt[kcalMap[slotKey]]||0)
+    };
+  }
   if(slotKey==='brk') return {name:mealOptionLabel(dayPlan.brk, lang), text:mealText(dayPlan.brk,null,lang)+renderExtraFoodsForSlot('brk', dayIndex), kcal:dt.brkKcal};
   if(slotKey==='snk1') return {name:lang==='EN'?'Snack 1':'Σνακ 1', text:dt.snk1Text+renderExtraFoodsForSlot('snk1', dayIndex), kcal:dt.snk1Kcal};
   if(slotKey==='lun') return {name:mealOptionLabel(dayPlan.lun, lang), text:mealText(dayPlan.lun,dt.portions.lunch,lang)+renderExtraFoodsForSlot('lun', dayIndex), kcal:dt.lunKcal};
@@ -4693,6 +4839,7 @@ function getSevenDaySlotData(dayPlan, dt, slotKey, lang, dayIndex){
 function reportSevenDaySlotText(dayPlan, dt, slotKey, lang, dayIndex, extraOpts){
   const ai=aiMealForSlot(dayPlan, slotKey);
   if(ai) return aiMealText(ai, lang)+renderExtraFoodsForSlot(slotKey, dayIndex, extraOpts);
+  if(dt?.strictSlots) return (strictSlotText(dayPlan, slotKey, lang, dayIndex)||'—')+renderExtraFoodsForSlot(slotKey, dayIndex, extraOpts);
   if(slotKey==='brk') return mealText(dayPlan.brk,null,lang)+renderExtraFoodsForSlot('brk', dayIndex, extraOpts);
   if(slotKey==='snk1') return dt.snk1Text+renderExtraFoodsForSlot('snk1', dayIndex, extraOpts);
   if(slotKey==='lun') return mealText(dayPlan.lun,dt.portions.lunch,lang)+renderExtraFoodsForSlot('lun', dayIndex, extraOpts);
@@ -4712,6 +4859,45 @@ function calcDayTotalsForPlanDisplay(dayPlan, lang='GR', dayIndex=0){
       totalKcal, target, gap:totalKcal-target, portions:{lunch:{},dinner:{}},
       snk1Text:aiMealText(dayPlan.aiMeals.snack1, lang), snk2Text:aiMealText(dayPlan.aiMeals.snack2, lang), slpText:aiMealText(dayPlan.aiMeals.before_sleep, lang),
       exchangeTotalKcal:exchangeSystemTotalKcal(S.ex||{}), exchangeGap:totalKcal-exchangeSystemTotalKcal(S.ex||{}), warnings:[]
+    };
+  }
+  const strict=strictFallbackLedger(dayPlan, dayIndex);
+  if(strict){
+    if(!strict.valid){
+      return {
+        brkKcal:0, snk1Kcal:0, lunKcal:0, snk2Kcal:0, dinKcal:0, slpKcal:0,
+        totalKcal:0, target:1581, gap:-1581, portions:{lunch:{},dinner:{}},
+        snk1Text:'—', snk2Text:'—', slpText:'—',
+        strictLedger:strict, strictSlots:strict.slots,
+        exchangeTotalKcal:1581, exchangeGap:-1581,
+        warnings:['Strict ledger failed — see console for exchange mismatch.']
+      };
+    }
+    return {
+      brkKcal:strictSlotKcal(strict.slots.brk),
+      snk1Kcal:strictSlotKcal(strict.slots.snk1),
+      lunKcal:strictSlotKcal(strict.slots.lun),
+      snk2Kcal:strictSlotKcal(strict.slots.snk2),
+      dinKcal:strictSlotKcal(strict.slots.din),
+      slpKcal:strictSlotKcal(strict.slots.sleep),
+      totalKcal:strict.totalKcal,
+      target:1581,
+      gap:strict.totalKcal-1581,
+      portions:{
+        lunch:{starch:strict.slots.lun.starch||0,prot:strict.slots.lun.protein||0,fat:strict.slots.lun.fat||0,veg:strict.slots.lun.veg||0},
+        dinner:{starch:strict.slots.din.starch||0,prot:strict.slots.din.protein||0,fat:strict.slots.din.fat||0,veg:strict.slots.din.veg||0}
+      },
+      snk1Text:strictSlotText(dayPlan,'snk1',lang,dayIndex),
+      snk2Text:strictSlotText(dayPlan,'snk2',lang,dayIndex),
+      slpText:strictSlotText(dayPlan,'sleep',lang,dayIndex),
+      strictLedger:strict,
+      strictSlots:strict.slots,
+      exchangeTotalKcal:1581,
+      exchangeGap:0,
+      exchangeTarget:{...STRICT_CASE1_EXCHANGES},
+      allocatedExchanges:{...strict.totals},
+      exchangeDiff:{},
+      warnings:[]
     };
   }
   return calcDayTotalsForPlan(dayPlan, lang, dayIndex);
