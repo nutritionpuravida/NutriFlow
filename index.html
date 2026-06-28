@@ -2201,9 +2201,9 @@ function calcDayTotals(){
   const brkKcal  = exchangesToKcal(brkComp, null) + extraKcal('brk', null);
   const lunKcal  = exchangesToKcal(lunComp, FIXED_COMPOSITION_MEALS.has(ms.lunch) ? null : portions.lunch) + extraKcal('lun', null);
   const dinKcal  = exchangesToKcal(dinComp, FIXED_COMPOSITION_MEALS.has(ms.dinner) ? null : portions.dinner) + extraKcal('din', null);
-  const snk1Kcal = exchangesToKcal(snk1Built.exch, null) + extraKcal('snk1', null);
-  const snk2Kcal = exchangesToKcal(snk2Built.exch, null) + extraKcal('snk2', null);
-  const slpKcal  = exchangesToKcal(sleepBuilt.exch, null) + extraKcal('sleep', null);
+  const snk1Kcal = exchangesToKcal(snk1Built.exch, null) + (snk1Built.addOnKcal||0) + extraKcal('snk1', null);
+  const snk2Kcal = exchangesToKcal(snk2Built.exch, null) + (snk2Built.addOnKcal||0) + extraKcal('snk2', null);
+  const slpKcal  = exchangesToKcal(sleepBuilt.exch, null) + (sleepBuilt.addOnKcal||0) + extraKcal('sleep', null);
   const totalKcal = brkKcal + lunKcal + dinKcal + snk1Kcal + snk2Kcal + slpKcal;
   const target = Math.round(S.goalKcal||0);
   const gap = totalKcal - target;
@@ -2714,13 +2714,25 @@ function handleSnackOptionChange(cb){
   if(!cb) return;
   const group=cb.dataset.group;
   const container=cb.closest('#s-snack1,#s-snack2,#s-sleep,.snack-extras-group');
+  console.log('[NutriFlow snacks] checkbox changed', {
+    value: cb.value,
+    checked: cb.checked,
+    group,
+    containerId: container?.id || container?.className || null,
+    activeOneDay: !!document.getElementById('page-oneday')?.classList.contains('active')
+  });
   if(group && cb.checked && container){
     container.querySelectorAll(`input[data-group="${group}"]`).forEach(other=>{
       if(other!==cb) other.checked=false;
     });
   }
-  if(document.getElementById('page-oneday')?.classList.contains('active')) buildOneDayPlan();
-  else if(document.getElementById('page-dashboard')?.classList.contains('active')) buildOneDayPlan();
+  if(document.getElementById('page-oneday')?.classList.contains('active')){
+    console.log('[NutriFlow snacks] recalculating 1-day plan after snack change');
+    buildOneDayPlan();
+  } else if(document.getElementById('page-dashboard')?.classList.contains('active')){
+    console.log('[NutriFlow snacks] recalculating dashboard 1-day preview after snack change');
+    buildOneDayPlan();
+  }
 }
 
 function refreshSnackExtrasLabels(){
@@ -2759,6 +2771,7 @@ function buildSlotSnack(slot, extras, lang='GR', breakfastKey, plan=null, fruitD
   const addCoffee = (extras||[]).includes('coffee');
 
   const exch = {fruit:0, starch:0, fat:0, dairy:0};
+  let addOnKcal = 0;
   const parts = [];
 
   if(fruitCount>0){
@@ -2779,10 +2792,13 @@ function buildSlotSnack(slot, extras, lang='GR', breakfastKey, plan=null, fruitD
       parts.push(lang==='EN' ? `${cupEn} 1.5% milk` : `${cup} γάλα 1,5%`);
     }
   }
-  if(addNuts){ exch.fat += 1; parts.push(lang==='EN' ? '6 almonds or 4 walnuts' : '6 αμύγδαλα ή 4 καρύδια'); }
+  if(addNuts){
+    addOnKcal += 45;
+    parts.push(lang==='EN' ? '6 almonds or 4 walnuts' : '6 αμύγδαλα ή 4 καρύδια');
+  }
   if(addCoffee){ parts.push(lang==='EN' ? 'Coffee (without sugar)' : 'Καφές (χωρίς ζάχαρη)'); }
 
-  return {exch, text: parts.length ? parts.join(' + ') : '—'};
+  return {exch, addOnKcal, text: parts.length ? parts.join(' + ') : '—'};
 }
 
 function autoSnackExtrasForPlan(plan){
@@ -3962,13 +3978,30 @@ function buildOneDayPlan(){
     {slot:'din', time:lang==='EN'?'Dinner':'Βραδινό',        en:'Dinner',        text:mealText(din,portions.dinner,lang),   kcal:day.dinKcal},
     {slot:'sleep', time:lang==='EN'?'Before sleep':'Πριν τον ύπνο',en:'Before sleep', text:sleepBuilt.text,                   kcal:day.slpKcal},
   ];
+  const visibleMeals=meals.filter(m=>m.text&&m.text!=='—');
+  const displayedTotalKcal=visibleMeals.reduce((sum,m)=>sum+Number(m.kcal||0),0);
+  const displayedGap=displayedTotalKcal-day.target;
+  if(displayedTotalKcal!==day.totalKcal){
+    console.log('[NutriFlow snacks] visible meal kcal sum differs from engine total', {
+      engineTotal: day.totalKcal,
+      displayedTotal: displayedTotalKcal,
+      meals: visibleMeals.map(m=>({slot:m.slot,kcal:m.kcal}))
+    });
+  } else {
+    console.log('[NutriFlow snacks] 1-day total recalculated from visible meals', {
+      displayedTotal: displayedTotalKcal,
+      snack1: day.snk1Kcal,
+      snack2: day.snk2Kcal,
+      beforeSleep: day.slpKcal
+    });
+  }
   const planEl=document.getElementById('oneday-plan');
-  if(planEl) planEl.innerHTML=meals.filter(m=>m.text&&m.text!=='—').map(m=>
+  if(planEl) planEl.innerHTML=visibleMeals.map(m=>
     `<div class="meal-row">
       <div class="meal-time">${m.time}<div style="font-size:10px;color:var(--text-muted);font-weight:400;margin-top:2px">${m.kcal} kcal</div></div>
       <div class="meal-desc">${m.text}${renderExtraFoodsForSlot(m.slot, null)}<br><span class="meal-tag">${lang==='EN'?'EN':'GR'}</span></div>
     </div>`).join('');
-  const gapAbs=Math.abs(day.gap);
+  const gapAbs=Math.abs(displayedGap);
   const gapOk=gapAbs<=100;
   const gapColor=gapOk?'var(--teal-600)':gapAbs<=200?'var(--warn)':'var(--err)';
   const gapBadge=gapOk?'ok':gapAbs<=200?'warn':'err';
@@ -3982,9 +4015,9 @@ function buildOneDayPlan(){
       ⚠️ <strong>Exchange allocation warning:</strong> ${day.warnings.map(safeHtml).join(' · ')}
     </div>`;
   }
-  if(!gapOk && day.gap<0){
-    const starchNeeded=Math.round(Math.abs(day.gap)/81);
-    const fatNeeded=Math.round(Math.abs(day.gap)/45);
+  if(!gapOk && displayedGap<0){
+    const starchNeeded=Math.round(Math.abs(displayedGap)/81);
+    const fatNeeded=Math.round(Math.abs(displayedGap)/45);
     gapAdvice+=`<div style="margin-top:8px;padding:8px 12px;background:var(--amber-bg);border-radius:6px;font-size:12px;color:var(--amber-text)">
       💡 <strong>How to close this gap:</strong> Go to Exchange System and manually increase:
       <ul style="margin:4px 0 0 16px;line-height:1.8">
@@ -3994,7 +4027,7 @@ function buildOneDayPlan(){
       </ul>
       Use the <strong>↻ button</strong> in Exchange System to unlock manual override per category, then click "🔄 Apply to Meal Plans".
     </div>`;
-  } else if(!gapOk && day.gap>0){
+  } else if(!gapOk && displayedGap>0){
     gapAdvice+=`<div style="margin-top:8px;padding:8px 12px;background:var(--amber-bg);border-radius:6px;font-size:12px;color:var(--amber-text)">
       💡 <strong>Slightly over target:</strong> Reduce fat by 1–2 exchanges or untick a "+" extra on a snack.
     </div>`;
@@ -4002,16 +4035,16 @@ function buildOneDayPlan(){
   const chkEl=document.getElementById('oneday-check');
   if(chkEl) chkEl.innerHTML=`
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px">
-      <div style="font-size:13px"><strong>Daily total: ${day.totalKcal} kcal</strong></div>
+      <div style="font-size:13px"><strong>Daily total: ${displayedTotalKcal} kcal</strong></div>
       <div style="font-size:13px;color:var(--text-muted)">Target: ${day.target} kcal</div>
-      <span class="badge ${gapBadge}">${day.gap>0?'+':''}${day.gap} kcal</span>
-      ${gapOk?'<span style="font-size:12px;color:var(--teal-600)">✅ Within ±100 kcal of target</span>':'<span style="font-size:12px;color:'+gapColor+'">'+(day.gap<0?'Below':'Above')+' target</span>'}
+      <span class="badge ${gapBadge}">${displayedGap>0?'+':''}${displayedGap} kcal</span>
+      ${gapOk?'<span style="font-size:12px;color:var(--teal-600)">✅ Within ±100 kcal of target</span>':'<span style="font-size:12px;color:'+gapColor+'">'+(displayedGap<0?'Below':'Above')+' target</span>'}
     </div>
     ${gapAdvice}
     <table><thead><tr><th>Meal</th><th>kcal</th><th>% of day</th></tr></thead><tbody>
-      ${meals.filter(m=>m.text&&m.text!=='—').map(m=>`<tr><td>${m.time}</td><td>${m.kcal}</td><td>${day.totalKcal?Math.round(m.kcal/day.totalKcal*100):'—'}%</td></tr>`).join('')}
-      <tr style="font-weight:700;border-top:2px solid var(--border-strong)"><td>Total</td><td>${day.totalKcal}</td><td>100%</td></tr>
-      <tr><td style="color:var(--text-muted)">Target</td><td style="color:var(--text-muted)">${day.target}</td><td style="color:${gapColor}">${day.gap>0?'+':''}${day.gap}</td></tr>
+      ${visibleMeals.map(m=>`<tr><td>${m.time}</td><td>${m.kcal}</td><td>${displayedTotalKcal?Math.round(m.kcal/displayedTotalKcal*100):'—'}%</td></tr>`).join('')}
+      <tr style="font-weight:700;border-top:2px solid var(--border-strong)"><td>Total</td><td>${displayedTotalKcal}</td><td>100%</td></tr>
+      <tr><td style="color:var(--text-muted)">Target</td><td style="color:var(--text-muted)">${day.target}</td><td style="color:${gapColor}">${displayedGap>0?'+':''}${displayedGap}</td></tr>
     </tbody></table>`;
   const dashMeals=document.getElementById('dash-meals');
   if(dashMeals){
@@ -4048,9 +4081,9 @@ function calcDayTotalsForPlan(dayPlan, lang='GR', dayIndex=0){
   const brkKcal  = exchangesToKcal(brkComp, null) + extraKcal('brk', dayIndex);
   const lunKcal  = exchangesToKcal(lunComp, FIXED_COMPOSITION_MEALS.has(dayPlan.lun) ? null : portions.lunch) + extraKcal('lun', dayIndex);
   const dinKcal  = exchangesToKcal(dinComp, FIXED_COMPOSITION_MEALS.has(dayPlan.din) ? null : portions.dinner) + extraKcal('din', dayIndex);
-  const snk1Kcal = exchangesToKcal(snk1Built.exch, null) + extraKcal('snk1', dayIndex);
-  const snk2Kcal = exchangesToKcal(snk2Built.exch, null) + extraKcal('snk2', dayIndex);
-  const slpKcal  = exchangesToKcal(sleepBuilt.exch, null) + extraKcal('sleep', dayIndex);
+  const snk1Kcal = exchangesToKcal(snk1Built.exch, null) + (snk1Built.addOnKcal||0) + extraKcal('snk1', dayIndex);
+  const snk2Kcal = exchangesToKcal(snk2Built.exch, null) + (snk2Built.addOnKcal||0) + extraKcal('snk2', dayIndex);
+  const slpKcal  = exchangesToKcal(sleepBuilt.exch, null) + (sleepBuilt.addOnKcal||0) + extraKcal('sleep', dayIndex);
   const totalKcal= brkKcal+lunKcal+dinKcal+snk1Kcal+snk2Kcal+slpKcal;
   const target   = Math.round(S.goalKcal||0);
   const gap      = totalKcal-target;
