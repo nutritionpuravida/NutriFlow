@@ -975,7 +975,7 @@ tr:hover td { background: var(--bg-hover); }
             <div id="s-sleep" style="display:flex;flex-wrap:wrap;gap:8px;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input)" onchange="buildOneDayPlan()"></div>
           </div>
         </div>
-        <div class="field-note" style="margin-bottom:12px">Fruit and dairy servings are assigned with the snack checkboxes and draw from the Exchange System totals. Choose fresh fruit or dried fruit, and milk or yogurt. Nuts count as a fat exchange and replace olive oil from main meals; coffee remains optional.</div>
+        <div class="field-note" style="margin-bottom:12px">Fruit and dairy servings are assigned with the snack checkboxes and draw from the Exchange System totals. Choose fresh fruit or dried fruit, and milk or yogurt. 🥜 Nuts count as 1 fat exchange and automatically replace 1 tsp olive oil from the main meals — daily calorie total stays unchanged.</div>
         <div id="oneday-plan"></div>
         <div class="section-label">EXCHANGE COVERAGE CHECK</div>
         <div id="oneday-check"></div>
@@ -2803,7 +2803,7 @@ const SNACK_EXTRAS = [
   {v:'driedfruit', group:'fruit', gr:'🍇 Αποξηραμένα φρούτα (1 μερίδα)', en:'🍇 Dried fruit (1 serving)'},    // 1 fruit exchange
   {v:'milk',       group:'dairy', gr:'🥛 Γάλα 1,5% (1 φλ.)',         en:'🥛 Milk 1.5% (1 cup)'},             // 1 dairy exchange
   {v:'yogurt',     group:'dairy', gr:'🍦 Γιαούρτι 2% (~170g)',       en:'🍦 Yogurt 2% (~170g)'},             // 1 dairy exchange
-  {v:'nuts',       gr:'🥜 Ξηροί καρποί (1 λίπος)',     en:'🥜 Nuts (1 fat exchange)'},        // 1 fat exchange
+  {v:'nuts',       gr:'🥜 Ξηροί καρποί (1 λίπος)',     en:'🥜 Nuts (1 fat exchange)', tip:'Αντικαθιστά 1 κ.γ. ελαιόλαδο από το κύριο γεύμα — οι θερμίδες παραμένουν ίδιες / Replaces 1 tsp olive oil from main meal — calories stay the same'},        // 1 fat exchange
   {v:'coffee',     gr:'☕ + Καφές',                    en:'☕ + Coffee (without sugar)'},      // additive extra
 ];
 
@@ -2814,7 +2814,7 @@ function snackExtraLabel(extra, lang){
 }
 function snackExtrasHtml(){
   const lang=S.mealLanguage||'GR';
-  return SNACK_EXTRAS.map(e=>`<label style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;white-space:nowrap"><input type="checkbox" value="${e.v}" data-group="${e.group||''}" style="width:auto" ${e.v==='fruit'?'checked':''} onchange="handleSnackOptionChange(this)"> ${snackExtraLabel(e, lang)}</label>`).join('');
+  return SNACK_EXTRAS.map(e=>`<label title="${safeHtml(e.tip||'')}" style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;white-space:nowrap"><input type="checkbox" value="${e.v}" data-group="${e.group||''}" style="width:auto" ${e.v==='fruit'?'checked':''} onchange="handleSnackOptionChange(this)"> ${snackExtraLabel(e, lang)}</label>`).join('');
 }
 
 function handleSnackOptionChange(cb){
@@ -3189,18 +3189,20 @@ function allocateProteinRemaining(ex, fixed, scalableSlots, portions, p, caps, w
   });
   while(remaining>0){
     const available=scalableSlots.filter(slot=>Number(portions[slot]?.prot||0)<slotCaps[slot]);
-    const targets=available.length ? available : scalableSlots;
     if(!available.length){
       warnings.push(`Protein target exceeds realistic per-meal caps; review meal combination or add another protein occasion.`);
+      break;
     }
-    for(const slot of targets){
-      if(remaining<=0) break;
-      portions[slot].prot += 1;
-      remaining--;
-      if(portions[slot].prot>slotCaps[slot]){
-        warnings.push(`${slot} protein exceeds realistic per-meal cap (${portions[slot].prot} > ${slotCaps[slot]}).`);
-      }
-    }
+    available.sort((a,b)=>{
+      const pa=Number(portions[a]?.prot||0), pb=Number(portions[b]?.prot||0);
+      if(pa!==pb) return pa-pb;
+      // Prefer dinner on ties so breakfast-light days do not keep giving
+      // the remainder to lunch first.
+      return a==='dinner' ? -1 : 1;
+    });
+    const slot=available[0];
+    portions[slot].prot += 1;
+    remaining--;
   }
 }
 function allocateFatRemaining(ex, fixed, portions, p, warnings){
@@ -4383,7 +4385,7 @@ function buildSevenDay(){
   const ex=S.ex;
   const sel=(key,di,opts,cur)=>`<select style="width:100%;font-size:11px;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--bg-page);color:var(--text-secondary);margin-bottom:5px" onchange="handleWeekMealSelect(${di},'${key}',this)">${mealOptionsHtml(opts,cur)}</select>`;
   // Compact checkbox-extras group for a snack slot on a given day
-  const extrasGroup=(slotKey,di,checked)=>`<div class="snack-extras-group" style="display:flex;flex-direction:column;gap:2px;margin-bottom:5px">${SNACK_EXTRAS.map(e=>`<label style="display:flex;align-items:center;gap:4px;font-size:10px;cursor:pointer;white-space:nowrap"><input type="checkbox" data-group="${e.group||''}" style="width:auto;transform:scale(0.85)" ${checked.includes(e.v)?'checked':''} onchange="toggleWeekPlanExtra(${di},'${slotKey}','${e.v}',this.checked)"> ${snackExtraLabel(e, lang)}</label>`).join('')}</div>`;
+  const extrasGroup=(slotKey,di,checked)=>`<div class="snack-extras-group" style="display:flex;flex-direction:column;gap:2px;margin-bottom:5px">${SNACK_EXTRAS.map(e=>`<label title="${safeHtml(e.tip||'')}" style="display:flex;align-items:center;gap:4px;font-size:10px;cursor:pointer;white-space:nowrap"><input type="checkbox" data-group="${e.group||''}" style="width:auto;transform:scale(0.85)" ${checked.includes(e.v)?'checked':''} onchange="toggleWeekPlanExtra(${di},'${slotKey}','${e.v}',this.checked)"> ${snackExtraLabel(e, lang)}</label>`).join('')}</div>`;
 
   let html='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr>';
   html+=`<th style="background:var(--teal-600);color:#fff;padding:8px;min-width:90px">${lang==='EN'?'Meal':'Γεύμα'}</th>`;
