@@ -5638,16 +5638,21 @@ function renderSevenDayMealCard(dayPlan, dt, slot, lang, dayIndex){
 
 function renderSevenDayWeekSummary(lang='GR'){
   const weekTheme=S.weekViewTheme==='dark'?'dark':'light';
-  return `<div class="week-summary-wrap" data-lang="${lang}" data-week-theme="${weekTheme}" style="overflow-x:auto"><table class="week-summary-table" data-lang="${lang}" style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;color:#111827;border:1px solid #d9e2df">
-    <thead><tr style="background:#0F6E56;color:#fff">
-      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Day':'Ημέρα'}</th>
-      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Breakfast':'Πρωινό'}</th>
-      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Snack 1':'Σνακ 1'}</th>
-      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Lunch':'Μεσημεριανό'}</th>
-      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Snack 2':'Σνακ 2'}</th>
-      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Dinner':'Βραδινό'}</th>
-      <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Before sleep':'Πριν τον ύπνο'}</th>
-      <th style="padding:9px;text-align:right;border-bottom:1px solid #d9e2df">Kcal</th>
+  const pal=weekTheme==='dark'
+    ? {table:'#1e1e2e', row:'#1e1e2e', alt:'#242438', head:'#2a2a3e', border:'#3a3a4e', text:'#ffffff', body:'#f2f5f4', day:'#ffffff', kcal:'#4ECDC4', footer:'#1e1e2e'}
+    : {table:'#ffffff', row:'#ffffff', alt:'#fafafa', head:'#f5f5f5', border:'#e0e0e0', text:'#1a1a1a', body:'#1a1a1a', day:'#1a1a1a', kcal:'#1A7A6E', footer:'#ffffff'};
+  const thStyle=`padding:9px;text-align:left;border-bottom:1px solid ${pal.border};background:${pal.head};color:${pal.text}`;
+  const tdStyle=`padding:9px;color:${pal.body};line-height:1.45;vertical-align:top;border-bottom:1px solid ${pal.border}`;
+  return `<div class="week-summary-wrap" data-lang="${lang}" data-week-theme="${weekTheme}" style="overflow-x:auto;background:${pal.table};color:${pal.text}"><table class="week-summary-table" data-lang="${lang}" style="width:100%;border-collapse:collapse;font-size:12px;background:${pal.table};color:${pal.text};border:1px solid ${pal.border}">
+    <thead><tr style="background:${pal.head};color:${pal.text}">
+      <th style="${thStyle}">${lang==='EN'?'Day':'Ημέρα'}</th>
+      <th style="${thStyle}">${lang==='EN'?'Breakfast':'Πρωινό'}</th>
+      <th style="${thStyle}">${lang==='EN'?'Snack 1':'Σνακ 1'}</th>
+      <th style="${thStyle}">${lang==='EN'?'Lunch':'Μεσημεριανό'}</th>
+      <th style="${thStyle}">${lang==='EN'?'Snack 2':'Σνακ 2'}</th>
+      <th style="${thStyle}">${lang==='EN'?'Dinner':'Βραδινό'}</th>
+      <th style="${thStyle}">${lang==='EN'?'Before sleep':'Πριν τον ύπνο'}</th>
+      <th style="${thStyle};text-align:right">Kcal</th>
     </tr></thead><tbody>
     ${S.weekPlans.map((p,i)=>{
       const dt=calcDayTotalsForPlanDisplay(p, lang, i);
@@ -5657,21 +5662,21 @@ function renderSevenDayWeekSummary(lang='GR'){
       const snk2=getSevenDaySlotData(p, dt, 'snk2', lang, i);
       const din=getSevenDaySlotData(p, dt, 'din', lang, i);
       const sleep=getSevenDaySlotData(p, dt, 'sleep', lang, i);
-      return `<tr style="border-bottom:1px solid #d9e2df;background:${i%2===0?'#ffffff':'#f4fbf8'}">
-        <td style="padding:9px;font-weight:900;color:#111827;vertical-align:top">${safeHtml(weekDayLabel(p,i,lang))}</td>
-        <td style="padding:9px;color:#374151;line-height:1.45;vertical-align:top">${safeHtml(brk.text||'—')}</td>
-        <td style="padding:9px;color:#374151;line-height:1.45;vertical-align:top">${safeHtml(snk1.text||'—')}</td>
-        <td style="padding:9px;color:#374151;line-height:1.45;vertical-align:top">${safeHtml(lun.text||'—')}</td>
-        <td style="padding:9px;color:#374151;line-height:1.45;vertical-align:top">${safeHtml(snk2.text||'—')}</td>
-        <td style="padding:9px;color:#374151;line-height:1.45;vertical-align:top">${safeHtml(din.text||'—')}</td>
-        <td style="padding:9px;color:#374151;line-height:1.45;vertical-align:top">${safeHtml(sleep.text||'—')}</td>
-        <td style="padding:9px;text-align:right;font-weight:900;color:#0F6E56;vertical-align:top">${dt.totalKcal}</td>
+      return `<tr style="border-bottom:1px solid ${pal.border};background:${i%2===0?pal.row:pal.alt}">
+        <td style="${tdStyle};font-weight:900;color:${pal.day}">${safeHtml(weekDayLabel(p,i,lang))}</td>
+        <td style="${tdStyle}">${safeHtml(brk.text||'—')}</td>
+        <td style="${tdStyle}">${safeHtml(snk1.text||'—')}</td>
+        <td style="${tdStyle}">${safeHtml(lun.text||'—')}</td>
+        <td style="${tdStyle}">${safeHtml(snk2.text||'—')}</td>
+        <td style="${tdStyle}">${safeHtml(din.text||'—')}</td>
+        <td style="${tdStyle}">${safeHtml(sleep.text||'—')}</td>
+        <td style="${tdStyle};text-align:right;font-weight:900;color:${pal.kcal}">${dt.totalKcal}</td>
       </tr>`;
     }).join('')}
-      <tr style="background:#eef8f4;border-top:2px solid #0F6E56">
-        <td style="padding:9px;font-weight:900;color:#111827">${lang==='EN'?'Target/day':'Στόχος/ημέρα'}</td>
-        <td colspan="6" style="padding:9px;color:#374151"></td>
-        <td style="padding:9px;text-align:right;font-weight:900;color:#0F6E56">${Math.round(S.goalKcal||exchangeSystemTotalKcal(S.ex||{})||0)} kcal</td>
+      <tr style="background:${pal.footer};border-top:2px solid ${pal.kcal}">
+        <td style="padding:9px;font-weight:900;color:${pal.day};border-bottom:1px solid ${pal.border}">${lang==='EN'?'Target/day':'Στόχος/ημέρα'}</td>
+        <td colspan="6" style="padding:9px;color:${pal.body};border-bottom:1px solid ${pal.border}"></td>
+        <td style="padding:9px;text-align:right;font-weight:900;color:${pal.kcal};border-bottom:1px solid ${pal.border}">${Math.round(S.goalKcal||exchangeSystemTotalKcal(S.ex||{})||0)} kcal</td>
       </tr>
     </tbody></table></div>`;
 }
