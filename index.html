@@ -221,6 +221,57 @@ td { padding: 9px 10px; border-bottom: 1px solid var(--border); color: var(--tex
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--bg-hover); }
 .week-summary-table tr:hover td { background: inherit !important; }
+[data-week-theme="light"] .week-summary-table,
+[data-week-theme="light"] .week-summary-table tbody tr {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border-color: #d9e2df !important;
+}
+[data-week-theme="light"] .week-summary-table tbody tr:nth-child(even) {
+  background: #f4fbf8 !important;
+}
+[data-week-theme="light"] .week-summary-table tbody tr:last-child {
+  background: #eef8f4 !important;
+  border-top-color: #0F6E56 !important;
+}
+[data-week-theme="light"] .week-summary-table td {
+  color: #374151 !important;
+  border-color: #d9e2df !important;
+}
+[data-week-theme="light"] .week-summary-table td:first-child {
+  color: #111827 !important;
+  font-weight: 900 !important;
+}
+[data-week-theme="light"] .week-summary-table td:last-child {
+  color: #0F6E56 !important;
+}
+[data-week-theme="dark"] .week-summary-table,
+[data-week-theme="dark"] .week-summary-table tbody tr {
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+}
+[data-week-theme="dark"] .week-summary-table tbody tr:nth-child(even) {
+  background: var(--bg-page) !important;
+}
+[data-week-theme="dark"] .week-summary-table tbody tr:last-child {
+  background: rgba(15, 110, 86, .18) !important;
+  border-top-color: var(--teal-600) !important;
+}
+[data-week-theme="dark"] .week-summary-table th,
+[data-week-theme="dark"] .week-summary-table td {
+  border-color: var(--border) !important;
+}
+[data-week-theme="dark"] .week-summary-table td {
+  color: var(--text-secondary) !important;
+}
+[data-week-theme="dark"] .week-summary-table td:first-child {
+  color: var(--text-primary) !important;
+  font-weight: 900 !important;
+}
+[data-week-theme="dark"] .week-summary-table td:last-child {
+  color: var(--teal-600) !important;
+}
 [data-theme="dark"] .week-summary-table,
 html[data-theme="dark"] .week-summary-table {
   background: var(--bg-surface) !important;
@@ -259,6 +310,30 @@ html[data-theme="dark"] .week-summary-table td:first-child {
 [data-theme="dark"] .week-summary-table td:last-child,
 html[data-theme="dark"] .week-summary-table td:last-child {
   color: var(--teal-600) !important;
+}
+[data-week-theme="light"] .week-summary-table,
+[data-week-theme="light"] .week-summary-table tbody tr {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border-color: #d9e2df !important;
+}
+[data-week-theme="light"] .week-summary-table tbody tr:nth-child(even) {
+  background: #f4fbf8 !important;
+}
+[data-week-theme="light"] .week-summary-table tbody tr:last-child {
+  background: #eef8f4 !important;
+  border-top-color: #0F6E56 !important;
+}
+[data-week-theme="light"] .week-summary-table td {
+  color: #374151 !important;
+  border-color: #d9e2df !important;
+}
+[data-week-theme="light"] .week-summary-table td:first-child {
+  color: #111827 !important;
+  font-weight: 900 !important;
+}
+[data-week-theme="light"] .week-summary-table td:last-child {
+  color: #0F6E56 !important;
 }
 
 /* ─── BADGES ─── */
@@ -950,25 +1025,7 @@ html[data-theme="dark"] .week-summary-table td:last-child {
       <div class="card">
         <div class="card-header"><span class="card-title">📊 Clinical Macro Suggestions</span></div>
         <div class="card-body">
-          <table><thead><tr><th>Condition</th><th>Carb</th><th>Prot</th><th>Fat</th></tr></thead><tbody>
-            <tr><td>Weight Management</td><td>40%</td><td>25%</td><td>35%</td></tr>
-            <tr><td>Diabetes Type 2</td><td>40%</td><td>25%</td><td>35%</td></tr>
-            <tr><td>High Cholesterol</td><td>45%</td><td>20%</td><td>35%</td></tr>
-            <tr><td>Hypertension</td><td>45%</td><td>20%</td><td>35%</td></tr>
-            <tr><td>PCOS</td><td>40%</td><td>25%</td><td>35%</td></tr>
-            <tr><td>Hypothyroidism / Hashimoto's</td><td>45%</td><td>20%</td><td>35%</td></tr>
-            <tr><td>IBS / Digestive Issues</td><td>45%</td><td>25%</td><td>30%</td></tr>
-            <tr><td>Food Intolerances / Allergies</td><td>45%</td><td>20%</td><td>35%</td></tr>
-            <tr><td>Pregnancy</td><td>45%</td><td>20%</td><td>35%</td></tr>
-            <tr><td>Menopause</td><td>40%</td><td>25%</td><td>35%</td></tr>
-            <tr><td>Sports Nutrition / Performance</td><td>50%</td><td>25%</td><td>25%</td></tr>
-            <tr><td>ΓΟΠ / GERD</td><td>45%</td><td>20%</td><td>35%</td></tr>
-            <tr><td>Οστεοπόρωση</td><td>45%</td><td>25%</td><td>30%</td></tr>
-            <tr><td>Ημικρανίες</td><td>45%</td><td>25%</td><td>30%</td></tr>
-            <tr><td>Χρόνια Νεφρική Νόσος (ΧΝΝ)</td><td>50%</td><td>20%</td><td>30%</td></tr>
-            <tr><td>Λιπώδης Ηπατοπάθεια (NAFLD)</td><td>45%</td><td>20%</td><td>35%</td></tr>
-            <tr><td>Healthy Eating</td><td>45%</td><td>20%</td><td>35%</td></tr>
-          </tbody></table>
+          <table><thead><tr><th>Condition</th><th>Carb</th><th>Prot</th><th>Fat</th></tr></thead><tbody id="clinical-macro-suggestions-body"></tbody></table>
         </div>
       </div>
     </div>
@@ -1362,7 +1419,7 @@ const S = {
   exMeta:null, lastDairyType:'Moderate-fat', lastMeatType:'Lean', weightSuggestionLocked:false, bcManual:{fatmass:false,ffm:false,muscle:false},
   bc:{bf:null,water:null,fatmass:null,ffm:null,muscle:null,metage:null,visceral:null},
   tracking:[],intake:{},notes:{},labValues:{},foodResults:[],recipes:[],recipeDraft:[],editingRecipeId:null,extraFoods:[],appointments:[],mealLanguage:'GR',reportOptions:{oneDay:false,sevenDay:true,includeBlood:true},
-  sevenDayView:'day', sevenDayActiveIndex:0, aiPlanStatus:'',
+  sevenDayView:'day', sevenDayActiveIndex:0, weekViewTheme:'light', aiPlanStatus:'',
   customMeals:[], customMealDraft:[], customMealContext:null,
   mealSel:{breakfast:'BRK_TOAST',lunch:'LUN_CHICKEN_RICE',dinner:'DIN_FISH_POTATO',snack1Extras:['fruit'],snack2Extras:['fruit'],sleepExtras:['fruit']}
 };
@@ -3328,6 +3385,8 @@ function syncWeekPlanSnackExtraFromOneDay(extraValue){
 
 function setMealLanguage(lang){
   S.mealLanguage = lang==='EN' ? 'EN' : 'GR';
+  renderConditionRadios();
+  renderClinicalMacroSuggestions();
   updateMealLanguageButtons();
   refreshMealDropdownLabels();
   refreshSnackExtrasLabels();
@@ -3692,26 +3751,51 @@ const COND_GUIDANCE = {
   NAFLD:       {gr:'Λιπώδης Ηπατοπάθεια (NAFLD)', main:'Απώλεια βάρους 7-10% είναι βασική θεραπευτική στρατηγική όταν υπάρχει υπερβάλλον βάρος. Μεσογειακή διατροφή και περιορισμός ραφιναρισμένων υδατανθράκων.', prefer:'Μεσογειακή διατροφή, ψάρι, καρύδια/ωμέγα-3, λαχανικά, όσπρια, δημητριακά ολικής και σταδιακή απώλεια βάρους.', avoid:'Αλκοόλ, ζαχαρούχα ποτά, φρουκτόζη/πολλά γλυκά, επεξεργασμένα τρόφιμα και υπερβολικά κορεσμένα λιπαρά.'},
 };
 
+const CONDITION_ORDER = ['Obesity','Diabetes','Dyslipidemia','Hypertension','PCOS','Thyroid','IBS','FoodIntolerance','Pregnancy','Menopause','Sports','General','GERD','Osteoporosis','Migraines','CKD','NAFLD'];
 const CONDITION_LABELS = {
-  General:'Healthy Eating',
-  Obesity:'Weight Management',
-  Diabetes:'Diabetes Type 2',
-  Dyslipidemia:'High Cholesterol (Dyslipidemia)',
-  Hypertension:'Hypertension',
-  PCOS:'PCOS',
-  Thyroid:"Hypothyroidism / Hashimoto's",
-  IBS:'IBS / Digestive Issues',
-  FoodIntolerance:'Food Intolerances / Allergies',
-  Pregnancy:'Pregnancy',
-  Menopause:'Menopause',
-  Sports:'Sports Nutrition / Performance',
-  GERD:'ΓΟΠ / GERD',
-  Osteoporosis:'Οστεοπόρωση',
-  Migraines:'Ημικρανίες',
-  CKD:'Χρόνια Νεφρική Νόσος (ΧΝΝ)',
-  NAFLD:'Λιπώδης Ηπατοπάθεια (NAFLD)',
+  GR:{
+    Obesity:'Διαχείριση Βάρους',
+    Diabetes:'Διαβήτης Τύπου 2',
+    Dyslipidemia:'Υψηλή Χοληστερόλη',
+    Hypertension:'Υπέρταση',
+    PCOS:'ΣΠΩ (PCOS)',
+    Thyroid:"Υποθυρεοειδισμός / Hashimoto's",
+    IBS:'ΣΕΕ / Πεπτικά Προβλήματα',
+    FoodIntolerance:'Δυσανεξίες / Αλλεργίες',
+    Pregnancy:'Εγκυμοσύνη',
+    Menopause:'Εμμηνόπαυση',
+    Sports:'Αθλητική Διατροφή / Απόδοση',
+    General:'Υγιεινή Διατροφή',
+    GERD:'ΓΟΠ / GERD',
+    Osteoporosis:'Οστεοπόρωση',
+    Migraines:'Ημικρανίες',
+    CKD:'Χρόνια Νεφρική Νόσος (ΧΝΝ)',
+    NAFLD:'Λιπώδης Ηπατοπάθεια (NAFLD)'
+  },
+  EN:{
+    Obesity:'Weight Management',
+    Diabetes:'Diabetes Type 2',
+    Dyslipidemia:'High Cholesterol (Dyslipidemia)',
+    Hypertension:'Hypertension',
+    PCOS:'PCOS',
+    Thyroid:"Hypothyroidism / Hashimoto's",
+    IBS:'IBS / Digestive Issues',
+    FoodIntolerance:'Food Intolerances / Allergies',
+    Pregnancy:'Pregnancy',
+    Menopause:'Menopause',
+    Sports:'Sports Nutrition / Performance',
+    General:'Healthy Eating',
+    GERD:'GERD / Acid Reflux',
+    Osteoporosis:'Osteoporosis',
+    Migraines:'Migraines',
+    CKD:'Chronic Kidney Disease (CKD)',
+    NAFLD:'Fatty Liver Disease (NAFLD)'
+  }
 };
-function conditionLabel(c){ return CONDITION_LABELS[c] || (COND_GUIDANCE[c]&&COND_GUIDANCE[c].gr) || c || 'Healthy Eating'; }
+function conditionLabel(c, lang=S.mealLanguage||'GR'){
+  const key=lang==='EN'?'EN':'GR';
+  return CONDITION_LABELS[key]?.[c] || CONDITION_LABELS.EN[c] || (COND_GUIDANCE[c]&&COND_GUIDANCE[c].gr) || c || CONDITION_LABELS[key].General;
+}
 
 // Evidence sources referenced in the guidance above (for clinician reference / transparency)
 const GUIDANCE_SOURCES = 'Πηγές: ADA Standards of Care in Diabetes 2026 · KDIGO 2024 CKD Guideline · AHA/DASH · Monash University Low-FODMAP Diet · Nutrition Reviews 2025 (Hashimoto\'s Thyroiditis) · ACOG / NIH ODS / Dietary Guidelines for Americans 2020-2025 (Pregnancy). Οι πληροφορίες είναι γενικές κατευθυντήριες γραμμές — απαιτείται πάντα κλινική κρίση και εξατομίκευση.';
@@ -3739,6 +3823,25 @@ const GENERAL_HEALTH_RULES_EN = [
   'Sleep: aim for 7-9 hours/night; inadequate sleep can increase appetite and make weight management harder.',
   'Limit added sugars and ultra-processed foods; prefer fresh or minimally processed foods most of the time.',
 ];
+
+function renderConditionRadios(){
+  const wrap=document.getElementById('p-conditions');
+  if(!wrap) return;
+  const selected=getSelectedPrimaryCondition() || S.condition || '';
+  const lang=S.mealLanguage||'GR';
+  wrap.innerHTML = CONDITION_ORDER.map(key=>`<label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="${key}" onclick="onConditionRadioClick(this)" style="width:auto" ${selected===key?'checked':''}> ${safeHtml(conditionLabel(key, lang))}</label>`).join('');
+  refreshConditionVisualState();
+}
+
+function renderClinicalMacroSuggestions(){
+  const body=document.getElementById('clinical-macro-suggestions-body');
+  if(!body) return;
+  const lang=S.mealLanguage||'GR';
+  body.innerHTML = CONDITION_ORDER.map(key=>{
+    const m=COND_MACROS[key] || COND_MACROS.General;
+    return `<tr><td>${safeHtml(conditionLabel(key, lang))}</td><td>${m.c}%</td><td>${m.p}%</td><td>${m.f}%</td></tr>`;
+  }).join('');
+}
 
 const REPORT_CONDITION_EN = {
   General:{name:'Healthy Eating', main:'Mediterranean diet as the core pattern: vegetables, fruit, whole grains/pulses, olive oil, fish and quality protein. Aim for 25-30g fibre/day, hydration and regular meals.', prefer:'Vegetables, fruit, olive oil, nuts, fish, pulses, whole grains and adequate protein for satiety and muscle maintenance.', avoid:'Ultra-processed foods, sweet drinks, extreme restriction and unrealistic meal combinations.'},
@@ -4032,7 +4135,8 @@ function nav(id) {
   if(id==='recipes') { renderRecipeDraft(); loadRecipes(); }
   if(id==='appointments') { loadAppointments(true).then(renderAppointments); }
   if(id==='account') { setTimeout(()=>refreshAccountSubscriptionPage().catch(err=>console.error('[NutriFlow account] deferred refresh failed', err)), 0); }
-  if(id==='profile') { calcBodyComp(); refreshConditionVisualState(); }
+  if(id==='profile') { renderConditionRadios(); calcBodyComp(); refreshConditionVisualState(); }
+  if(id==='macros') renderClinicalMacroSuggestions();
   if(id==='exchanges') renderExchanges();
   // Always sync exchange inputs → S.ex before building meal plans
   // This ensures any value typed in the Exchange System is captured
@@ -4043,7 +4147,7 @@ function nav(id) {
     loadCustomMeals({render:false});
   }
   if(id==='oneday') buildOneDayPlan();
-  if(id==='sevenday') buildSevenDay();
+  if(id==='sevenday') { if(S.sevenDayView==='week') S.weekViewTheme='light'; buildSevenDay(); }
   if(id==='report') buildReport();
   if(id==='tracking') renderTracking();
 }
@@ -5447,6 +5551,7 @@ function buildSevenDay(){
   const dt=calcDayTotalsForPlanDisplay(dayPlan, lang, active);
   const dayLabel=weekDayLabel(dayPlan, active, lang);
   const isWeek=S.sevenDayView==='week';
+  const weekTheme=S.weekViewTheme==='dark'?'dark':'light';
   const statusOk=Math.abs(dt.gap)<=100;
   const statusColor=statusOk?'var(--teal-600)':Math.abs(dt.gap)<=200?'var(--warn)':'var(--err)';
   const dayTabs=S.weekPlans.map((p,i)=>{
@@ -5463,6 +5568,7 @@ function buildSevenDay(){
     <div style="display:flex;gap:8px">
       <button class="btn ${lang==='EN'?'':'primary'}" id="meal-lang-gr-7day" onclick="setMealLanguage('GR')">GR</button>
       <button class="btn ${lang==='EN'?'primary':''}" id="meal-lang-en-7day" onclick="setMealLanguage('EN')">EN</button>
+      ${isWeek?`<button class="btn" title="${weekTheme==='dark'?'Week view dark mode':'Week view light mode'}" onclick="toggleWeekViewTheme()">${weekTheme==='dark'?'🌙':'☀️'}</button>`:''}
     </div>
   </div>
   <div style="padding:10px 12px;border:1px solid var(--teal-100);background:var(--teal-50);border-radius:8px;margin-bottom:12px;color:var(--teal-800);font-size:13px;font-weight:700">✨ AI-generated plan — clinical review required before sharing with client.</div>
@@ -5531,7 +5637,8 @@ function renderSevenDayMealCard(dayPlan, dt, slot, lang, dayIndex){
 }
 
 function renderSevenDayWeekSummary(lang='GR'){
-  return `<div class="week-summary-wrap" data-lang="${lang}" style="overflow-x:auto"><table class="week-summary-table" data-lang="${lang}" style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;color:#111827;border:1px solid #d9e2df">
+  const weekTheme=S.weekViewTheme==='dark'?'dark':'light';
+  return `<div class="week-summary-wrap" data-lang="${lang}" data-week-theme="${weekTheme}" style="overflow-x:auto"><table class="week-summary-table" data-lang="${lang}" style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;color:#111827;border:1px solid #d9e2df">
     <thead><tr style="background:#0F6E56;color:#fff">
       <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Day':'Ημέρα'}</th>
       <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Breakfast':'Πρωινό'}</th>
@@ -5571,11 +5678,20 @@ function renderSevenDayWeekSummary(lang='GR'){
 
 function setSevenDayActive(index){ S.sevenDayActiveIndex=Number(index)||0; if(S.sevenDayView==='week') S.sevenDayView='day'; buildSevenDay(); }
 function shiftSevenDay(delta){ S.sevenDayActiveIndex=(Number(S.sevenDayActiveIndex||0)+Number(delta)+7)%7; buildSevenDay(); }
-function setSevenDayView(view){ S.sevenDayView=view==='week'?'week':'day'; buildSevenDay(); }
+function setSevenDayView(view){
+  S.sevenDayView=view==='week'?'week':'day';
+  if(S.sevenDayView==='week') S.weekViewTheme='light';
+  buildSevenDay();
+}
+function toggleWeekViewTheme(){
+  S.weekViewTheme=S.weekViewTheme==='dark'?'light':'dark';
+  buildSevenDay();
+}
 
 window.setSevenDayActive=setSevenDayActive;
 window.shiftSevenDay=shiftSevenDay;
 window.setSevenDayView=setSevenDayView;
+window.toggleWeekViewTheme=toggleWeekViewTheme;
 
 function collectAiMealPlanPayload(){
   const selectedCondition=getSelectedPrimaryCondition();
@@ -8198,6 +8314,8 @@ window.onload=function(){
   document.getElementById('s-snack1').innerHTML=snackExtrasHtml('snk1', S.mealSel.snack1Extras||[]);
   document.getElementById('s-snack2').innerHTML=snackExtrasHtml('snk2', S.mealSel.snack2Extras||[]);
   document.getElementById('s-sleep').innerHTML=snackExtrasHtml('sleep', S.mealSel.sleepExtras||[]);
+  renderConditionRadios();
+  renderClinicalMacroSuggestions();
   calcAll(); calcMacros(); renderDashboard();
   loadCustomMeals({render:false}).then(()=>rebuildMealDropdownOptions()).catch(e=>console.error('[NutriFlow custom meals] startup load failed', e));
   const handledSignedOutReturn = handleSignedOutReturn();
