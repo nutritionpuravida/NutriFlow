@@ -1903,6 +1903,11 @@ supabaseClient.auth.onAuthStateChange(async (event, session)=>{
       updateTrialBanner();
       updateAccountPage();
     }
+    try{
+      await migrateLocalClientsToSupabase();
+    }catch(err){
+      console.error('[NutriFlow clients] migration on login failed', err);
+    }
     if(subscriptionState.active && document.getElementById('page-clients')?.classList.contains('active')) renderClientList();
     loadCustomMeals({render:false}).then(()=>rebuildMealDropdownOptions()).catch(e=>console.error('[NutriFlow custom meals] auth load failed', e));
     if(currentUser){
@@ -7488,12 +7493,12 @@ function clientStorageKey(){
 }
 function normalizeClientRow(row){
   const data=row?.data || row?.state || {};
-  const clientRef=row?.client_ref || row?.clientRef || data?.inputs?.['p-id'] || '';
+  const clientRef=row?.client_ref || row?.clientRef || data?.fields?.['p-id'] || data?.inputs?.['p-id'] || '';
   return {
     id: row?.id || ('local_'+(clientRef||Date.now())),
     user_id: row?.user_id || (currentUser && currentUser.id) || null,
     client_ref: clientRef,
-    name: row?.name || data?.inputs?.['p-name'] || 'Unnamed client',
+    name: row?.name || data?.fields?.['p-name'] || data?.inputs?.['p-name'] || 'Unnamed client',
     data,
     updated_at: row?.updated_at || new Date().toISOString(),
     localOnly: !!row?.localOnly || String(row?.id||'').startsWith('local_')
@@ -7523,10 +7528,100 @@ function upsertLocalClient(row){
   const normalized=normalizeClientRow(row);
   const key=normalized.client_ref || normalized.id;
   const clients=loadLocalClients().filter(c=>(c.client_ref||c.id)!==key && String(c.id)!==String(normalized.id));
-  const saved={...normalized, localOnly:true, updated_at:new Date().toISOString()};
+  const saved={...normalized, localOnly:normalized.localOnly!==false, updated_at:normalized.updated_at||new Date().toISOString()};
   clients.unshift(saved);
   saveLocalClients(clients);
   return saved;
+}
+
+async function fetchSupabaseClients(){
+  if(!currentUser) return [];
+  const {data, error}=await supabaseClient.from('clients')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('updated_at', {ascending:false});
+  if(error) throw error;
+  return (data||[]).map(row=>normalizeClientRow({...row, localOnly:false}));
+}
+
+async function findSupabaseClientByRef(clientRef){
+  if(!currentUser || !clientRef) return null;
+  const {data, error}=await supabaseClient.from('clients')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .eq('client_ref', clientRef)
+    .maybeSingle();
+  if(error) throw error;
+  return data ? normalizeClientRow({...data, localOnly:false}) : null;
+}
+
+async function upsertClientToSupabase(row, options={}){
+  if(!currentUser) throw new Error('No signed-in user');
+  const normalized=normalizeClientRow(row);
+  const payload={
+    user_id: currentUser.id,
+    client_ref: normalized.client_ref,
+    name: normalized.name,
+    data: normalized.data,
+    updated_at: options.updated_at || normalized.updated_at || new Date().toISOString()
+  };
+  const upsertResult=await supabaseClient.from('clients')
+    .upsert(payload, {onConflict:'user_id,client_ref'})
+    .select()
+    .maybeSingle();
+  if(!upsertResult.error) return normalizeClientRow({...upsertResult.data, localOnly:false});
+
+  // If the database is missing a unique constraint on (user_id, client_ref),
+  // fall back to an explicit find-then-update/insert so Save Client still
+  // updates the existing row rather than creating duplicates.
+  console.warn('[NutriFlow clients] upsert fallback used', upsertResult.error);
+  const existing=await findSupabaseClientByRef(normalized.client_ref);
+  if(existing?.id && !String(existing.id).startsWith('local_')){
+    const {data, error}=await supabaseClient.from('clients')
+      .update({name:payload.name, data:payload.data, updated_at:payload.updated_at})
+      .eq('id', existing.id)
+      .eq('user_id', currentUser.id)
+      .select()
+      .maybeSingle();
+    if(error) throw error;
+    return normalizeClientRow({...data, localOnly:false});
+  }
+  const {data, error}=await supabaseClient.from('clients')
+    .insert(payload)
+    .select()
+    .maybeSingle();
+  if(error) throw error;
+  return normalizeClientRow({...data, localOnly:false});
+}
+
+async function migrateLocalClientsToSupabase(){
+  if(!currentUser) return;
+  const localClients=loadLocalClients();
+  if(!localClients.length) return;
+  let migrated=0;
+  for(const client of localClients){
+    const row=normalizeClientRow(client);
+    if(!row.client_ref || !row.data || !Object.keys(row.data).length) continue;
+    try{
+      const remote=await findSupabaseClientByRef(row.client_ref);
+      const localTime=Date.parse(row.updated_at||'')||0;
+      const remoteTime=Date.parse(remote?.updated_at||'')||0;
+      if(remote && remoteTime>localTime) continue;
+      await upsertClientToSupabase({...row, localOnly:false}, {updated_at:row.updated_at});
+      migrated++;
+    }catch(e){
+      console.error('[NutriFlow clients] local migration failed for '+(row.name||row.client_ref), e);
+    }
+  }
+  if(migrated){
+    try{
+      const remote=await fetchSupabaseClients();
+      saveLocalClients(remote.map(c=>({...c, localOnly:false})));
+      console.log('[NutriFlow clients] migrated local clients to Supabase', migrated);
+    }catch(e){
+      console.error('[NutriFlow clients] refresh after migration failed', e);
+    }
+  }
 }
 
 function stateHasValue(state, fieldId){
@@ -7575,7 +7670,8 @@ async function saveCurrentClient(options={}){
   let id=v('p-id');
   if(!id){ id='c'+Date.now(); document.getElementById('p-id').value=id; }
   const state=captureState();
-  const localRow={id:'local_'+id, client_ref:id, name, data:state, updated_at:new Date().toISOString(), localOnly:true};
+  const savedAt=new Date().toISOString();
+  const localRow={id:'local_'+id, client_ref:id, name, data:state, updated_at:savedAt, localOnly:true};
   const existingLocal=loadLocalClients().find(c=>(c.client_ref||c.id)===id);
   if(existingLocal && shouldWarnRiskyClientOverwrite(state, existingLocal)){
     const existingName=existingClientDisplayName(existingLocal);
@@ -7593,21 +7689,15 @@ async function saveCurrentClient(options={}){
   let error=null;
   let savedRemote=null;
   try{
-    const existingResult = await supabaseClient.from('clients').select('*').eq('user_id',currentUser.id).eq('client_ref',id).maybeSingle();
-    if(existingResult.error) throw existingResult.error;
-    const existing=existingResult.data;
+    const existing=await findSupabaseClientByRef(id);
     if(existing){
       if(!existingLocal && shouldWarnRiskyClientOverwrite(state, existing)){
         const existingName=existingClientDisplayName(existing);
         const ok=confirm(`⚠️ This will overwrite the existing client "${existingName}" with blank/incomplete data. Their saved profile, body composition, exchanges, and meal plans may be lost. Continue?`);
         if(!ok) return;
       }
-      const result = await supabaseClient.from('clients').update({name, data:state, updated_at:new Date().toISOString()}).eq('id',existing.id).select().maybeSingle();
-      error=result.error; savedRemote=result.data;
-    } else {
-      const result = await supabaseClient.from('clients').insert({user_id:currentUser.id, client_ref:id, name, data:state}).select().maybeSingle();
-      error=result.error; savedRemote=result.data;
     }
+    savedRemote=await upsertClientToSupabase({client_ref:id, name, data:state, updated_at:savedAt, localOnly:false}, {updated_at:savedAt});
   }catch(e){
     error=e;
   }
@@ -7633,17 +7723,19 @@ async function loadClientById(rowId){
     if(!confirm(`Switch to a different client?\n\nAny unsaved changes to "${currentName}" will be lost. Click "💾 Save Client" first if you want to keep them.`)) return;
   }
   let data=null;
-  if(String(rowId).startsWith('local_') || !currentUser){
-    data=loadLocalClients().find(c=>String(c.id)===String(rowId));
-  } else {
+  const localFallback=()=>loadLocalClients().find(c=>String(c.id)===String(rowId) || String(c.client_ref)===String(rowId));
+  if(currentUser && !String(rowId).startsWith('local_')){
     try{
-      const result = await supabaseClient.from('clients').select('*').eq('id',rowId).single();
+      const result = await supabaseClient.from('clients').select('*').eq('id',rowId).eq('user_id',currentUser.id).single();
       if(result.error) throw result.error;
-      data=result.data;
+      data=normalizeClientRow({...result.data, localOnly:false});
+      upsertLocalClient({...data, localOnly:false});
     }catch(e){
-      console.error('[NutriFlow clients] Supabase load failed', e);
-      data=loadLocalClients().find(c=>String(c.id)===String(rowId));
+      console.error('[NutriFlow clients] Supabase load failed, using local backup if available', e);
+      data=localFallback();
     }
+  } else {
+    data=localFallback();
   }
   if(!data) return;
   applyState(data.data);
@@ -7653,15 +7745,20 @@ async function loadClientById(rowId){
 
 async function deleteClientById(rowId){
   if(!confirm('Delete this client permanently? This cannot be undone.')) return;
-  saveLocalClients(loadLocalClients().filter(c=>String(c.id)!==String(rowId)));
+  let deletedRemote=false;
   if(currentUser && !String(rowId).startsWith('local_')){
     try{
       const {error}=await supabaseClient.from('clients').delete().eq('id',rowId).eq('user_id',currentUser.id);
-      if(error) console.error('[NutriFlow clients] Supabase delete failed', error);
+      if(error) throw error;
+      deletedRemote=true;
     }catch(e){
-      console.error('[NutriFlow clients] Supabase delete exception', e);
+      console.error('[NutriFlow clients] Supabase delete failed', e);
+      alert('Could not delete this client from Supabase. Please try again.');
+      return;
     }
   }
+  saveLocalClients(loadLocalClients().filter(c=>String(c.id)!==String(rowId) && String(c.client_ref)!==String(rowId)));
+  if(deletedRemote) console.log('[NutriFlow clients] deleted from Supabase', rowId);
   renderClientList();
 }
 
@@ -7669,27 +7766,27 @@ async function renderClientList(){
   const el=document.getElementById('clients-table');
   if(!el) return;
   const localClients=loadLocalClients();
-  // Cache the full list so the search box can filter instantly client-side
-  // without a new fetch on every keystroke.
-  S.clientListCache = localClients;
   const searchEl=document.getElementById('client-search');
   if(searchEl) searchEl.value='';
-  renderClientListRows(S.clientListCache);
-  if(!currentUser) return;
+  if(!currentUser){
+    S.clientListCache = localClients;
+    renderClientListRows(S.clientListCache);
+    return;
+  }
+  el.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:24px">Loading clients from Supabase...</div>';
   try{
-    const {data:clients, error} = await supabaseClient.from('clients').select('*').eq('user_id',currentUser.id).order('updated_at',{ascending:false});
-    if(error) throw error;
-    const remote=(clients||[]).map(normalizeClientRow);
-    const remoteRefs=new Set(remote.map(c=>c.client_ref||c.id));
-    S.clientListCache=[...remote, ...localClients.filter(c=>c.localOnly && !remoteRefs.has(c.client_ref||c.id))]
-      .sort((a,b)=>String(b.updated_at).localeCompare(String(a.updated_at)));
+    const remote=await fetchSupabaseClients();
+    S.clientListCache=remote;
+    saveLocalClients(remote.map(c=>({...c, localOnly:false})));
     renderClientListRows(S.clientListCache);
   }catch(e){
-    console.error('[NutriFlow clients] Supabase list failed', e);
-    if(!localClients.length){
-      S.clientListCache=[];
-      renderClientListRows([]);
-    }
+    console.error('[NutriFlow clients] Supabase list failed, showing local backup', e);
+    S.clientListCache=localClients;
+    renderClientListRows(S.clientListCache);
+    const note=document.createElement('div');
+    note.style.cssText='margin-top:10px;color:var(--amber-700);font-size:12px;font-weight:700';
+    note.textContent='Showing local backup because Supabase clients could not be loaded.';
+    el.prepend(note);
   }
 }
 
