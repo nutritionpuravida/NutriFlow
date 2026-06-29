@@ -610,6 +610,7 @@ tr:hover td { background: var(--bg-hover); }
         <button onclick="handleSignOut()">Sign out</button>
       </div>
       <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle dark mode">🌙 Dark</button>
+      <button class="btn primary no-print" onclick="saveCurrentClient()" id="topbar-save-client-btn" title="Save complete current client state">💾 Save Client</button>
       <button class="btn" onclick="printPage()" id="topbar-print-btn" title="Print current page">🖨️ Print</button>
     </div>
   </div>
@@ -787,6 +788,11 @@ tr:hover td { background: var(--bg-hover); }
               <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="Pregnancy" onclick="onConditionRadioClick(this)" style="width:auto"> Pregnancy</label>
               <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="Menopause" onclick="onConditionRadioClick(this)" style="width:auto"> Menopause</label>
               <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="Sports" onclick="onConditionRadioClick(this)" style="width:auto"> Sports Nutrition / Performance</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="GERD" onclick="onConditionRadioClick(this)" style="width:auto"> ΓΟΠ / GERD</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="Osteoporosis" onclick="onConditionRadioClick(this)" style="width:auto"> Οστεοπόρωση</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="Migraines" onclick="onConditionRadioClick(this)" style="width:auto"> Ημικρανίες</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="CKD" onclick="onConditionRadioClick(this)" style="width:auto"> Χρόνια Νεφρική Νόσος (ΧΝΝ)</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="NAFLD" onclick="onConditionRadioClick(this)" style="width:auto"> Λιπώδης Ηπατοπάθεια (NAFLD)</label>
               <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="General" onclick="onConditionRadioClick(this)" style="width:auto"> Healthy Eating (no condition)</label>
             </div>
             <div id="pregnancy-trimester-field" class="form-field" style="display:none;margin-top:10px;max-width:260px">
@@ -862,7 +868,7 @@ tr:hover td { background: var(--bg-hover); }
           <div class="form-field"><label>⏱ Metabolic Age</label><input type="number" id="bc-metage" placeholder="—" oninput="calcBodyComp()"><div class="field-note" id="bc-metage-note"></div></div>
           <div class="form-field"><label>🔥 Visceral Fat Score</label><input type="number" id="bc-visceral" placeholder="1–12 healthy, 13+ excess" oninput="calcBodyComp()"><div class="field-note" id="bc-visceral-note"></div></div>
           <div class="form-field"><label>🏃 Physique Rating (1–9)</label><input type="number" id="bc-physique" placeholder="Tanita 1–9" min="1" max="9"></div>
-          <div class="form-field"><label>🦴 Bone Mass (kg)</label><input type="number" id="bc-bone" placeholder="~3–5% of body weight" step="0.1"></div>
+          <div class="form-field"><label>🦴 Οστική Μάζα / Bone Mass (kg)</label><input type="number" id="bc-bone" placeholder="Tanita/device value" step="0.1" oninput="calcBodyComp()"></div>
         </div>
         <div class="section-label">AUTO INTERPRETATION</div>
         <div id="bc-interpretation"></div>
@@ -917,6 +923,11 @@ tr:hover td { background: var(--bg-hover); }
             <tr><td>Pregnancy</td><td>45%</td><td>20%</td><td>35%</td></tr>
             <tr><td>Menopause</td><td>40%</td><td>25%</td><td>35%</td></tr>
             <tr><td>Sports Nutrition / Performance</td><td>50%</td><td>25%</td><td>25%</td></tr>
+            <tr><td>ΓΟΠ / GERD</td><td>45%</td><td>20%</td><td>35%</td></tr>
+            <tr><td>Οστεοπόρωση</td><td>45%</td><td>25%</td><td>30%</td></tr>
+            <tr><td>Ημικρανίες</td><td>45%</td><td>25%</td><td>30%</td></tr>
+            <tr><td>Χρόνια Νεφρική Νόσος (ΧΝΝ)</td><td>50%</td><td>20%</td><td>30%</td></tr>
+            <tr><td>Λιπώδης Ηπατοπάθεια (NAFLD)</td><td>45%</td><td>20%</td><td>35%</td></tr>
             <tr><td>Healthy Eating</td><td>45%</td><td>20%</td><td>35%</td></tr>
           </tbody></table>
         </div>
@@ -2079,7 +2090,7 @@ const MEALS = {
   DIN_OMELETTE:       (ex,p) => 'Ομελέτα (2 αυγά) + 1 φέτα ψωμί – βραστά λαχανικά (2 φλ.)',
   DIN_TUNA_POTATO:    (ex,p) => 'Τόνος + πατάτα' + mealSuffix(ex,p,'σαλάτα',null,'πατάτα','τόνο',true),
   DIN_PASTA_MINCE:    (ex,p) => 'Μακαρόνια + κιμάς' + mealSuffix(ex,p,'σαλάτα',null,'ζυμαρικά','κιμά'),
-  DIN_SOUVLAKI_PITA:  (ex,p) => 'Σουβλάκι κοτόπουλο + κυπριακή πίτα – σαλάτα (2 φλ.)',
+  DIN_SOUVLAKI_PITA:  (ex,p) => 'Σουβλάκι κοτόπουλο + μικρή κυπριακή πίτα (2 ισοδύναμα αμύλου) – σαλάτα (2 φλ.)',
   DIN_BIFTEKI_BULGUR: (ex,p) => 'Μπιφτέκι + πλιγούρι' + mealSuffix(ex,p,'σαλάτα',null,'πλιγούρι','μπιφτέκι'),
   LUN_LENTILS_RICE:   (ex,p) => 'Φακές γιαχνί + ρύζι' + mealSuffix(ex,p,'σαλάτα', n=>`${n} μερίδ${n>1?'ες':'α'} φακές (½ φλ. μαγειρεμένες ανά μερίδα)`, 'ρύζι'),
   LUN_CHICKPEA_STEW:  (ex,p) => 'Ρεβίθια γιαχνί + ψωμί ολικής – σαλάτα (2 φλ.)',
@@ -2112,7 +2123,7 @@ const MEALS_EN = {
   DIN_OMELETTE:       (ex,p) => 'Omelette (2 eggs) + 1 slice bread - boiled vegetables (2 cups)',
   DIN_TUNA_POTATO:    (ex,p) => 'Tuna + potato' + mealSuffixEn(ex,p,'salad',null,'potato','tuna',true),
   DIN_PASTA_MINCE:    (ex,p) => 'Pasta + mince' + mealSuffixEn(ex,p,'salad',null,'pasta','mince'),
-  DIN_SOUVLAKI_PITA:  (ex,p) => 'Chicken souvlaki + Cypriot pita - salad (2 cups)',
+  DIN_SOUVLAKI_PITA:  (ex,p) => 'Chicken souvlaki + small Cypriot pita (2 starch exchanges) - salad (2 cups)',
   DIN_BIFTEKI_BULGUR: (ex,p) => 'Burger + bulgur' + mealSuffixEn(ex,p,'salad',null,'bulgur','burger'),
   LUN_LENTILS_RICE:   (ex,p) => 'Lentil stew + rice' + mealSuffixEn(ex,p,'salad', n=>`${n} lentil serving${n>1?'s':''} (1/2 cup cooked per serving)`, 'rice'),
   LUN_CHICKPEA_STEW:  (ex,p) => 'Chickpea stew + wholegrain bread - salad (2 cups)',
@@ -2248,7 +2259,7 @@ const MEAL_EXCHANGES = {
   DIN_OMELETTE:       {protein:2, starch:1, fat:1, fruit:0, dairy:0, veg:2}, // fixed: 2 eggs + 1 bread + oil + veg
   DIN_TUNA_POTATO:    {protein:0, starch:0, fat:0, fruit:0, dairy:0, veg:1},
   DIN_PASTA_MINCE:    {protein:0, starch:0, fat:0, fruit:0, dairy:0, veg:1},
-  DIN_SOUVLAKI_PITA:  {protein:2, starch:2, fat:0, fruit:0, dairy:0, veg:1}, // fixed: souvlaki + pita + salad
+  DIN_SOUVLAKI_PITA:  {protein:2, starch:2, fat:0, fruit:0, dairy:0, veg:1}, // fixed: souvlaki + small pita minimum (2 starch) + salad
   DIN_BIFTEKI_BULGUR: {protein:0, starch:0, fat:0, fruit:0, dairy:0, veg:1},
   // Vegetarian/Vegan options — legumes provide both starch AND protein
   // (standard exchange convention: ½ cup cooked legumes = 1 starch + 1 protein)
@@ -3625,11 +3636,11 @@ function getMealPortions(plan=S.mealSel, lang=S.mealLanguage||'GR') {
 const COND_GUIDANCE = {
   General:     {gr:'Υγιεινή διατροφή',  main:'Μεσογειακό πρότυπο ως βασική δομή: λαχανικά, φρούτα, όσπρια/δημητριακά ολικής, ελαιόλαδο, ψάρι και ποιοτική πρωτεΐνη. Στόχος 25–30g φυτικών ινών/ημέρα, επαρκής ενυδάτωση και τακτικά γεύματα.', prefer:'Λαχανικά, φρούτα, ελαιόλαδο, ξηρούς καρπούς, ψάρι, όσπρια, δημητριακά ολικής και επαρκή πρωτεΐνη για κορεσμό και μυϊκή μάζα.', avoid:'Ultra-processed τρόφιμα, ζαχαρούχα ποτά, ακραίες στερήσεις και μη ρεαλιστικούς συνδυασμούς.'},
   Diabetes:    {gr:'Διαβήτης (ADA 2024–25)', main:'Δεν υπάρχει ένα "καλύτερο" πρότυπο διατροφής — εξατομίκευση με βάση Μεσογειακή, DASH ή άλλη διατροφή που ο ασθενής μπορεί να ακολουθήσει μακροπρόθεσμα. Έμφαση σε τακτικά γεύματα και ποιοτικά λιπαρά (όχι μόνο "λίγους υδατάνθρακες").', prefer:'Δημητριακά ολικής άλεσης, όσπρια, λαχανικά, φρούτα με μέτρο, ελαιόλαδο/ξηροί καρποί, ψάρι και άπαχη πρωτεΐνη — μεσογειακού τύπου διατροφή.', avoid:'Ζαχαρούχα ποτά/χυμούς, πολύ επεξεργασμένα/ραφιναρισμένα τρόφιμα, υπερβολικό αλκοόλ. Περιορισμός — όχι πλήρης αποκλεισμός — υδατανθράκων, εξατομικευμένος ανάλογα με αγωγή.'},
-  CKD:         {gr:'Χρόνια Νεφρική Νόσος (KDIGO 2024)', main:'Πρωτεΐνη ~0.8 g/kg σωματικού βάρους/ημέρα για στάδια G3–G5 (όχι αυστηρά χαμηλότερα χωρίς στενή παρακολούθηση)· αποφυγή υψηλής πρόσληψης πρωτεΐνης (>1.3 g/kg/ημέρα). Νάτριο <2 g/ημέρα. Κάλιο και φώσφορος εξατομικευμένα βάσει αιματολογικού ελέγχου — ΟΧΙ γενικευμένος αποκλεισμός φρούτων/λαχανικών.', prefer:'Έμφαση σε φυτικής προέλευσης τρόφιμα (όσπρια, λαχανικά, φρούτα, δημητριακά ολικής άλεσης) έναντι ζωικών πηγών πρωτεΐνης όπου είναι ασφαλές, μείωση ultra-processed τροφίμων. Φρέσκα, ανεπεξέργαστα τρόφιμα.', avoid:'Επεξεργασμένα τρόφιμα με πρόσθετα φωσφόρου (αλλαντικά, έτοιμα γεύματα, αναψυκτικά cola), υπερβολικό αλάτι, υπερβολική πρωτεΐνη. Περιορισμός συγκεκριμένων τροφών σε Κ/Φ ΜΟΝΟ όταν δείχνουν αυξημένα τα αιματολογικά (όχι προληπτικά).'},
+  CKD:         {gr:'Χρόνια Νεφρική Νόσος (ΧΝΝ)', main:'Πρωτεΐνη περίπου 0.8g/kg σωματικού βάρους για Stage 1-2 ή όταν υπάρχει ανάγκη ήπιου περιορισμού. Χαμηλό νάτριο <2g/ημέρα, επαρκής ενυδάτωση όπου επιτρέπεται και παρακολούθηση καλίου/φωσφόρου, ιδιαίτερα σε Stage 3+.', prefer:'Φρέσκα τρόφιμα, χαμηλό αλάτι, εξατομίκευση πρωτεΐνης, υγρών, καλίου και φωσφόρου βάσει αιματολογικών και ιατρικής καθοδήγησης.', avoid:'Υπερβολική πρωτεΐνη, επεξεργασμένα τρόφιμα με πολύ νάτριο/πρόσθετα φωσφόρου και συμπληρώματα χωρίς ιατρική καθοδήγηση.'},
   Hypertension:{gr:'Υπέρταση (DASH / AHA)', main:'DASH διατροφή — νάτριο <2.3 g/ημέρα (ιδανικά ~1.5 g για μεγαλύτερο όφελος), πλούσια σε κάλιο, ασβέστιο και μαγνήσιο.', prefer:'Λαχανικά, φρούτα, δημητριακά ολικής άλεσης, χαμηλά λιπαρά γαλακτοκομικά, ψάρι/πουλερικά, όσπρια και ξηροί καρποί.', avoid:'Λιπαρό κόκκινο/επεξεργασμένο κρέας, full-fat γαλακτοκομικά, τροπικά λάδια (φοίνικας/καρύδα), ζαχαρούχα ποτά, αλάτι/αλμυρά σνακ, αλκοόλ.'},
   Dyslipidemia:{gr:'Δυσλιπιδαιμία', main:'Μεσογειακή διατροφή — η ισχυρότερη τεκμηρίωση για βελτίωση λιπιδαιμικού προφίλ· DASH επίσης αποτελεσματική, ειδικά αν συνυπάρχει υπέρταση.', prefer:'Λιπαρά ψάρια (ω-3), ελαιόλαδο, ξηροί καρποί, όσπρια, βρώμη, φρούτα/λαχανικά πλούσια σε φυτικές ίνες.', avoid:'Κορεσμένα και trans λιπαρά (λιπαρό κρέας, βούτυρο, fast food), επεξεργασμένα κρέατα, ultra-processed σνακ, υπερβολικό αλκοόλ.'},
   PCOS:        {gr:'PCOS', main:'Δεν υπάρχει αποδεδειγμένα "καλύτερο" πρότυπο — η DASH διατροφή με ήπιο θερμιδικό έλλειμμα έχει τα πιο συνεπή ευρήματα για απώλεια βάρους και γλυκαιμικό έλεγχο σε γυναίκες με PCOS.', prefer:'Λαχανικά, φρούτα, δημητριακά ολικής άλεσης, χαμηλά λιπαρά γαλακτοκομικά, άπαχη πρωτεΐνη (DASH-τύπου), τακτική σωματική δραστηριότητα.', avoid:'Υπερβολή σε επεξεργασμένους υδατάνθρακες/ζάχαρη. Εξατομίκευση σημαντική — δεν χρειάζεται αυστηρή αποφυγή υδατανθράκων για όλες.'},
-  GERD:        {gr:'Γαστροοισοφαγική παλινδρόμηση', main:'Η κλασική αποφυγή "trigger" τροφών (ντομάτα, εσπεριδοειδή, τηγανητά) δίνει μόνο μερική ανακούφιση σε πολλούς ασθενείς — η εξατομίκευση είναι σημαντική. Σε επίμονα συμπτώματα παρά τη φαρμακευτική αγωγή, μια προσέγγιση τύπου low-FODMAP μπορεί να βοηθήσει μειώνοντας τη διάταση του εντέρου.', prefer:'Μικρά, συχνά γεύματα· αποφυγή φαγητού 2-3 ώρες πριν τον ύπνο· διατήρηση φυσιολογικού βάρους.', avoid:'Λιπαρά/τηγανητά, καφεΐνη, αλκοόλ, ανθρακούχα ποτά, μέντα — αλλά εξατομικευμένα ανά ασθενή, όχι γενικευμένη λίστα.'},
+  GERD:        {gr:'ΓΟΠ / GERD', main:'Μικρά συχνά γεύματα, αποφυγή τροφίμων 2-3 ώρες πριν τον ύπνο και χαμηλά λιπαρά γαλακτοκομικά. Το γιαούρτι 2% προτιμάται έναντι γάλακτος όπου υπάρχει καλύτερη ανοχή.', prefer:'Μικρά γεύματα, ήπια μαγειρική, γιαούρτι 2%, χαμηλά λιπαρά γαλακτοκομικά και εξατομίκευση με βάση τα συμπτώματα.', avoid:'Πικάντικα, τηγανητά, σοκολάτα, μέντα, αλκοόλ, καφεΐνη, όξινα τρόφιμα και κατανάλωση πριν τον ύπνο.'},
   IBS:         {gr:'Σύνδρομο ευερέθιστου εντέρου', main:'Low-FODMAP διατροφή (Monash) — ισχυρότερη τεκμηρίωση από όλες τις διατροφικές παρεμβάσεις για IBS, αλλά εφαρμόζεται ως 2ης γραμμής, σε φάσεις (περιορισμός → επανεισαγωγή) με καθοδήγηση διαιτολόγου για να αποφευχθούν ελλείψεις.', prefer:'Φάση περιορισμού: ρύζι, κινόα, βρώμη, καρότο, αγγούρι, ώριμη μπανάνα, εσπεριδοειδή με μέτρο, κοτόπουλο, αυγό, lactose-free γαλακτοκομικά.', avoid:'Σκόρδο, κρεμμύδι, σιτάρι/σίκαλη σε ποσότητα, όσπρια, μήλο/αχλάδι/καρπούζι, γαλακτοκομικά με λακτόζη, γλυκαντικά πολυόλης (sorbitol/mannitol) — στη φάση περιορισμού μόνο.'},
   Obesity:     {gr:'Weight Management', main:'Ήπιο, βιώσιμο θερμιδικό έλλειμμα με έμφαση σε φυτικής προέλευσης, ελάχιστα επεξεργασμένα πρότυπα (Μεσογειακή/DASH/whole-food) — με τη μεγαλύτερη τεκμηρίωση για μακροπρόθεσμη απώλεια βάρους και καρδιαγγειακό όφελος.', prefer:'Λαχανικά, όσπρια, δημητριακά ολικής άλεσης, άπαχη πρωτεΐνη για κορεσμό, νερό αντί ζαχαρούχων ποτών.', avoid:'Ultra-processed τρόφιμα, ζαχαρούχα ποτά, fast food, υπερβολικό αλκοόλ.'},
   Hemodialysis:{gr:'Αιμοκάθαρση', main:'Νάτριο <2.3 g/ημέρα και έλεγχος υγρών παραμένουν βασικά. Πρωτεΐνη συνήθως αυξημένη (λόγω απωλειών στη διαδικασία αιμοκάθαρσης) — όχι περιορισμένη όπως στην CKD πριν την αιμοκάθαρση. Κάλιο/φώσφορος εξατομικευμένα βάσει τακτικού αιματολογικού ελέγχου.', prefer:'Πρωτεΐνη υψηλής βιολογικής αξίας (κρέας, ψάρι, αυγό, πουλερικά), ρύζι, ζυμαρικά· βράσιμο λαχανικών/κρέατος μειώνει την περιεκτικότητα σε φώσφορο/κάλιο.', avoid:'Τρόφιμα με πρόσθετα φωσφόρου (επεξεργασμένα, fast food, cola), περίσσεια υγρών. Περιορισμός υψηλού-Κ τροφίμων μόνο όταν υποδεικνύεται από τα τρέχοντα αιματολογικά.'},
@@ -3640,6 +3651,9 @@ const COND_GUIDANCE = {
   FoodIntolerance:{gr:'Food Intolerances / Allergies', main:'Εξατομίκευση με βάση επιβεβαιωμένη αλλεργία/δυσανεξία και συμπτώματα. Αποφυγή μόνο των τροφίμων που χρειάζεται, ώστε να μην περιορίζεται άσκοπα η ποικιλία.', prefer:'Ασφαλείς εναλλακτικές τροφίμων, προσεκτική ανάγνωση ετικετών, έλεγχος για διασταυρούμενη επιμόλυνση όπου υπάρχει αλλεργία.', avoid:'Αυθαίρετους αποκλεισμούς ολόκληρων ομάδων τροφίμων χωρίς κλινικό λόγο ή διαγνωστική τεκμηρίωση.'},
   Menopause:   {gr:'Menopause', main:'Έμφαση σε καρδιομεταβολική υγεία, διαχείριση βάρους, μυϊκή μάζα και οστική υγεία. Οι ανάγκες εξατομικεύονται ανάλογα με συμπτώματα, λιπίδια, γλυκόζη και επίπεδο δραστηριότητας.', prefer:'Πρωτεΐνη κατανεμημένη μέσα στην ημέρα, ασβέστιο/βιταμίνη D από τροφή ή ιατρικά ελεγμένη συμπλήρωση, λαχανικά, όσπρια, ψάρια, ελαιόλαδο και άσκηση αντίστασης.', avoid:'Υπερβολικό αλκοόλ, πολύ επεξεργασμένα τρόφιμα και πολύ χαμηλές θερμίδες που δυσκολεύουν τη διατήρηση μυϊκής μάζας.'},
   Sports:      {gr:'Sports Nutrition / Performance', main:'Στόχος είναι επαρκής ενέργεια, σωστή κατανομή υδατανθράκων γύρω από την προπόνηση, επαρκής πρωτεΐνη για αποκατάσταση και καλή ενυδάτωση.', prefer:'Υδατάνθρακες ανάλογα με τον όγκο προπόνησης, πρωτεΐνη σε 3–5 γεύματα, γεύμα/σνακ αποκατάστασης και ηλεκτρολύτες όταν υπάρχει έντονη εφίδρωση.', avoid:'Ανεπαρκή πρόσληψη ενέργειας, ακραίους περιορισμούς υδατανθράκων σε υψηλή προπόνηση και μη ελεγμένα συμπληρώματα.'},
+  Osteoporosis:{gr:'Οστεοπόρωση', main:'Ασβέστιο στόχος περίπου 1200mg/ημέρα, επαρκής βιταμίνη D μέσω ήλιου/τροφίμων ή ιατρικά ελεγμένης συμπλήρωσης και πρωτεΐνη 1.2-1.5g/kg όπου είναι κλινικά κατάλληλο.', prefer:'Γαλακτοκομικά χαμηλά σε λιπαρά, σαρδέλες, αμύγδαλα, σπανάκι/πράσινα λαχανικά, επαρκής πρωτεΐνη και άσκηση αντίστασης.', avoid:'Υπερβολική καφεΐνη και αλκοόλ, κάπνισμα και πολύ χαμηλές θερμίδες που δυσκολεύουν την οστική και μυϊκή υγεία.'},
+  Migraines:   {gr:'Ημικρανίες', main:'Τακτικά γεύματα κάθε 3-4 ώρες και επαρκής ενυδάτωση 1.5-2 λίτρα/ημέρα μπορούν να μειώσουν διατροφικούς εκλυτικούς παράγοντες.', prefer:'Μαγνήσιο από ξηρούς καρπούς και δημητριακά ολικής, σταθερά γεύματα, νερό και καταγραφή πιθανών triggers.', avoid:'Παλαιωμένα τυριά, αλλαντικά, αλκοόλ, MSG, τεχνητά γλυκαντικά και παράλειψη γευμάτων όπου αυτά πυροδοτούν συμπτώματα.'},
+  NAFLD:       {gr:'Λιπώδης Ηπατοπάθεια (NAFLD)', main:'Απώλεια βάρους 7-10% είναι βασική θεραπευτική στρατηγική όταν υπάρχει υπερβάλλον βάρος. Μεσογειακή διατροφή και περιορισμός ραφιναρισμένων υδατανθράκων.', prefer:'Μεσογειακή διατροφή, ψάρι, καρύδια/ωμέγα-3, λαχανικά, όσπρια, δημητριακά ολικής και σταδιακή απώλεια βάρους.', avoid:'Αλκοόλ, ζαχαρούχα ποτά, φρουκτόζη/πολλά γλυκά, επεξεργασμένα τρόφιμα και υπερβολικά κορεσμένα λιπαρά.'},
 };
 
 const CONDITION_LABELS = {
@@ -3655,6 +3669,11 @@ const CONDITION_LABELS = {
   Pregnancy:'Pregnancy',
   Menopause:'Menopause',
   Sports:'Sports Nutrition / Performance',
+  GERD:'ΓΟΠ / GERD',
+  Osteoporosis:'Οστεοπόρωση',
+  Migraines:'Ημικρανίες',
+  CKD:'Χρόνια Νεφρική Νόσος (ΧΝΝ)',
+  NAFLD:'Λιπώδης Ηπατοπάθεια (NAFLD)',
 };
 function conditionLabel(c){ return CONDITION_LABELS[c] || (COND_GUIDANCE[c]&&COND_GUIDANCE[c].gr) || c || 'Healthy Eating'; }
 
@@ -3698,6 +3717,11 @@ const REPORT_CONDITION_EN = {
   Pregnancy:{name:'Pregnancy', main:'No weight-loss energy restriction unless medically indicated. Support folate, iron, calcium, iodine, choline and omega-3 needs.', prefer:'Fully cooked proteins, pasteurised dairy, low-mercury fish and folate-rich foods.', avoid:'Alcohol, raw/undercooked animal foods, unpasteurised dairy and high-mercury fish.'},
   Menopause:{name:'Menopause', main:'Focus on cardiometabolic health, weight management, muscle mass and bone health.', prefer:'Protein spread through the day, calcium/vitamin D adequacy, vegetables, pulses, fish, olive oil and resistance exercise.', avoid:'Excess alcohol, ultra-processed foods and very low-calorie approaches that compromise muscle mass.'},
   Sports:{name:'Sports Nutrition / Performance', main:'Support adequate energy, carbohydrate timing around training, protein for recovery and hydration.', prefer:'Carbohydrates matched to training load, protein across 3-5 meals, recovery snacks and electrolytes when sweating heavily.', avoid:'Under-fuelling, extreme carbohydrate restriction during heavy training and unverified supplements.'},
+  GERD:{name:'GERD', main:'Use smaller frequent meals, avoid eating 2-3 hours before sleep and choose lower-fat dairy where tolerated.', prefer:'Small meals, gentle cooking, 2% yogurt where better tolerated than milk and individual trigger tracking.', avoid:'Spicy foods, fried foods, chocolate, mint, alcohol, caffeine, acidic foods and late-night eating.'},
+  Osteoporosis:{name:'Osteoporosis', main:'Support calcium intake around 1200mg/day, vitamin D adequacy and protein around 1.2-1.5g/kg where clinically appropriate.', prefer:'Low-fat dairy, sardines, almonds, leafy greens, adequate protein and resistance exercise.', avoid:'Excess caffeine/alcohol, smoking and very low-calorie approaches that compromise bone and muscle health.'},
+  Migraines:{name:'Migraines', main:'Regular meals every 3-4 hours and adequate hydration can reduce diet-related triggers in some clients.', prefer:'Magnesium-rich foods such as nuts and whole grains, steady meals, water and trigger tracking.', avoid:'Known triggers such as aged cheeses, processed meats, alcohol, MSG, artificial sweeteners and skipped meals.'},
+  CKD:{name:'Chronic Kidney Disease', main:'Protein around 0.8g/kg body weight for early CKD where appropriate; sodium <2g/day; potassium and phosphorus individualised by labs.', prefer:'Fresh minimally processed foods, adequate hydration if allowed and lab-guided potassium/phosphorus planning.', avoid:'Excess protein, high-sodium processed foods and supplements unless medically directed.'},
+  NAFLD:{name:'Fatty Liver Disease (NAFLD)', main:'Weight loss of 7-10% is a key therapeutic target when excess weight is present. Mediterranean-style eating is preferred.', prefer:'Mediterranean foods, fish, walnuts/omega-3 sources, vegetables, pulses, whole grains and gradual weight loss.', avoid:'Alcohol, sugary drinks, excess fructose/sweets, ultra-processed foods and excess saturated fat.'},
 };
 
 // Shown when Pregnancy is selected, in addition to the combined guidance above
@@ -3749,23 +3773,26 @@ function onPregnancyToggle(){
 
 const COND_MACROS = {
   // Sources: ADA 2026, KDIGO 2024, AHA/DASH, Monash Low-FODMAP, ESPEN
-  General:     {c:40,p:25,f:35},
+  General:     {c:45,p:20,f:35},
   Diabetes:    {c:40,p:25,f:35}, // ADA 2026: moderate carb reduction, not ultra-low
   CKD:         {c:50,p:20,f:30}, // KDIGO 2024: ~0.8g/kg protein; higher carb to spare protein
-  Hypertension:{c:40,p:25,f:35}, // DASH: no major macro change, focus on sodium/potassium
-  Dyslipidemia:{c:40,p:25,f:35}, // AHA: reduce saturated fat; total fat % not drastically changed
+  Hypertension:{c:45,p:20,f:35}, // DASH: no major macro change, focus on sodium/potassium
+  Dyslipidemia:{c:45,p:20,f:35}, // AHA: reduce saturated fat; total fat % not drastically changed
   PCOS:        {c:40,p:25,f:35}, // moderate carb reduction helps insulin resistance
-  GERD:        {c:45,p:25,f:30}, // lower fat reduces reflux triggers
+  GERD:        {c:45,p:20,f:35},
   IBS:         {c:45,p:25,f:30}, // low-FODMAP focus, moderate fat
   Obesity:     {c:40,p:25,f:35}, // moderate carb reduction, higher protein for satiety
   Hemodialysis:{c:45,p:25,f:30}, // HD: higher protein needed (losses during dialysis)
-  Thyroid:     {c:40,p:25,f:35},
+  Thyroid:     {c:45,p:20,f:35},
   Celiac:      {c:40,p:25,f:35},
   Thalassemia: {c:40,p:25,f:35},
-  Pregnancy:   {c:40,p:25,f:35},
-  FoodIntolerance:{c:40,p:25,f:35},
+  Pregnancy:   {c:45,p:20,f:35},
+  FoodIntolerance:{c:45,p:20,f:35},
   Menopause:   {c:40,p:25,f:35},
   Sports:      {c:50,p:25,f:25},
+  Osteoporosis:{c:45,p:25,f:30},
+  Migraines:   {c:45,p:25,f:30},
+  NAFLD:       {c:45,p:20,f:35},
 };
 
 // ── CONDITION-SPECIFIC CAP OVERRIDES ──
@@ -3837,7 +3864,11 @@ const GUIDANCE_SOURCE_MAP = {
   Menopause:'Bone health and cardiometabolic menopause nutrition guidance',
   Sports:'ACSM sports nutrition and hydration guidance',
   CKD:'KDIGO 2024 CKD Guideline',
-  Hemodialysis:'KDOQI/KDIGO renal nutrition guidance'
+  Hemodialysis:'KDOQI/KDIGO renal nutrition guidance',
+  GERD:'GERD lifestyle nutrition guidance',
+  Osteoporosis:'Bone health nutrition guidance · calcium/vitamin D evidence',
+  Migraines:'Migraine trigger and meal-regularity nutrition guidance',
+  NAFLD:'EASL/AASLD fatty liver lifestyle nutrition guidance'
 };
 function guidanceSourcesForConditions(conditions, lang=S.mealLanguage||'GR'){
   const list=(conditions&&conditions.length)?conditions:['General'];
@@ -4474,7 +4505,7 @@ function calcBodyComp(){
   const w=Number.isFinite(fieldWeight) && fieldWeight>0 ? fieldWeight : (S.weight||0);
   const isMale=S.sex==='M';
   const bf=parseFloat(v('bc-bf'))||null, water=parseFloat(v('bc-water'))||null;
-  const visceral=parseFloat(v('bc-visceral'))||null, metage=parseFloat(v('bc-metage'))||null;
+  const visceral=parseFloat(v('bc-visceral'))||null, metage=parseFloat(v('bc-metage'))||null, bone=parseFloat(v('bc-bone'))||null;
   const fatmass=bf&&w ? w*bf/100 : null;
   const ffm=fatmass!==null ? w-fatmass : null;
   const fatmassEl=document.getElementById('bc-fatmass');
@@ -4482,11 +4513,11 @@ function calcBodyComp(){
   if(fatmass!==null && fatmassEl && (!S.bcManual?.fatmass || !String(fatmassEl.value||'').trim())) fatmassEl.value=fatmass.toFixed(1);
   if(ffm!==null && ffmEl && (!S.bcManual?.ffm || !String(ffmEl.value||'').trim())) ffmEl.value=ffm.toFixed(1);
   const muscle=parseFloat(v('bc-muscle'))||null;
-  S.bc={bf,water,fatmass,ffm,muscle,metage,visceral};
+  S.bc={bf,water,fatmass,ffm,muscle,metage,visceral,bone};
   if(bf!==null){const lo=isMale?10:18,hi=isMale?20:28; setEl('bc-bf-note',bf<lo?'⚠ Low — review energy availability':bf>hi?'⚠ High — metabolic risk':'✅ Within normal range');}
   if(water!==null){const lo=isMale?50:45,hi=isMale?65:60; setEl('bc-water-note',water<lo?'⚠ May indicate dehydration':water>hi?'⚠ Review clinically':'✅ Adequate');}
   if(visceral!==null){
-    const msg=visceral<=9?'✅ Healthy level':visceral<=12?'⚠ Borderline / upper-limit — monitor cardiometabolic risk':'⚠ Elevated — cardiometabolic risk';
+    const msg=visceral<=8?'✅ Healthy level':visceral<=12?'⚠ Borderline / upper-limit — monitor cardiometabolic risk':'⚠ Elevated — cardiometabolic risk';
     setEl('bc-visceral-note',msg);
   }
   if(metage!==null&&S.age) setEl('bc-metage-note',metage<=S.age?'✅ Favorable':'⚠ Metabolic age above chronological');
@@ -4494,9 +4525,10 @@ function calcBodyComp(){
   const fields=[['Body Fat',bf,'%',isMale?'10–20%':'18–28%'],['Body Water',water,'%',isMale?'50–65%':'45–60%'],
     ['Fat Mass',fatmass!==null?fatmass.toFixed(1):null,'kg','Auto'],['Fat-Free Mass',ffm!==null?ffm.toFixed(1):null,'kg','Weight − fat mass'],
     ['Muscle Mass',muscle!==null?muscle.toFixed(1):null,'kg','Measured / manual'],
-    ['Visceral Fat',visceral,'score','1–9 healthy · 10–12 borderline · 13+ high'],['Metabolic Age',metage,'y','≤ chronological age']];
+    ['Bone Mass',bone!==null?bone.toFixed(1):null,'kg','Measured / Tanita'],
+    ['Visceral Fat',visceral,'score','1–8 healthy · 9–12 borderline · 13+ high'],['Metabolic Age',metage,'y','≤ chronological age']];
   setEl('bc-interpretation','<div class="metrics-grid">'+fields.map(([l,val,u,ref])=>{
-    const visceralClass=l==='Visceral Fat'&&val!=null ? (val<=9?'ok':val<=12?'warn':'err') : '';
+    const visceralClass=l==='Visceral Fat'&&val!=null ? (val<=8?'ok':val<=12?'warn':'err') : '';
     return `<div class="metric"><div class="m-label">${l}</div><div class="m-value ${visceralClass}" style="font-size:20px">${val!=null?val+u:'—'}</div><div class="m-sub">Ref: ${ref}</div></div>`;
   }).join('')+'</div>');
 
@@ -5051,8 +5083,10 @@ function strictMainDescription(mealKey, exch, lang='GR'){
   if(isCustomMealKey(mealKey)) return customMealText(mealKey, lang);
   const portions={starch:Number(exch.starch||0), prot:Number(exch.protein||0), fat:Number(exch.fat||0), veg:Number(exch.veg||0)};
   const proteinGr=portions.prot===4 ? 140 : portions.prot*30;
-  const starchGR=portions.starch>0 ? (mealKey.includes('SOUVLAKI') ? '1 μικρή κυπριακή πίτα' : mealKey.includes('POTATO') ? formatPotatoPortion(portions.starch,'GR') : `${formatCups(portions.starch)} φλ. ${mealKey.includes('PASTA')?'ζυμαρικά':mealKey.includes('BIFTEKI')?'πλιγούρι':'ρύζι'}`) : '';
-  const starchEN=portions.starch>0 ? (mealKey.includes('SOUVLAKI') ? '1 small Cypriot pita' : mealKey.includes('POTATO') ? formatPotatoPortion(portions.starch,'EN') : `${formatCups(portions.starch)} cup ${mealKey.includes('PASTA')?'pasta':mealKey.includes('BIFTEKI')?'bulgur':'rice'}`) : '';
+  const pitaPortionGR=starch=>starch>=4?'1 κανονική κυπριακή πίτα':starch>=2?'1 μικρή κυπριακή πίτα':'½ μικρή κυπριακή πίτα';
+  const pitaPortionEN=starch=>starch>=4?'1 standard Cypriot pita':starch>=2?'1 small Cypriot pita':'1/2 small Cypriot pita';
+  const starchGR=portions.starch>0 ? (mealKey.includes('SOUVLAKI') ? pitaPortionGR(portions.starch) : mealKey.includes('POTATO') ? formatPotatoPortion(portions.starch,'GR') : `${formatCups(portions.starch)} φλ. ${mealKey.includes('PASTA')?'ζυμαρικά':mealKey.includes('BIFTEKI')?'πλιγούρι':'ρύζι'}`) : '';
+  const starchEN=portions.starch>0 ? (mealKey.includes('SOUVLAKI') ? pitaPortionEN(portions.starch) : mealKey.includes('POTATO') ? formatPotatoPortion(portions.starch,'EN') : `${formatCups(portions.starch)} cup ${mealKey.includes('PASTA')?'pasta':mealKey.includes('BIFTEKI')?'bulgur':'rice'}`) : '';
   const fatGR=portions.fat>0 ? `${portions.fat} κ.γ. ελαιόλαδο` : '';
   const fatEN=portions.fat>0 ? `${portions.fat} tsp olive oil` : '';
   const vegGR=`σαλάτα (${portions.veg} φλ.)`;
@@ -5803,6 +5837,7 @@ function reportBodyCompositionHtml(isEn){
   const fatmass=v('bc-fatmass') || (S.bc?.fatmass!=null ? Number(S.bc.fatmass).toFixed(1) : '');
   const ffm=v('bc-ffm') || (S.bc?.ffm!=null ? Number(S.bc.ffm).toFixed(1) : '');
   const muscle=v('bc-muscle');
+  const bone=v('bc-bone');
   const visceral=v('bc-visceral');
   const deficit=(S.tdee && S.goalKcal) ? Math.round(Number(S.tdee)-Number(S.goalKcal)) : '';
   return reportMetricGridHtml(isEn?'Body Composition':'Σωματομετρικά / Body Composition', [
@@ -5813,6 +5848,7 @@ function reportBodyCompositionHtml(isEn){
     [isEn?'Fat mass':'Μάζα λίπους', fatmass ? `${fatmass} kg` : ''],
     [isEn?'Fat-free mass':'Άλιπη μάζα', ffm ? `${ffm} kg` : ''],
     [isEn?'Muscle mass':'Μυϊκή μάζα', muscle ? `${muscle} kg` : ''],
+    [isEn?'Bone mass':'Οστική μάζα', bone ? `${bone} kg` : ''],
     [isEn?'Visceral fat rating':'Σπλαχνικό λίπος', visceral || ''],
     [isEn?'BMR':'Βασικός μεταβολισμός BMR', S.bmr ? `${Math.round(S.bmr)} kcal` : ''],
     [isEn?'TDEE':'Συνολικές ενεργειακές ανάγκες TDEE', S.tdee ? `${Math.round(S.tdee)} kcal` : ''],
