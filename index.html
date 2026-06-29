@@ -2198,11 +2198,7 @@ function getCustomMealByKey(key){
 function customMealText(key, lang='GR'){
   const meal=getCustomMealByKey(key);
   if(!meal) return '';
-  const ingredients=Array.isArray(meal.ingredients)?meal.ingredients:[];
-  const detail=ingredients.length
-    ? ingredients.map(i=>`${safeHtml(i.name||'Food')} ${Math.round(foodNumber(i.grams)||0)}g`).join(' + ')
-    : '';
-  return `${safeHtml(meal.name||'Custom meal')} ✏️${detail?' ('+detail+')':''}`;
+  return `${safeHtml(meal.name||'Custom meal')} ✏️`;
 }
 function customMealKcal(key){
   const meal=getCustomMealByKey(key);
@@ -5344,6 +5340,8 @@ function buildSevenDay(){
       <div style="font-size:13px;color:var(--text-secondary);margin-top:4px">${lang==='EN'?'Target':'Στόχος'}: ${dt.target||0} kcal · ${lang==='EN'?'Difference':'Διαφορά'}: ${dt.gap>0?'+':''}${dt.gap||0} kcal</div>
     </div>`;
   }
+  const sevenBody=document.getElementById('sevenday-body');
+  if(sevenBody) sevenBody.textContent='';
   setEl('sevenday-body', html);
   updateMealLanguageButtons();
 }
@@ -5374,7 +5372,7 @@ function renderSevenDayMealCard(dayPlan, dt, slot, lang, dayIndex){
 }
 
 function renderSevenDayWeekSummary(lang='GR'){
-  return `<div style="overflow-x:auto"><table class="week-summary-table" style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;color:#111827;border:1px solid #d9e2df">
+  return `<div class="week-summary-wrap" data-lang="${lang}" style="overflow-x:auto"><table class="week-summary-table" data-lang="${lang}" style="width:100%;border-collapse:collapse;font-size:12px;background:#fff;color:#111827;border:1px solid #d9e2df">
     <thead><tr style="background:#0F6E56;color:#fff">
       <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Day':'Ημέρα'}</th>
       <th style="padding:9px;text-align:left;border-bottom:1px solid #d9e2df">${lang==='EN'?'Breakfast':'Πρωινό'}</th>
