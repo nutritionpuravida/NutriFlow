@@ -3128,7 +3128,6 @@ function buildEquivalents(){
 const BREAKFAST_OPTIONS = [
   {v:'BRK_TOAST',        l:'Τοστ (τυρί)'},
   {v:'BRK_TOAST_TURKEY', l:'Τοστ (τυρί + γαλοπούλα)'},
-  {v:'BRK_EGGS',         l:'Αυγά βραστά + ψωμί'},
   {v:'BRK_EGGS_TOAST',   l:'Τοστ (αυγό + τυρί)'},
   {v:'BRK_CEREAL',       l:'Βρώμη + γάλα'},
   {v:'BRK_OATS_VEGAN',   l:'Βρώμη + φυτικό γάλα 🌱'},
@@ -3253,7 +3252,6 @@ const SNACK_EXTRAS = [
   {v:'snk_fruit_ricecakes_tahini_nuts', group:'combo', slots:['snk1'], gr:'🍎 1 φρούτο + 2 ρυζογκοφρέτες + 1 κ.γ. ταχίνι + 6 αμύγδαλα ή 4 καρύδια', en:'🍎 1 fruit + 2 rice cakes + 1 tsp tahini + 6 almonds or 4 walnuts'}, // 1 fruit + 1 starch + 2 fat
   {v:'snk_anthotyro_rusk_fruit', group:'combo', slots:['snk1'], gr:'🧀 Ανθότυρο (~40g) + παξιμάδι (1) + φρούτο', en:'🧀 Anthotyros cheese (~40g) + rusk (1) + fruit'}, // 1 protein + 1 starch + 1 fruit
   {v:'snk_hummus_veg', group:'combo', slots:['snk1','snk2'], gr:'🥣 Χούμους (2 κ.σ.) + λαχανικά (αγγούρι, καρότο, πιπεριά)', en:'🥣 Hummus (2 tbsp) + vegetables (cucumber, carrot, pepper)'}, // 1 starch + 1 fat + 1 vegetable
-  {v:'snk_yogurt_only', group:'combo', slots:['snk2'], gr:'🍦 1 γιαούρτι 2% (~170g)', en:'🍦 Greek yogurt 2% (~170g)'}, // 1 dairy
   {v:'snk_crackers_cheese', group:'combo', slots:['snk2'], gr:'🍞 4 κράκερ ολικής + 1 φέτα τυρί light', en:'🍞 4 wholegrain crackers + 1 slice light cheese'}, // 1 starch + 1 protein
   {v:'sleep_milk_glass', group:'combo', slots:['sleep'], gr:'🥛 1 ποτήρι γάλα 1,5% (~240ml)', en:'🥛 1 glass semi-skimmed milk 1.5% (~240ml)'}, // 1 dairy
   {v:'sleep_cocoa_milk', group:'combo', slots:['sleep'], gr:'☕ Κακάο με γάλα 1,5% (~240ml, χωρίς ζάχαρη)', en:'☕ Cocoa with semi-skimmed milk 1.5% (~240ml, no sugar)'}, // 1 dairy
@@ -3270,7 +3268,6 @@ const SNACK_COMBO_EXCHANGES = {
   snk_fruit_ricecakes_tahini_nuts:{fruit:1,starch:1,fat:2},
   snk_anthotyro_rusk_fruit:{protein:1,starch:1,fruit:1},
   snk_hummus_veg:{starch:1,fat:1,veg:1},
-  snk_yogurt_only:{dairy:1},
   snk_crackers_cheese:{starch:1,protein:1},
   sleep_milk_glass:{dairy:1},
   sleep_cocoa_milk:{dairy:1},
