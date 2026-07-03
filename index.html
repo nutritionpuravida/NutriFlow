@@ -1634,6 +1634,7 @@ function showSubscriptionScreen(message){
   const el=document.getElementById('subscription-screen');
   if(el) el.classList.remove('hidden');
   if(message) setEl('subscription-message', message);
+  updateSubscriptionCheckoutButtons();
 }
 function hideSubscriptionScreen(){
   const el=document.getElementById('subscription-screen');
@@ -1735,6 +1736,23 @@ function updateTrialBanner(){
   const show=subscriptionState.trialActive && days<=10 && !subscriptionState.ownerBypass;
   banner.style.display=show ? 'flex' : 'none';
   if(show && text) text.textContent=`🎁 Free trial — ${days} day${days===1?'':'s'} remaining. Subscribe to continue after your trial.`;
+}
+function updateSubscriptionCheckoutButtons(){
+  const trialAlreadyUsed=!!(subscriptionState?.trialUsedExpired || subscriptionState?.trialExpired);
+  const screenMonthly=document.getElementById('subscription-monthly-checkout-btn');
+  const screenYearly=document.getElementById('subscription-yearly-checkout-btn');
+  const accountMonthly=document.getElementById('account-monthly-trial-btn');
+  const accountYearly=document.getElementById('account-yearly-trial-btn');
+  const copy=document.getElementById('subscription-plan-copy');
+  if(screenMonthly) screenMonthly.textContent = trialAlreadyUsed ? 'Subscribe Monthly — €29/month' : 'Start 7-day trial — Monthly';
+  if(screenYearly) screenYearly.textContent = trialAlreadyUsed ? 'Subscribe Yearly — €249/year' : 'Start 7-day trial — Yearly';
+  if(accountMonthly) accountMonthly.textContent = trialAlreadyUsed ? 'Subscribe Monthly — €29/month' : 'Start monthly trial';
+  if(accountYearly) accountYearly.textContent = trialAlreadyUsed ? 'Subscribe Yearly — €249/year' : 'Start yearly trial';
+  if(copy){
+    copy.textContent = trialAlreadyUsed
+      ? 'Client profiles, exchange system, 1-day and 7-day plans, blood analysis, tracking, recipes, and reports for your dietetic practice. Your free trial has already been used; choose a subscription to continue.'
+      : 'Client profiles, exchange system, 1-day and 7-day plans, blood analysis, tracking, recipes, and reports for your dietetic practice. Start with a 7-day free trial; card required upfront.';
+  }
 }
 function subscriptionCacheKey(){
   return currentUser?.id ? `nutriflow_subscription_state_${currentUser.id}` : null;
@@ -1854,6 +1872,7 @@ async function refreshSubscriptionGate(){
     subscriptionState = subscriptionState || {status:'Unable to refresh subscription', active:false};
   }
   updateAccountPage();
+  updateSubscriptionCheckoutButtons();
   if(subscriptionState.active){
     hideSubscriptionScreen();
   } else {
@@ -1929,6 +1948,7 @@ async function refreshAccountSubscriptionPage(){
     subscriptionState = await fetchSubscriptionStatusWithRetry();
     saveSubscriptionCache();
     updateAccountPage();
+    updateSubscriptionCheckoutButtons();
     requestAnimationFrame(updateAccountPage);
     setTimeout(updateAccountPage, 50);
     updateTrialBanner();
@@ -2024,6 +2044,7 @@ function updateAccountPage(){
   if(yearlyBtn) yearlyBtn.style.display = hasActiveAccess ? 'none' : '';
   const billingBtn=document.getElementById('account-manage-billing-btn');
   if(billingBtn) billingBtn.style.display = hasActiveAccess ? '' : 'none';
+  updateSubscriptionCheckoutButtons();
 }
 
 let hadSession = false; // tracks whether a session existed before, to detect unexpected sign-outs
