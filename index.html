@@ -2207,11 +2207,11 @@ const MEALS = {
   LUN_FISH_POTATO:    (ex,p) => 'Ψάρι + πατάτα' + mealSuffix(ex,p,'σαλάτα',null,'πατάτα','ψάρι',true),
   LUN_LOUVI_TUNA:     (ex,p) => 'Λουβί + τόνος' + mealSuffix(ex,p,'σαλάτα / χόρτα',null,'λουβί','τόνο',true),
   LUN_FASOLAKIA_PORK: (ex,p) => 'Φασολάκια + χοιρινό' + mealSuffix(ex,p,'φασολάκια + σαλάτα',null,'πατάτα','χοιρινό'),
-  LUN_TUNA_POTATO:    (ex,p) => 'Τόνος + πατάτα' + mealSuffix(ex,p,'σαλάτα',null,'πατάτα','τόνο',true),
+  LUN_TUNA_POTATO:    (ex,p) => 'Τόνος + πατάτα (100g τόνο + 1 μεγάλη πατάτα (~200g) + 4 κ.γ. ελαιόλαδο) – σαλάτα (2 φλ.)',
   LUN_PASTA_MINCE:    (ex,p) => 'Μακαρόνια + κιμάς' + mealSuffix(ex,p,'σαλάτα',null,'ζυμαρικά','κιμά'),
   LUN_BIFTEKI_BULGUR: (ex,p) => 'Μπιφτέκι + πλιγούρι' + mealSuffix(ex,p,'σαλάτα',null,'πλιγούρι','μπιφτέκι'),
   DIN_CHICKEN_RICE:   (ex,p) => 'Κοτόπουλο + ρύζι' + mealSuffix(ex,p,'σαλάτα',null,'ρύζι'),
-  DIN_FISH_POTATO:    (ex,p) => 'Ψάρι + πατάτα' + mealSuffix(ex,p,'σαλάτα',null,'πατάτα','ψάρι',true),
+  DIN_FISH_POTATO:    (ex,p) => 'Ψάρι + πατάτα (140g μαγειρεμένο ψάρι + 1 μέτρια πατάτα (~150g) + 3 κ.γ. ελαιόλαδο) – σαλάτα (2 φλ.)',
   DIN_OMELETTE:       (ex,p) => 'Ομελέτα (3 αυγά) + 1 φέτα ψωμί – βραστά λαχανικά (2 φλ.)',
   DIN_TUNA_POTATO:    (ex,p) => 'Τόνος + πατάτα' + mealSuffix(ex,p,'σαλάτα',null,'πατάτα','τόνο',true),
   DIN_PASTA_MINCE:    (ex,p) => 'Μακαρόνια + κιμάς' + mealSuffix(ex,p,'σαλάτα',null,'ζυμαρικά','κιμά'),
@@ -2243,11 +2243,11 @@ const MEALS_EN = {
   LUN_FISH_POTATO:    (ex,p) => 'Fish + potato' + mealSuffixEn(ex,p,'salad',null,'potato','fish',true),
   LUN_LOUVI_TUNA:     (ex,p) => 'Black-eyed beans + tuna' + mealSuffixEn(ex,p,'salad / greens',null,'black-eyed beans','tuna',true),
   LUN_FASOLAKIA_PORK: (ex,p) => 'Green beans + pork' + mealSuffixEn(ex,p,'green beans + salad',null,'potato','pork'),
-  LUN_TUNA_POTATO:    (ex,p) => 'Tuna + potato' + mealSuffixEn(ex,p,'salad',null,'potato','tuna',true),
+  LUN_TUNA_POTATO:    (ex,p) => 'Tuna + potato (100g tuna + 1 large potato (~200g) + 4 tsp olive oil) - salad (2 cups)',
   LUN_PASTA_MINCE:    (ex,p) => 'Pasta + mince' + mealSuffixEn(ex,p,'salad',null,'pasta','mince'),
   LUN_BIFTEKI_BULGUR: (ex,p) => 'Burger + bulgur' + mealSuffixEn(ex,p,'salad',null,'bulgur','burger'),
   DIN_CHICKEN_RICE:   (ex,p) => 'Chicken + rice' + mealSuffixEn(ex,p,'salad',null,'rice'),
-  DIN_FISH_POTATO:    (ex,p) => 'Fish + potato' + mealSuffixEn(ex,p,'salad',null,'potato','fish',true),
+  DIN_FISH_POTATO:    (ex,p) => 'Fish + potato (140g cooked fish + 1 medium potato (~150g) + 3 tsp olive oil) - salad (2 cups)',
   DIN_OMELETTE:       (ex,p) => 'Omelette (3 eggs) + 1 slice bread - boiled vegetables (2 cups)',
   DIN_TUNA_POTATO:    (ex,p) => 'Tuna + potato' + mealSuffixEn(ex,p,'salad',null,'potato','tuna',true),
   DIN_PASTA_MINCE:    (ex,p) => 'Pasta + mince' + mealSuffixEn(ex,p,'salad',null,'pasta','mince'),
@@ -2416,11 +2416,11 @@ const MEAL_EXCHANGES = {
   LUN_FISH_POTATO:    {protein:0, starch:0, fat:0, fruit:0, dairy:0, veg:1},
   LUN_LOUVI_TUNA:     {protein:0, starch:0, fat:0, fruit:0, dairy:0, veg:2},
   LUN_FASOLAKIA_PORK: {protein:0, starch:0, fat:0, fruit:0, dairy:0, veg:2},
-  LUN_TUNA_POTATO:    {protein:0, starch:0, fat:0, fruit:0, dairy:0, veg:1},
+  LUN_TUNA_POTATO:    {protein:3, starch:2, fat:4, fruit:0, dairy:0, veg:2},
   LUN_PASTA_MINCE:    {protein:0, starch:0, fat:0, fruit:0, dairy:0, veg:1},
   LUN_BIFTEKI_BULGUR: {protein:0, starch:0, fat:0, fruit:0, dairy:0, veg:1},
   DIN_CHICKEN_RICE:   {protein:0, starch:0, fat:0, fruit:0, dairy:0, veg:1},
-  DIN_FISH_POTATO:    {protein:3, starch:1, fat:4, fruit:0, dairy:0, veg:2},
+  DIN_FISH_POTATO:    {protein:3, starch:1, fat:3, fruit:0, dairy:0, veg:2},
   DIN_OMELETTE:       {protein:2, starch:1, fat:1, fruit:0, dairy:0, veg:2}, // fixed: 2 eggs + 1 bread + oil + veg
   DIN_TUNA_POTATO:    {protein:0, starch:0, fat:0, fruit:0, dairy:0, veg:1},
   DIN_PASTA_MINCE:    {protein:0, starch:0, fat:0, fruit:0, dairy:0, veg:1},
@@ -2470,7 +2470,7 @@ const MEAL_EXCHANGES = {
 // printed recipe describes (274 kcal) — with no indication anywhere in the
 // plan. These meals must NOT receive dynamic portions, same as breakfast.
 const FIXED_COMPOSITION_MEALS = new Set([
-  'DIN_OMELETTE', 'DIN_SOUVLAKI_PITA', 'DIN_FISH_POTATO',
+  'DIN_OMELETTE', 'DIN_SOUVLAKI_PITA', 'DIN_FISH_POTATO', 'LUN_TUNA_POTATO',
   'LUN_CHICKPEA_STEW', 'LUN_BEAN_SALAD',
   'DIN_CHICKPEA_STEW', 'DIN_HALLOUMI_SALAD',
   'LUN_CHICKEN_QUINOA', 'LUN_SALMON_QUINOA', 'LUN_LENTIL_SOUP',
@@ -3122,21 +3122,38 @@ function setEquivalentsLang(lang){
   buildEquivalents();
 }
 
+function equivalentsCompactTableHtml(lang='gr'){
+  const isEn=lang==='en';
+  const portionLabel=isEn?'1 exchange':'1 μερίδα';
+  const rows=EQUIVALENTS_DATA.map(cat=>{
+    const title=isEn?cat.en:cat.gr;
+    const examples=cat.items.map(it=>isEn?it.en:it.gr);
+    const split=Math.ceil(examples.length/2);
+    const colHtml=list=>list.map(x=>`<div style="margin-bottom:3px">• ${safeHtml(x)}</div>`).join('');
+    return `<tr style="break-inside:avoid;page-break-inside:avoid">
+      <td style="padding:7px 8px;border:1px solid var(--border);font-weight:800;color:var(--teal-800);vertical-align:top;width:20%">${cat.icon} ${safeHtml(title)}</td>
+      <td style="padding:7px 8px;border:1px solid var(--border);vertical-align:top;width:12%;white-space:nowrap">${portionLabel}</td>
+      <td style="padding:7px 8px;border:1px solid var(--border);vertical-align:top;width:34%;line-height:1.45">${colHtml(examples.slice(0,split))}</td>
+      <td style="padding:7px 8px;border:1px solid var(--border);vertical-align:top;width:34%;line-height:1.45">${colHtml(examples.slice(split))}</td>
+    </tr>`;
+  }).join('');
+  return `<table class="equivalents-compact-table" style="width:100%;border-collapse:collapse;font-size:12px;background:var(--bg-surface);border:1px solid var(--border)">
+    <thead>
+      <tr style="background:var(--bg-muted);color:var(--text-muted);text-transform:uppercase;font-size:10px;letter-spacing:.04em">
+        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left">${isEn?'Exchange':'Ισοδύναμο'}</th>
+        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left">${isEn?'Portion':'Μερίδα'}</th>
+        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left">${isEn?'Examples 1':'Παραδείγματα 1'}</th>
+        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left">${isEn?'Examples 2':'Παραδείγματα 2'}</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
 function buildEquivalents(){
   const lang=equivalentsLang;
   let html=`<div class="alert info">ℹ️ ${lang==='en'?'Within each category, foods can be swapped for one another in the listed amounts.':'Μέσα στην ίδια κατηγορία, τα τρόφιμα μπορούν να αντικατασταθούν μεταξύ τους στις αναγραφόμενες ποσότητες.'}</div>`;
-  EQUIVALENTS_DATA.forEach(cat=>{
-    const title = lang==='en' ? cat.en : cat.gr;
-    html+=`<div style="margin-bottom:16px">
-      <div style="font-weight:700;font-size:14px;color:var(--text-active);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)">${cat.icon} ${title}</div>
-      <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.8">
-        ${cat.items.map(it=>{
-          if(lang==='en') return `<li>${it.en}</li>`;
-          return `<li>${it.gr}</li>`;
-        }).join('')}
-      </ul>
-    </div>`;
-  });
+  html+=equivalentsCompactTableHtml(lang);
   setEl('equivalents-body', html);
 }
 function reportEquivalentsGuideHtml(isEn){
@@ -3146,13 +3163,7 @@ function reportEquivalentsGuideHtml(isEn){
       <div style="font-size:18px;font-weight:800;color:var(--teal-800)">${isEn?'Equivalents Guide':'Οδηγός Ισοδυνάμων / Equivalents Guide'}</div>
       <div style="font-size:11px;color:var(--text-muted);margin-top:3px">${isEn?'Foods within each exchange category can be swapped in the listed amounts.':'Τα τρόφιμα μέσα στην ίδια κατηγορία ισοδυνάμων μπορούν να αντικατασταθούν στις αναγραφόμενες ποσότητες.'}</div>
     </div>
-    ${EQUIVALENTS_DATA.map(cat=>`
-      <div style="break-inside:avoid;page-break-inside:avoid;margin-bottom:12px">
-        <div style="font-weight:800;font-size:13px;color:var(--teal-800);margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid var(--border)">${cat.icon} ${safeHtml(lang==='en'?cat.en:cat.gr)}</div>
-        <table style="width:100%;border-collapse:collapse;font-size:11px;background:var(--bg-surface);border:1px solid var(--border)">
-          <tbody>${cat.items.map(it=>`<tr style="border-bottom:1px solid var(--border)"><td style="padding:4px 6px">${safeHtml(lang==='en'?it.en:it.gr)}</td></tr>`).join('')}</tbody>
-        </table>
-      </div>`).join('')}
+    ${equivalentsCompactTableHtml(lang)}
   </div>`;
 }
 // Single source of truth for breakfast/lunch/dinner dropdowns, used by both
@@ -4841,6 +4852,23 @@ function calcBodyComp(){
   }
   if(metage!==null&&S.age) setEl('bc-metage-note',metage<=S.age?'✅ Favorable':'⚠ Metabolic age above chronological');
 
+  const visceralFatScaleHtml=score=>{
+    const n=Number(score);
+    if(!Number.isFinite(n)) return '';
+    const clamped=Math.max(1, Math.min(16, n));
+    const marker=((clamped-1)/15)*100;
+    return `<div style="margin-top:9px">
+      <div style="height:9px;border-radius:999px;overflow:hidden;position:relative;display:grid;grid-template-columns:8fr 4fr 4fr;border:1px solid var(--border);box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)">
+        <span style="background:#22c55e"></span>
+        <span style="background:#facc15"></span>
+        <span style="background:#ef4444"></span>
+        <span aria-hidden="true" style="position:absolute;left:calc(${marker}% - 5px);top:-4px;width:10px;height:17px;border-radius:999px;background:var(--text-primary);border:2px solid var(--bg-surface);box-shadow:0 1px 4px rgba(0,0,0,.25)"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;gap:6px;margin-top:4px;font-size:9px;color:var(--text-muted);line-height:1.2">
+        <span>1–8 Healthy</span><span>9–12 Borderline</span><span>13+ High</span>
+      </div>
+    </div>`;
+  };
   const fields=[['Body Fat',bf,'%',isMale?'10–20%':'18–28%'],['Body Water',water,'%',isMale?'50–65%':'45–60%'],
     ['Fat Mass',fatmass!==null?fatmass.toFixed(1):null,'kg','Auto'],['Fat-Free Mass',ffm!==null?ffm.toFixed(1):null,'kg','Weight − fat mass'],
     ['Muscle Mass',muscle!==null?muscle.toFixed(1):null,'kg','Measured / manual'],
@@ -4848,7 +4876,8 @@ function calcBodyComp(){
     ['Visceral Fat',visceral,'score','1–8 healthy · 9–12 borderline · 13+ high'],['Metabolic Age',metage,'y','≤ chronological age']];
   setEl('bc-interpretation','<div class="metrics-grid">'+fields.map(([l,val,u,ref])=>{
     const visceralClass=l==='Visceral Fat'&&val!=null ? (val<=8?'ok':val<=12?'warn':'err') : '';
-    return `<div class="metric"><div class="m-label">${l}</div><div class="m-value ${visceralClass}" style="font-size:20px">${val!=null?val+u:'—'}</div><div class="m-sub">Ref: ${ref}</div></div>`;
+    const valueText=val!=null ? `${val}${u?' '+u:''}` : '—';
+    return `<div class="metric"><div class="m-label">${l}</div><div class="m-value ${visceralClass}" style="font-size:20px">${valueText}</div><div class="m-sub">Ref: ${ref}</div>${l==='Visceral Fat'?visceralFatScaleHtml(val):''}</div>`;
   }).join('')+'</div>');
 
   const targetWt=w?(w*0.95).toFixed(1):'—';
@@ -5427,8 +5456,8 @@ function strictMainDescription(mealKey, exch, lang='GR'){
     LUN_CHICKEN_RICE:`Κοτόπουλο + ρύζι (${joinParts([`${proteinGr}g μαγειρεμένο κοτόπουλο`,starchGR,fatGR])}) – ${vegGR}`,
     DIN_CHICKEN_RICE:`Κοτόπουλο + ρύζι (${joinParts([`${proteinGr}g μαγειρεμένο κοτόπουλο`,starchGR,fatGR])}) – ${vegGR}`,
     LUN_FISH_POTATO:`Ψάρι + πατάτα (${joinParts([`${proteinGr}g μαγειρεμένο ψάρι`,starchGR,fatGR])}) – ${vegGR}`,
-    DIN_FISH_POTATO:`Ψάρι + πατάτα (${joinParts([`${proteinGr}g μαγειρεμένο ψάρι`,starchGR,fatGR])}) – ${vegGR}`,
-    LUN_TUNA_POTATO:`Τόνος + πατάτα (${joinParts([`${proteinGr}g τόνο`,starchGR,fatGR])}) – ${vegGR}`,
+    DIN_FISH_POTATO:`Ψάρι + πατάτα (140g μαγειρεμένο ψάρι + 1 μέτρια πατάτα (~150g) + 3 κ.γ. ελαιόλαδο) – σαλάτα (2 φλ.)`,
+    LUN_TUNA_POTATO:`Τόνος + πατάτα (100g τόνο + 1 μεγάλη πατάτα (~200g) + 4 κ.γ. ελαιόλαδο) – σαλάτα (2 φλ.)`,
     LUN_FASOLAKIA_PORK:`Φασολάκια + χοιρινό (${joinParts([`${proteinGr}g μαγειρεμένο χοιρινό`,starchGR,fatGR])}) – φασολάκια + ${vegGR}`,
     LUN_PASTA_MINCE:`Μακαρόνια + κιμάς (${joinParts([`${proteinGr}g μαγειρεμένο κιμά`,starchGR,fatGR])}) – ${vegGR}`,
     DIN_PASTA_MINCE:`Μακαρόνια + κιμάς (${joinParts([`${proteinGr}g μαγειρεμένο κιμά`,starchGR,fatGR])}) – ${vegGR}`,
@@ -5458,8 +5487,8 @@ function strictMainDescription(mealKey, exch, lang='GR'){
     LUN_CHICKEN_RICE:`Chicken + rice (${joinParts([`${proteinGr}g cooked chicken`,starchEN,fatEN])}) - ${vegEN}`,
     DIN_CHICKEN_RICE:`Chicken + rice (${joinParts([`${proteinGr}g cooked chicken`,starchEN,fatEN])}) - ${vegEN}`,
     LUN_FISH_POTATO:`Fish + potato (${joinParts([`${proteinGr}g cooked fish`,starchEN,fatEN])}) - ${vegEN}`,
-    DIN_FISH_POTATO:`Fish + potato (${joinParts([`${proteinGr}g cooked fish`,starchEN,fatEN])}) - ${vegEN}`,
-    LUN_TUNA_POTATO:`Tuna + potato (${joinParts([`${proteinGr}g tuna`,starchEN,fatEN])}) - ${vegEN}`,
+    DIN_FISH_POTATO:`Fish + potato (140g cooked fish + 1 medium potato (~150g) + 3 tsp olive oil) - salad (2 cups)`,
+    LUN_TUNA_POTATO:`Tuna + potato (100g tuna + 1 large potato (~200g) + 4 tsp olive oil) - salad (2 cups)`,
     LUN_FASOLAKIA_PORK:`Green beans + pork (${joinParts([`${proteinGr}g cooked pork`,starchEN,fatEN])}) - green beans + ${vegEN}`,
     LUN_PASTA_MINCE:`Pasta + mince (${joinParts([`${proteinGr}g cooked mince`,starchEN,fatEN])}) - ${vegEN}`,
     DIN_PASTA_MINCE:`Pasta + mince (${joinParts([`${proteinGr}g cooked mince`,starchEN,fatEN])}) - ${vegEN}`,
