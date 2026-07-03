@@ -729,7 +729,6 @@ html[data-theme="dark"] .week-summary-table td:last-child {
   <button class="nav-item" onclick="nav('intake')">📋 Client Notes / Intake</button>
   <button class="nav-item" onclick="nav('macros')">🎯 Macro Targets</button>
   <button class="nav-item" onclick="nav('exchanges')">🔄 Exchange System</button>
-  <button class="nav-item" onclick="nav('oneday')">☀️ 1-Day Plan</button>
   <button class="nav-item" onclick="nav('sevenday')">📅 7-Day Plan</button>
   <button class="nav-item" onclick="nav('report')">📄 Client Report</button>
   <button class="nav-item" onclick="nav('labs')">🩸 Blood Analysis</button>
@@ -795,8 +794,8 @@ html[data-theme="dark"] .week-summary-table td:last-child {
         <div class="card-body" id="dash-appointments"><div style="color:var(--text-muted);font-size:13px">No appointments today.</div></div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">☀️ Today's meal plan — <span id="dash-day">Monday</span></span><span class="card-action" onclick="nav('oneday')">Full plan →</span></div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">☀️ Today's meal plan — <span id="dash-day">Monday</span></span><span class="card-action" onclick="nav('sevenday')">Weekly plan →</span></div>
       <div class="card-body" id="dash-meals"><div style="color:var(--gray-400);font-size:13px">Fill Client Profile and Exchange System to generate plan</div></div>
     </div>
   </div>
@@ -1077,7 +1076,7 @@ html[data-theme="dark"] .week-summary-table td:last-child {
           <button class="btn" onclick="applySuggestedExchangeServings()">✨ Suggested servings</button>
           <button class="btn primary" onclick="refreshExchangePlansNow()">🔄 Apply to Meal Plans</button>
           <button class="btn primary" onclick="generateAiSevenDayPlan()">✨ Generate AI Plan</button>
-          <span style="font-size:12px;color:var(--text-muted)">Click after changing servings to push updates into 1-Day, 7-Day plan and Report</span>
+          <span style="font-size:12px;color:var(--text-muted)">Click after changing servings to push updates into the 7-Day plan and Report</span>
         </div>
         <div id="exchange-rows"></div>
         <div class="section-label">MACRO MATCH CHECK</div>
@@ -1085,7 +1084,6 @@ html[data-theme="dark"] .week-summary-table td:last-child {
         <div class="section-label">EXCHANGE PRECISION CONTROL</div>
         <div id="exchange-precision"></div>
         <div style="margin-top:14px;display:flex;gap:8px;">
-          <button class="btn primary" onclick="nav('oneday')">Build 1-Day Plan →</button>
           <button class="btn" onclick="nav('sevenday')">Build 7-Day Plan →</button>
         </div>
       </div>
@@ -1422,7 +1420,6 @@ html[data-theme="dark"] .week-summary-table td:last-child {
   <button class="bnav-item" onclick="nav('intake');setBnav(this)"><span>📋</span><span>Intake</span></button>
   <button class="bnav-item" onclick="nav('macros');setBnav(this)"><span>🎯</span><span>Macros</span></button>
   <button class="bnav-item" onclick="nav('exchanges');setBnav(this)"><span>🔄</span><span>Exchange</span></button>
-  <button class="bnav-item" onclick="nav('oneday');setBnav(this)"><span>☀️</span><span>1-Day</span></button>
   <button class="bnav-item" onclick="nav('sevenday');setBnav(this)"><span>📅</span><span>7-Day</span></button>
   <button class="bnav-item" onclick="nav('report');setBnav(this)"><span>📄</span><span>Report</span></button>
   <button class="bnav-item" onclick="nav('labs');setBnav(this)"><span>🩸</span><span>Labs</span></button>
@@ -2333,6 +2330,7 @@ Object.assign(MEALS_EN, {
 });
 
 function mealText(key, portions, lang){
+  if(isNoMealKey(key)) return '';
   if(isCustomMealKey(key)) return customMealText(key, lang);
   const map = (lang||S.mealLanguage)==='EN' ? MEALS_EN : MEALS;
   let text = map[key] ? map[key](S.ex, portions) : '';
@@ -2531,26 +2529,26 @@ const EXTRA_FOOD_DAYS=[
   {v:'6',label:'Sunday',gr:'Κυριακή',en:'Sunday'},
 ];
 const EXTRA_FOOD_SLOTS=[
-  {v:'brk',label:'Breakfast'},
-  {v:'snk1',label:'Snack 1'},
-  {v:'lun',label:'Lunch'},
-  {v:'snk2',label:'Snack 2'},
-  {v:'din',label:'Dinner'},
-  {v:'sleep',label:'Before sleep'},
+  {v:'brk',label:'Breakfast',gr:'Πρωινό',en:'Breakfast'},
+  {v:'snk1',label:'Snack 1',gr:'Σνακ 1',en:'Snack 1'},
+  {v:'lun',label:'Lunch',gr:'Μεσημεριανό',en:'Lunch'},
+  {v:'snk2',label:'Snack 2',gr:'Σνακ 2',en:'Snack 2'},
+  {v:'din',label:'Dinner',gr:'Βραδινό',en:'Dinner'},
+  {v:'sleep',label:'Before sleep',gr:'Πριν τον ύπνο',en:'Before sleep'},
 ];
 function extraFoodDayOptionsHtml(){
   const isEn=(S.mealLanguage||'GR')==='EN';
   return EXTRA_FOOD_DAYS.map(d=>`<option value="${d.v}">${isEn?(d.en||d.label):(d.gr||d.label)}</option>`).join('');
 }
 function extraFoodSlotOptionsHtml(){
-  return EXTRA_FOOD_SLOTS.map(s=>`<option value="${s.v}">${s.label}</option>`).join('');
+  const isEn=(S.mealLanguage||'GR')==='EN';
+  return EXTRA_FOOD_SLOTS.map(s=>`<option value="${s.v}">${isEn?(s.en||s.label):(s.gr||s.label)}</option>`).join('');
 }
 function extraFoodSpecificDaysHtml(index){
-  const isEn=(S.mealLanguage||'GR')==='EN';
   return EXTRA_FOOD_DAYS.filter(d=>!['all','specific'].includes(d.v)).map(d=>`
     <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;cursor:pointer">
       <input type="checkbox" id="food-add-specific-${index}-${d.v}" value="${d.v}" style="width:13px;height:13px;accent-color:var(--teal-600)">
-      ${isEn?(d.en||d.label):(d.gr||d.label)}
+      ${(d.gr||d.label)} / ${(d.en||d.label)}
     </label>`).join('');
 }
 function toggleFoodSpecificDays(index){
@@ -3213,21 +3211,24 @@ function mealTitleFromTemplate(key, lang='GR'){
   return String(text||'').split(/\s+[–-]\s+|\s+\(/)[0].trim();
 }
 function mealOptionDisplayLabel(option, lang=S.mealLanguage||'GR'){
+  if(option?.v==='__NONE__') return lang==='EN' ? '— No selection —' : '— Καμία επιλογή —';
   if(lang==='EN'){
     const title=mealTitleFromTemplate(option.v, 'EN');
     if(title) return title;
   }
   return option.l;
 }
+function isNoMealKey(key){ return String(key||'')==='__NONE__'; }
 function mealOptionsHtml(options, current){
   const lang=S.mealLanguage||'GR';
+  const noneOption=`<option value="__NONE__" ${current==='__NONE__'?'selected':''}>${lang==='EN'?'— No selection —':'— Καμία επιλογή —'}</option>`;
   const base=options.map(o=>`<option value="${o.v}" ${o.v===current?'selected':''}>${safeHtml(mealOptionDisplayLabel(o, lang))}</option>`).join('');
   const customCreate=`<option value="__CUSTOM__">＋ Custom meal</option>`;
   const custom=(S.customMeals||[]).map(m=>{
     const v='CUSTOM_'+m.id;
     return `<option value="${v}" ${v===current?'selected':''}>✏️ Custom — ${safeHtml(m.name||'Meal')}</option>`;
   }).join('');
-  return base + customCreate + custom;
+  return noneOption + base + customCreate + custom;
 }
 function refreshMealDropdownLabels(){
   const diet=v('p-diet')||'Omnivore';
@@ -5317,6 +5318,7 @@ function strictCompleteDairyLedger(slots, plan, isToast){
 
 function strictFallbackLedger(dayPlan, dayIndex){
   if(!strictCase1BudgetActive()) return null;
+  if(['brk','lun','din','breakfast','lunch','dinner'].some(k=>isNoMealKey(dayPlan?.[k]))) return null;
   normalizeDairyExtrasForPlan(dayPlan);
   const isToast=[0,2,4,6].includes(Number(dayIndex));
   const slots=isToast ? {
@@ -7096,6 +7098,11 @@ function addFoodResultToMealPlan(index){
   const grams=foodNumber(v(`food-add-grams-${index}`))||p.defaultGrams||100;
   const foodName=foodDisplayName(p);
   const selectedDays=selectedExtraFoodDays(index);
+  const selectedSlot=v(`food-add-slot-${index}`)||'brk';
+  if(!EXTRA_FOOD_SLOTS.some(s=>s.v===selectedSlot)){
+    alert((S.mealLanguage||'GR')==='EN' ? 'Please select one meal slot.' : 'Παρακαλώ επιλέξτε ένα γεύμα.');
+    return;
+  }
   if(!selectedDays.length){
     alert((S.mealLanguage||'GR')==='EN' ? 'Please select at least one day.' : 'Παρακαλώ επιλέξτε τουλάχιστον μία ημέρα.');
     return;
@@ -7114,7 +7121,7 @@ function addFoodResultToMealPlan(index){
     ...baseFood,
     id:'xf_'+Date.now()+'_'+Math.random().toString(16).slice(2),
     day,
-    slot:v(`food-add-slot-${index}`)||'brk',
+    slot:selectedSlot,
   }));
   S.extraFoods.push(...created);
   const panel=document.getElementById(`food-add-panel-${index}`);
@@ -7124,7 +7131,8 @@ function addFoodResultToMealPlan(index){
   const dayLabel=selectedDays.length===1
     ? ((EXTRA_FOOD_DAYS.find(d=>d.v===String(selectedDays[0]))||EXTRA_FOOD_DAYS[0])[isEn?'en':'gr']||EXTRA_FOOD_DAYS[0].label)
     : (isEn ? `${selectedDays.length} selected days` : `${selectedDays.length} επιλεγμένες ημέρες`);
-  const slotLabel=(EXTRA_FOOD_SLOTS.find(s=>s.v===created[0].slot)||EXTRA_FOOD_SLOTS[0]).label;
+  const slotObj=EXTRA_FOOD_SLOTS.find(s=>s.v===created[0].slot)||EXTRA_FOOD_SLOTS[0];
+  const slotLabel=isEn?(slotObj.en||slotObj.label):(slotObj.gr||slotObj.label);
   setEl('fooddb-status', `${safeHtml(foodName)} added to ${dayLabel} / ${slotLabel}. Meal-plan kcal now include this item.`);
 }
 function removeExtraFood(id){
