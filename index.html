@@ -691,7 +691,7 @@ html[data-theme="dark"] .week-summary-table td:last-child {
     <div class="subscription-status" id="subscription-message">Checking subscription…</div>
     <div class="subscription-plan">
       <strong>NutriFlow Professional</strong>
-      <div style="font-size:13px;color:var(--text-muted);line-height:1.5">Client profiles, exchange system, 1-day and 7-day plans, blood analysis, tracking, recipes, and reports for your dietetic practice. Start with a 7-day free trial; card required upfront.</div>
+      <div id="subscription-plan-copy" style="font-size:13px;color:var(--text-muted);line-height:1.5">Client profiles, exchange system, 1-day and 7-day plans, blood analysis, tracking, recipes, and reports for your dietetic practice. Start with a 7-day free trial; card required upfront.</div>
       <div style="margin-top:12px;display:grid;gap:8px">
         <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface)">
           <span style="font-weight:700;color:var(--text-primary)">Monthly</span>
@@ -703,8 +703,8 @@ html[data-theme="dark"] .week-summary-table td:last-child {
         </div>
       </div>
     </div>
-    <button class="auth-submit" onclick="startStripeCheckout('price_1ToMPVDwBpsAKvLemjXMV2Rg')">Start 7-day trial — Monthly</button>
-    <button class="auth-submit secondary" onclick="startStripeCheckout('price_1ToMPWDwBpsAKvLe4Ial8JRS')">Start 7-day trial — Yearly</button>
+    <button class="auth-submit" id="subscription-monthly-checkout-btn" onclick="startStripeCheckout('price_1ToMPVDwBpsAKvLemjXMV2Rg')">Start 7-day trial — Monthly</button>
+    <button class="auth-submit secondary" id="subscription-yearly-checkout-btn" onclick="startStripeCheckout('price_1ToMPWDwBpsAKvLe4Ial8JRS')">Start 7-day trial — Yearly</button>
     <button class="auth-submit secondary" onclick="handleSignOut()">Sign out</button>
   </div>
 </div>
@@ -1657,6 +1657,12 @@ function trialDaysRemaining(trialStart){
   end.setDate(end.getDate()+STRIPE_TRIAL_DAYS);
   return daysUntilDate(end);
 }
+function hasPastTrialEnd(value){
+  if(!value) return false;
+  const d=new Date(value);
+  if(!Number.isFinite(d.getTime())) return false;
+  return daysUntilDate(d)<=0;
+}
 function subscriptionIsActive(row){
   if(!row) return false;
   const status=(row.subscription_status || row.status || '').toLowerCase();
@@ -1706,14 +1712,17 @@ async function fetchSubscriptionStatus(){
     ? daysUntilDate(trialEnd)
     : null;
   const isTrialActive=statusLower==='trialing' && days>0;
+  const trialUsedExpired=hasPastTrialEnd(data&&data.trial_end);
   const active=subscriptionIsActive(data) || isTrialActive;
   return {
     status,
     active,
     trialActive:isTrialActive,
-    trialExpired:statusLower==='trialing' && days<=0,
+    trialExpired:(statusLower==='trialing' && days<=0) || (!active && trialUsedExpired),
+    trialUsedExpired,
     trialDaysRemaining:days,
     trialStart:data&&data.trial_start,
+    trialEnd:data&&data.trial_end,
     currentPeriodEnd:data&&(data.current_period_end||data.current_period_end_at||data.trial_end),
     stripeCustomerId:data&&data.stripe_customer_id,
   };
@@ -1749,8 +1758,11 @@ function loadSubscriptionCache(){
     if(!cached || typeof cached!=='object') return false;
     const statusLower=String(cached.status || '').toLowerCase();
     const days=statusLower==='trialing' && cached.currentPeriodEnd ? daysUntilDate(cached.currentPeriodEnd) : cached.trialDaysRemaining;
-    subscriptionState={...cached, trialDaysRemaining:days, trialActive:statusLower==='trialing' && days>0, trialExpired:statusLower==='trialing' && days<=0};
+    const trialUsedExpired=!!cached.trialUsedExpired || hasPastTrialEnd(cached.trialEnd);
+    const active=!!cached.active;
+    subscriptionState={...cached, trialUsedExpired, trialDaysRemaining:days, trialActive:statusLower==='trialing' && days>0, trialExpired:(statusLower==='trialing' && days<=0) || (!active && trialUsedExpired)};
     updateTrialBanner();
+    updateSubscriptionCheckoutButtons();
     updateAccountPage();
     return true;
   }catch(e){
@@ -2215,7 +2227,7 @@ const MEALS = {
   DIN_OMELETTE:       (ex,p) => 'Ομελέτα (3 αυγά) + 1 φέτα ψωμί – βραστά λαχανικά (2 φλ.)',
   DIN_TUNA_POTATO:    (ex,p) => 'Τόνος + πατάτα' + mealSuffix(ex,p,'σαλάτα',null,'πατάτα','τόνο',true),
   DIN_PASTA_MINCE:    (ex,p) => 'Μακαρόνια + κιμάς' + mealSuffix(ex,p,'σαλάτα',null,'ζυμαρικά','κιμά'),
-  DIN_SOUVLAKI_PITA:  (ex,p) => 'Σουβλάκι κοτόπουλο (140g) + μικρή κυπριακή πίτα (2 ισοδύναμα αμύλου) – σαλάτα (3 φλ.)',
+  DIN_SOUVLAKI_PITA:  (ex,p) => 'Σουβλάκι κοτόπουλο (140g) + μικρή κυπριακή πίτα – σαλάτα (3 φλ.) + 3 κ.γ. ελαιόλαδο',
   DIN_BIFTEKI_BULGUR: (ex,p) => 'Μπιφτέκι + πλιγούρι' + mealSuffix(ex,p,'σαλάτα',null,'πλιγούρι','μπιφτέκι'),
   LUN_LENTILS_RICE:   (ex,p) => 'Φακές γιαχνί + ρύζι' + mealSuffix(ex,p,'σαλάτα', n=>`${n} μερίδ${n>1?'ες':'α'} φακές (½ φλ. μαγειρεμένες ανά μερίδα)`, 'ρύζι'),
   LUN_CHICKPEA_STEW:  (ex,p) => 'Ρεβίθια γιαχνί + ψωμί ολικής – σαλάτα (2 φλ.)',
@@ -2251,7 +2263,7 @@ const MEALS_EN = {
   DIN_OMELETTE:       (ex,p) => 'Omelette (3 eggs) + 1 slice bread - boiled vegetables (2 cups)',
   DIN_TUNA_POTATO:    (ex,p) => 'Tuna + potato' + mealSuffixEn(ex,p,'salad',null,'potato','tuna',true),
   DIN_PASTA_MINCE:    (ex,p) => 'Pasta + mince' + mealSuffixEn(ex,p,'salad',null,'pasta','mince'),
-  DIN_SOUVLAKI_PITA:  (ex,p) => 'Chicken souvlaki (140g) + small Cypriot pita (2 starch exchanges) - salad (3 cups)',
+  DIN_SOUVLAKI_PITA:  (ex,p) => 'Chicken souvlaki (140g) + small Cypriot pita - salad (3 cups) + 3 tsp olive oil',
   DIN_BIFTEKI_BULGUR: (ex,p) => 'Burger + bulgur' + mealSuffixEn(ex,p,'salad',null,'bulgur','burger'),
   LUN_LENTILS_RICE:   (ex,p) => 'Lentil stew + rice' + mealSuffixEn(ex,p,'salad', n=>`${n} lentil serving${n>1?'s':''} (1/2 cup cooked per serving)`, 'rice'),
   LUN_CHICKPEA_STEW:  (ex,p) => 'Chickpea stew + wholegrain bread - salad (2 cups)',
@@ -2347,7 +2359,8 @@ function mealText(key, portions, lang){
   let text = map[key] ? map[key](S.ex, textPortions) : '';
   const extraProt=Number(portions?.prot||0);
   const extraFat=Number(portions?.fat||0);
-  if(text && FIXED_COMPOSITION_MEALS.has(key) && extraProt>0 && key!=='DIN_SOUVLAKI_PITA'){
+  const noFixedExtraDisplay=new Set(['DIN_SOUVLAKI_PITA','DIN_FISH_POTATO','LUN_TUNA_POTATO']);
+  if(text && FIXED_COMPOSITION_MEALS.has(key) && extraProt>0 && !noFixedExtraDisplay.has(key)){
     const gramsPerEx = Math.round(30 * (((S.exMeta && S.exMeta.protein && S.exMeta.protein.pro) || 7)/7));
     if((lang||S.mealLanguage)==='EN'){
       text += key==='DIN_OMELETTE'
@@ -2359,7 +2372,7 @@ function mealText(key, portions, lang){
         : ` + ${extraProt*gramsPerEx}g μαγειρεμένη άπαχη πρωτεΐνη`;
     }
   }
-  if(text && FIXED_COMPOSITION_MEALS.has(key) && extraFat>0){
+  if(text && FIXED_COMPOSITION_MEALS.has(key) && extraFat>0 && !noFixedExtraDisplay.has(key)){
     text += (lang||S.mealLanguage)==='EN' ? ` + ${extraFat} tsp olive oil` : ` + ${extraFat} κ.γ. ελαιόλαδο`;
   }
   return text;
@@ -2698,9 +2711,7 @@ function formatPotatoPortion(exCount, lang='GR') {
   if(n<=0) return '';
   const isEn=lang==='EN';
   if(n<=1) return isEn ? '1 medium potato (~150g)' : '1 μέτρια πατάτα (~150g)';
-  if(n<=2) return isEn ? '1 large potato (~200g)' : '1 μεγάλη πατάτα (~200g)';
-  if(n===3) return isEn ? '1 large potato (~200g) + 1 medium potato (~150g)' : '1 μεγάλη πατάτα (~200g) + 1 μέτρια πατάτα (~150g)';
-  return isEn ? `${n} potato starch exchanges` : `${n} ισοδύναμα αμύλου από πατάτα`;
+  return isEn ? '1 large potato (~200g)' : '1 μεγάλη πατάτα (~200g)';
 }
 
 function mealSuffix(ex, p, veg, proteinSource, carbName, proteinLabel, isFishProtein) {
@@ -3131,19 +3142,19 @@ function equivalentsCompactTableHtml(lang='gr'){
     const split=Math.ceil(examples.length/2);
     const colHtml=list=>list.map(x=>`<div style="margin-bottom:3px">• ${safeHtml(x)}</div>`).join('');
     return `<tr style="break-inside:avoid;page-break-inside:avoid">
-      <td style="padding:7px 8px;border:1px solid var(--border);font-weight:800;color:var(--teal-800);vertical-align:top;width:20%">${cat.icon} ${safeHtml(title)}</td>
-      <td style="padding:7px 8px;border:1px solid var(--border);vertical-align:top;width:12%;white-space:nowrap">${portionLabel}</td>
-      <td style="padding:7px 8px;border:1px solid var(--border);vertical-align:top;width:34%;line-height:1.45">${colHtml(examples.slice(0,split))}</td>
-      <td style="padding:7px 8px;border:1px solid var(--border);vertical-align:top;width:34%;line-height:1.45">${colHtml(examples.slice(split))}</td>
+      <td style="padding:7px 8px;border:1px solid var(--border);font-weight:800;color:var(--teal-800);vertical-align:top;width:18%">${cat.icon} ${safeHtml(title)}</td>
+      <td style="padding:7px 6px;border:1px solid var(--border);vertical-align:top;width:8%;white-space:nowrap;font-size:11px">${portionLabel}</td>
+      <td style="padding:7px 8px;border:1px solid var(--border);vertical-align:top;width:37%;line-height:1.45">${colHtml(examples.slice(0,split))}</td>
+      <td style="padding:7px 8px;border:1px solid var(--border);vertical-align:top;width:37%;line-height:1.45">${colHtml(examples.slice(split))}</td>
     </tr>`;
   }).join('');
   return `<table class="equivalents-compact-table" style="width:100%;border-collapse:collapse;font-size:12px;background:var(--bg-surface);border:1px solid var(--border)">
     <thead>
       <tr style="background:var(--bg-muted);color:var(--text-muted);text-transform:uppercase;font-size:10px;letter-spacing:.04em">
-        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left">${isEn?'Exchange':'Ισοδύναμο'}</th>
-        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left">${isEn?'Portion':'Μερίδα'}</th>
-        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left">${isEn?'Examples 1':'Παραδείγματα 1'}</th>
-        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left">${isEn?'Examples 2':'Παραδείγματα 2'}</th>
+        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left;width:18%">${isEn?'Exchange':'Ισοδύναμο'}</th>
+        <th style="padding:7px 6px;border:1px solid var(--border);text-align:left;width:8%">${isEn?'Portion':'Μερίδα'}</th>
+        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left;width:37%">${isEn?'Examples 1':'Παραδείγματα 1'}</th>
+        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left;width:37%">${isEn?'Examples 2':'Παραδείγματα 2'}</th>
       </tr>
     </thead>
     <tbody>${rows}</tbody>
@@ -5463,7 +5474,7 @@ function strictMainDescription(mealKey, exch, lang='GR'){
     DIN_PASTA_MINCE:`Μακαρόνια + κιμάς (${joinParts([`${proteinGr}g μαγειρεμένο κιμά`,starchGR,fatGR])}) – ${vegGR}`,
     DIN_BIFTEKI_BULGUR:`Μπιφτέκι + πλιγούρι (${joinParts([`${proteinGr}g μπιφτέκι`,starchGR,fatGR])}) – ${vegGR}`,
     DIN_OMELETTE:`Ομελέτα + ψωμί (${joinParts(['3 αυγά','60g γαλοπούλα light',starchGR,fatGR])}) – βραστά λαχανικά (${portions.veg} φλ.)`,
-    DIN_SOUVLAKI_PITA:`Σουβλάκι κοτόπουλο + κυπριακή πίτα (${joinParts([`${proteinGr}g κοτόπουλο`,starchGR||'1 μικρή κυπριακή πίτα',fatGR])}) – ${vegGR}`,
+    DIN_SOUVLAKI_PITA:`Σουβλάκι κοτόπουλο (140g) + μικρή κυπριακή πίτα – σαλάτα (3 φλ.) + 3 κ.γ. ελαιόλαδο`,
     LUN_CHICKEN_POTATO:`Κοτόπουλο + πατάτα (${joinParts([`${proteinGr}g μαγειρεμένο κοτόπουλο`,starchGR,visibleFatGR])}) – ${vegGR}`,
     DIN_CHICKEN_POTATO:`Κοτόπουλο + πατάτα (${joinParts([`${proteinGr}g μαγειρεμένο κοτόπουλο`,starchGR,visibleFatGR])}) – ${vegGR}`,
     LUN_FASOLAKIA_CHICKEN:`Φασολάκια + κοτόπουλο (${joinParts([`${proteinGr}g μαγειρεμένο κοτόπουλο`,'φασολάκια',starchGR,visibleFatGR])}) – ${vegGR}`,
@@ -5494,7 +5505,7 @@ function strictMainDescription(mealKey, exch, lang='GR'){
     DIN_PASTA_MINCE:`Pasta + mince (${joinParts([`${proteinGr}g cooked mince`,starchEN,fatEN])}) - ${vegEN}`,
     DIN_BIFTEKI_BULGUR:`Burger + bulgur (${joinParts([`${proteinGr}g burger`,starchEN,fatEN])}) - ${vegEN}`,
     DIN_OMELETTE:`Omelette + bread (${joinParts(['3 eggs','60g light turkey',starchEN,fatEN])}) - boiled vegetables (${portions.veg} cups)`,
-    DIN_SOUVLAKI_PITA:`Chicken souvlaki + Cypriot pita (${joinParts([`${proteinGr}g chicken`,starchEN||'1 small Cypriot pita',fatEN])}) - ${vegEN}`,
+    DIN_SOUVLAKI_PITA:`Chicken souvlaki (140g) + small Cypriot pita - salad (3 cups) + 3 tsp olive oil`,
     LUN_CHICKEN_POTATO:`Chicken + potato (${joinParts([`${proteinGr}g cooked chicken`,starchEN,visibleFatEN])}) - ${vegEN}`,
     DIN_CHICKEN_POTATO:`Chicken + potato (${joinParts([`${proteinGr}g cooked chicken`,starchEN,visibleFatEN])}) - ${vegEN}`,
     LUN_FASOLAKIA_CHICKEN:`Green beans + chicken (${joinParts([`${proteinGr}g cooked chicken`,'green beans',starchEN,visibleFatEN])}) - ${vegEN}`,
