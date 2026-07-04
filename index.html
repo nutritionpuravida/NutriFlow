@@ -2245,7 +2245,7 @@ const MEALS = {
   LUN_BIFTEKI_BULGUR: (ex,p) => 'Μπιφτέκι + πλιγούρι' + mealSuffix(ex,p,'σαλάτα',null,'πλιγούρι','μπιφτέκι'),
   DIN_CHICKEN_RICE:   (ex,p) => 'Κοτόπουλο + ρύζι' + mealSuffix(ex,p,'σαλάτα',null,'ρύζι'),
   DIN_FISH_POTATO:    (ex,p) => 'Ψάρι + πατάτα (140g μαγειρεμένο ψάρι + 1 μέτρια πατάτα (~150g) + 3 κ.γ. ελαιόλαδο) – σαλάτα (2 φλ.)',
-  DIN_OMELETTE:       (ex,p) => 'Ομελέτα (3 αυγά) + 1 φέτα ψωμί + 3 κ.γ. ελαιόλαδο – βραστά λαχανικά (2 φλ.)',
+  DIN_OMELETTE:       (ex,p) => 'Ομελέτα (3 αυγά) + 1 φέτα ψωμί + 3 κ.γ. ελαιόλαδο – βραστά λαχανικά (2 φλ.) + 30g γαλοπούλα light',
   DIN_TUNA_POTATO:    (ex,p) => 'Τόνος + πατάτα' + mealSuffix(ex,p,'σαλάτα',null,'πατάτα','τόνο',true),
   DIN_PASTA_MINCE:    (ex,p) => 'Μακαρόνια + κιμάς' + mealSuffix(ex,p,'σαλάτα',null,'ζυμαρικά','κιμά'),
   DIN_SOUVLAKI_PITA:  (ex,p) => 'Σουβλάκι κοτόπουλο (140g) + μικρή κυπριακή πίτα – σαλάτα (3 φλ.) + 3 κ.γ. ελαιόλαδο',
@@ -2281,7 +2281,7 @@ const MEALS_EN = {
   LUN_BIFTEKI_BULGUR: (ex,p) => 'Burger + bulgur' + mealSuffixEn(ex,p,'salad',null,'bulgur','burger'),
   DIN_CHICKEN_RICE:   (ex,p) => 'Chicken + rice' + mealSuffixEn(ex,p,'salad',null,'rice'),
   DIN_FISH_POTATO:    (ex,p) => 'Fish + potato (140g cooked fish + 1 medium potato (~150g) + 3 tsp olive oil) - salad (2 cups)',
-  DIN_OMELETTE:       (ex,p) => 'Omelette (3 eggs) + 1 slice bread + 3 tsp olive oil - boiled vegetables (2 cups)',
+  DIN_OMELETTE:       (ex,p) => 'Omelette (3 eggs) + 1 slice bread + 3 tsp olive oil - boiled vegetables (2 cups) + 30g light turkey',
   DIN_TUNA_POTATO:    (ex,p) => 'Tuna + potato' + mealSuffixEn(ex,p,'salad',null,'potato','tuna',true),
   DIN_PASTA_MINCE:    (ex,p) => 'Pasta + mince' + mealSuffixEn(ex,p,'salad',null,'pasta','mince'),
   DIN_SOUVLAKI_PITA:  (ex,p) => 'Chicken souvlaki (140g) + small Cypriot pita - salad (3 cups) + 3 tsp olive oil',
@@ -4913,8 +4913,12 @@ function calcBodyComp(){
     return `<div class="metric"><div class="m-label">${l}</div><div class="m-value ${visceralClass}" style="font-size:20px">${valueText}</div><div class="m-sub">Ref: ${ref}</div>${l==='Visceral Fat'?visceralFatScaleHtml(val):''}</div>`;
   }).join('')+'</div>');
 
-  const targetWt=w?(w*0.95).toFixed(1):'—';
-  setEl('bc-targets',`<div class="form-grid"><div class="metric"><div class="m-label">Target weight (5% initial)</div><div class="m-value" style="font-size:20px">${targetWt}${w?' kg':''}</div></div><div class="metric"><div class="m-label">Target BMI (long-term)</div><div class="m-value" style="font-size:20px">22–27</div><div class="m-sub">Clinical reference zone</div></div></div>`);
+  const goal=S.goal || v('p-goal') || 'Maintenance';
+  const isGainGoal=goal==='Weight Gain' || goal==='Muscle Gain';
+  const isLossGoal=goal==='Weight Loss';
+  const targetWt=w ? (isLossGoal ? `${(w*0.95).toFixed(1)} kg` : isGainGoal ? `${(w*1.05).toFixed(1)} kg` : 'Συντήρηση / Maintain current weight') : '—';
+  const targetLabel=isLossGoal ? 'Target weight (-5% initial)' : isGainGoal ? 'Target weight (+5% initial)' : 'Target weight';
+  setEl('bc-targets',`<div class="form-grid"><div class="metric"><div class="m-label">${targetLabel}</div><div class="m-value" style="font-size:20px">${targetWt}</div></div><div class="metric"><div class="m-label">Target BMI (long-term)</div><div class="m-value" style="font-size:20px">22–27</div><div class="m-sub">Clinical reference zone</div></div></div>`);
   setEl('d-bf',bf?bf.toFixed(1)+'%':'—');
 }
 
@@ -5495,7 +5499,7 @@ function strictMainDescription(mealKey, exch, lang='GR'){
     LUN_PASTA_MINCE:`Μακαρόνια + κιμάς (${joinParts([`${proteinGr}g μαγειρεμένο κιμά`,starchGR,fatGR])}) – ${vegGR}`,
     DIN_PASTA_MINCE:`Μακαρόνια + κιμάς (${joinParts([`${proteinGr}g μαγειρεμένο κιμά`,starchGR,fatGR])}) – ${vegGR}`,
     DIN_BIFTEKI_BULGUR:`Μπιφτέκι + πλιγούρι (${joinParts([`${proteinGr}g μπιφτέκι`,starchGR,fatGR])}) – ${vegGR}`,
-    DIN_OMELETTE:`Ομελέτα + ψωμί (3 αυγά + ${starchGR || '1 φέτα ψωμί'} + 3 κ.γ. ελαιόλαδο) – βραστά λαχανικά (${portions.veg} φλ.)`,
+    DIN_OMELETTE:`Ομελέτα + ψωμί (3 αυγά + ${starchGR || '1 φέτα ψωμί'} + 3 κ.γ. ελαιόλαδο) – βραστά λαχανικά (${portions.veg} φλ.) + 30g γαλοπούλα light`,
     DIN_SOUVLAKI_PITA:`Σουβλάκι κοτόπουλο (140g) + μικρή κυπριακή πίτα – σαλάτα (3 φλ.) + 3 κ.γ. ελαιόλαδο`,
     LUN_CHICKEN_POTATO:`Κοτόπουλο + πατάτα (90g μαγειρεμένο κοτόπουλο + 1 μεγάλη πατάτα (~200g) + 4 κ.γ. ελαιόλαδο) – σαλάτα (2 φλ.)`,
     DIN_CHICKEN_POTATO:`Κοτόπουλο + πατάτα (${joinParts([`${proteinGr}g μαγειρεμένο κοτόπουλο`,starchGR,visibleFatGR])}) – ${vegGR}`,
@@ -5526,7 +5530,7 @@ function strictMainDescription(mealKey, exch, lang='GR'){
     LUN_PASTA_MINCE:`Pasta + mince (${joinParts([`${proteinGr}g cooked mince`,starchEN,fatEN])}) - ${vegEN}`,
     DIN_PASTA_MINCE:`Pasta + mince (${joinParts([`${proteinGr}g cooked mince`,starchEN,fatEN])}) - ${vegEN}`,
     DIN_BIFTEKI_BULGUR:`Burger + bulgur (${joinParts([`${proteinGr}g burger`,starchEN,fatEN])}) - ${vegEN}`,
-    DIN_OMELETTE:`Omelette + bread (3 eggs + ${starchEN || '1 slice bread'} + 3 tsp olive oil) - boiled vegetables (${portions.veg} cups)`,
+    DIN_OMELETTE:`Omelette + bread (3 eggs + ${starchEN || '1 slice bread'} + 3 tsp olive oil) - boiled vegetables (${portions.veg} cups) + 30g light turkey`,
     DIN_SOUVLAKI_PITA:`Chicken souvlaki (140g) + small Cypriot pita - salad (3 cups) + 3 tsp olive oil`,
     LUN_CHICKEN_POTATO:`Chicken + potato (90g cooked chicken + 1 large potato (~200g) + 4 tsp olive oil) - salad (2 cups)`,
     DIN_CHICKEN_POTATO:`Chicken + potato (${joinParts([`${proteinGr}g cooked chicken`,starchEN,visibleFatEN])}) - ${vegEN}`,
