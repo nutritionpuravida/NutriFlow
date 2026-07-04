@@ -2441,8 +2441,8 @@ const MEAL_EXCHANGES = {
   BRK_TOAST_TURKEY:{protein:2, starch:2, fat:0, fruit:0, dairy:0, veg:1}, // cheese+turkey = 2 protein + cucumber/tomato veg
   BRK_EGGS:        {protein:2, starch:1, fat:0, fruit:0, dairy:0, veg:0}, // 2 eggs = 2 protein, 1 bread
   BRK_EGGS_TOAST:  {protein:2, starch:2, fat:0, fruit:0, dairy:0, veg:0}, // egg+cheese = 2 protein
-  BRK_CEREAL:      {protein:0, starch:2, fat:0, fruit:0, dairy:1, veg:0},
-  BRK_OATS_VEGAN:  {protein:0, starch:2, fat:0, fruit:0, dairy:1, veg:0}, // fortified plant milk counted as dairy exchange (see Equivalents Guide)
+  BRK_CEREAL:      {protein:0, starch:3, fat:0, fruit:0, dairy:1, veg:0},
+  BRK_OATS_VEGAN:  {protein:0, starch:3, fat:0, fruit:0, dairy:1, veg:0}, // fortified plant milk counted as dairy exchange (see Equivalents Guide)
   BRK_BOILED_EGGS_2:{protein:2, starch:1, fat:0, fruit:0, dairy:0, veg:1},
   BRK_RUSKS_ANTHOTYRO:{protein:1, starch:2, fat:0, fruit:0, dairy:0, veg:1},
   BRK_YOGURT_HONEY_WALNUTS:{protein:0, starch:0, fat:1, fruit:1, dairy:1, veg:0},
@@ -5419,7 +5419,7 @@ function strictFallbackLedger(dayPlan, dayIndex){
     din:{starch:1,protein:4,fat:4,veg:2},
     sleep:{},
   } : {
-    brk:{starch:2,dairy:1},
+    brk:{starch:3,dairy:1},
     snk1:{fruit:1},
     lun:{starch:2,protein:4,fat:4,veg:3},
     snk2:{fruit:1},
