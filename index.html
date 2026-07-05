@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='6' y='6' width='88' height='88' rx='20' fill='white'/%3E%3Ctext x='50' y='68' font-size='64' text-anchor='middle'%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='6' y='6' width='88' height='88' rx='20' fill='white'/%3E%3Cpath d='M51 80C30 64 21 43 26 24c19 3 35 15 43 36 6-14 13-25 24-32-1 25-14 42-42 52Z' fill='%231B5E20'/%3E%3Cpath d='M31 31c17 17 30 30 39 43' stroke='%23E8F5E9' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M66 59c6-11 13-19 22-26' stroke='%23E8F5E9' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -383,6 +383,15 @@ html[data-theme="dark"] .week-summary-table td:last-child {
 .food-add-panel.open { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .food-add-panel input, .food-add-panel select { font-size: 11px; padding: 5px 6px; }
 
+.client-cards-mobile { display:none; }
+@media (max-width: 640px) {
+  #clients-table table { display:none; }
+  .client-cards-mobile { display:grid; gap:10px; }
+  .client-card-mobile { background:var(--bg-surface); border:1px solid var(--border); border-radius:10px; padding:12px; }
+  .client-card-mobile .client-card-title { font-weight:800; color:var(--text-primary); font-size:14px; }
+  .client-card-mobile .client-card-meta { color:var(--text-muted); font-size:12px; margin-top:3px; line-height:1.4; }
+  .client-card-mobile .client-card-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+}
 /* ─── MOBILE DRAWER OVERLAY ─── */
 .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 99; }
 .sidebar-overlay.open { display: block; }
@@ -614,7 +623,15 @@ html[data-theme="dark"] .week-summary-table td:last-child {
     background: #F7F9F6 !important;
   }
   html[data-theme="light"] {
-    --bg-page: #F7F9F6;
+    --bg-page: #F7F9F6 !important;
+  }
+  html[data-theme="light"] #auth-screen,
+  html[data-theme="light"] #subscription-screen,
+  html[data-theme="light"] .main,
+  html[data-theme="light"] .content,
+  html[data-theme="light"] .bottom-nav,
+  html[data-theme="light"] .topbar {
+    background-color: #F7F9F6 !important;
   }
   :root { --nav-w: 260px; }
   .sidebar { position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); transition: transform .25s; box-shadow: 4px 0 20px rgba(0,0,0,.2); }
@@ -723,7 +740,19 @@ table th,
       <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password">
     </div>
     <button class="auth-submit" id="auth-submit-btn" onclick="handleAuthSubmit()">Sign In</button>
+    <button type="button" id="forgot-password-btn" onclick="sendPasswordResetEmail()" style="display:block;margin:10px auto 0;border:0;background:none;color:var(--text-link);font-size:12px;font-weight:700;cursor:pointer">Forgot password?</button>
     <button class="auth-submit secondary" id="resend-confirmation-btn" onclick="resendConfirmationEmail()" style="display:none;margin-top:8px">Resend confirmation email</button>
+    <div id="password-reset-panel" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+      <div class="auth-field">
+        <label>New password</label>
+        <input type="password" id="reset-new-password" placeholder="New password" autocomplete="new-password">
+      </div>
+      <div class="auth-field">
+        <label>Confirm new password</label>
+        <input type="password" id="reset-confirm-password" placeholder="Confirm password" autocomplete="new-password">
+      </div>
+      <button class="auth-submit" id="reset-password-submit-btn" onclick="completePasswordReset()">Update password</button>
+    </div>
   </div>
 </div>
 
@@ -1481,6 +1510,7 @@ table th,
 <!-- BOTTOM NAV (mobile) -->
 <nav class="bottom-nav" id="bottom-nav">
   <button class="bnav-item active" onclick="nav('dashboard');setBnav(this)"><span>📊</span><span>Home</span></button>
+  <button class="bnav-item" onclick="nav('clients');setBnav(this)"><span>🗂️</span><span>Clients</span></button>
   <button class="bnav-item" onclick="nav('profile');setBnav(this)"><span>👤</span><span>Profile</span></button>
   <button class="bnav-item" onclick="nav('intake');setBnav(this)"><span>📋</span><span>Intake</span></button>
   <button class="bnav-item" onclick="nav('macros');setBnav(this)"><span>🎯</span><span>Macros</span></button>
@@ -1638,6 +1668,69 @@ async function resendConfirmationEmail(){
   if(btn){ btn.disabled=false; btn.textContent='Resend confirmation email'; btn.style.display='block'; }
 }
 
+function showPasswordResetPanel(){
+  authTab='signin';
+  document.getElementById('tab-signin')?.classList.add('active');
+  document.getElementById('tab-signup')?.classList.remove('active');
+  const panel=document.getElementById('password-reset-panel');
+  const forgot=document.getElementById('forgot-password-btn');
+  const submit=document.getElementById('auth-submit-btn');
+  const resend=document.getElementById('resend-confirmation-btn');
+  if(panel) panel.style.display='block';
+  if(forgot) forgot.style.display='none';
+  if(submit) submit.style.display='none';
+  if(resend) resend.style.display='none';
+  showAuthScreen();
+  setAuthMessage('Enter your new password below.','success');
+}
+function hidePasswordResetPanel(){
+  const panel=document.getElementById('password-reset-panel');
+  const forgot=document.getElementById('forgot-password-btn');
+  const submit=document.getElementById('auth-submit-btn');
+  if(panel) panel.style.display='none';
+  if(forgot) forgot.style.display = authTab==='signin' ? 'block' : 'none';
+  if(submit) submit.style.display='block';
+}
+async function sendPasswordResetEmail(){
+  const email=document.getElementById('auth-email')?.value.trim();
+  if(!email){ setAuthMessage('Please enter your email first, then click Forgot password.','error'); return; }
+  const btn=document.getElementById('forgot-password-btn');
+  if(btn){ btn.textContent='Sending reset email…'; btn.style.pointerEvents='none'; }
+  try{
+    const result=await withTimeout(
+      supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:AUTH_EMAIL_REDIRECT_URL}),
+      10000,
+      'password reset email'
+    );
+    if(result.error) throw result.error;
+    setAuthMessage('Password reset email sent. Please check your inbox.','success');
+  }catch(err){
+    console.error('[Nutrese auth] password reset email failed', err);
+    setAuthMessage(friendlyAuthError(err,'Could not send password reset email. Please try again.'),'error');
+  }finally{
+    if(btn){ btn.textContent='Forgot password?'; btn.style.pointerEvents='auto'; }
+  }
+}
+async function completePasswordReset(){
+  const p1=document.getElementById('reset-new-password')?.value || '';
+  const p2=document.getElementById('reset-confirm-password')?.value || '';
+  const btn=document.getElementById('reset-password-submit-btn');
+  if(p1.length<6){ setAuthMessage('Password must be at least 6 characters.','error'); return; }
+  if(p1!==p2){ setAuthMessage('Passwords do not match.','error'); return; }
+  if(btn){ btn.disabled=true; btn.textContent='Updating…'; }
+  try{
+    const result=await withTimeout(supabaseClient.auth.updateUser({password:p1}),10000,'update password');
+    if(result.error) throw result.error;
+    setAuthMessage('Password updated. You can now sign in with your new password.','success');
+    hidePasswordResetPanel();
+    supabaseClient.auth.signOut().catch(()=>{});
+  }catch(err){
+    console.error('[Nutrese auth] password update failed', err);
+    setAuthMessage(friendlyAuthError(err,'Could not update password. Please try again.'),'error');
+  }finally{
+    if(btn){ btn.disabled=false; btn.textContent='Update password'; }
+  }
+}
 async function handleSignOut(){
   console.log('[Nutrese auth] handleSignOut called');
   if(!confirm('Sign out?')) return;
@@ -2113,6 +2206,11 @@ let recoveringSession = false; // true if we just had an unexpected sign-out and
 let intentionalSignOut = false; // true only when the user deliberately clicks Sign out
 supabaseClient.auth.onAuthStateChange(async (event, session)=>{
   console.log('[Nutrese auth] onAuthStateChange', {event, hasSession:!!session, email:session?.user?.email || null});
+  if(event==='PASSWORD_RECOVERY' && session?.user){
+    currentUser=session.user;
+    showPasswordResetPanel();
+    return;
+  }
   currentUser = session ? session.user : null;
   if(currentUser){
     hadSession = true;
@@ -6507,9 +6605,14 @@ async function loadReportLogo(){
         5000,
         'load report logo'
       );
-      if(!result.error && validReportLogoDataUrl(result.data?.report_logo)){
-        S.reportLogo=result.data.report_logo;
-        localStorage.setItem(REPORT_LOGO_LOCAL_KEY, S.reportLogo);
+      if(!result.error){
+        if(validReportLogoDataUrl(result.data?.report_logo)){
+          S.reportLogo=result.data.report_logo;
+          localStorage.setItem(REPORT_LOGO_LOCAL_KEY, S.reportLogo);
+        } else if(result.data && !result.data.report_logo){
+          S.reportLogo='';
+          localStorage.removeItem(REPORT_LOGO_LOCAL_KEY);
+        }
       }
     }catch(e){
       console.warn('[Nutrese report logo] using local logo fallback', e);
@@ -8767,16 +8870,23 @@ function renderClientListRows(clients){
       : '<div style="color:var(--text-muted);text-align:center;padding:24px">No saved clients yet. Fill in Client Profile and click "💾 Save Client".</div>';
     return;
   }
-  el.innerHTML='<table><thead><tr><th>Name</th><th>Reference</th><th>Last saved</th><th></th></tr></thead><tbody>'+
-    clients.map(c=>{
-      const data=c.data||{};
-      const cond=(data.conditions||[]).map(conditionLabel).join(', ')||'Healthy Eating';
-      const savedAt=c.updated_at ? new Date(c.updated_at).toLocaleString('el-GR') : '—';
-      const badge=c.localOnly ? '<div style="font-size:10px;color:var(--amber-600);font-weight:700">Saved locally</div>' : '';
-      return `<tr><td><strong>${safeHtml(c.name||'Unnamed client')}</strong>${badge}<div style="font-size:11px;color:var(--text-muted)">${safeHtml(cond)}</div></td><td>${safeHtml(c.client_ref||'—')}</td><td>${savedAt}</td>
-        <td style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" style="padding:5px 10px;font-size:12px" onclick="loadClientById('${c.id}')">📂 Load</button><button class="btn" style="padding:5px 10px;font-size:12px" onclick="deleteClientById('${c.id}')">🗑️ Delete</button></td></tr>`;
-    }).join('')+
+  const rows=clients.map(c=>{
+    const data=c.data||{};
+    const cond=(data.conditions||[]).map(conditionLabel).join(', ')||'Healthy Eating';
+    const savedAt=c.updated_at ? new Date(c.updated_at).toLocaleString('el-GR') : '—';
+    const badge=c.localOnly ? '<div style="font-size:10px;color:var(--amber-text);font-weight:700">Saved locally</div>' : '';
+    return {c,cond,savedAt,badge};
+  });
+  const tableHtml='<table><thead><tr><th>Name</th><th>Reference</th><th>Last saved</th><th></th></tr></thead><tbody>'+
+    rows.map(({c,cond,savedAt,badge})=>`<tr><td><strong>${safeHtml(c.name||'Unnamed client')}</strong>${badge}<div style="font-size:11px;color:var(--text-muted)">${safeHtml(cond)}</div></td><td>${safeHtml(c.client_ref||'—')}</td><td>${safeHtml(savedAt)}</td>
+        <td style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" style="padding:5px 10px;font-size:12px" onclick="loadClientById('${c.id}')">📂 Load</button><button class="btn" style="padding:5px 10px;font-size:12px" onclick="deleteClientById('${c.id}')">🗑️ Delete</button></td></tr>`).join('')+
     '</tbody></table>';
+  const cardsHtml='<div class="client-cards-mobile">'+rows.map(({c,cond,savedAt,badge})=>`<div class="client-card-mobile">
+    <div class="client-card-title">${safeHtml(c.name||'Unnamed client')}</div>${badge}
+    <div class="client-card-meta">${safeHtml(c.client_ref||'—')} · ${safeHtml(cond)}<br>Last saved: ${safeHtml(savedAt)}</div>
+    <div class="client-card-actions"><button class="btn primary" style="padding:6px 10px;font-size:12px" onclick="loadClientById('${c.id}')">📂 Load</button><button class="btn" style="padding:6px 10px;font-size:12px" onclick="deleteClientById('${c.id}')">🗑️ Delete</button></div>
+  </div>`).join('')+'</div>';
+  el.innerHTML=tableHtml+cardsHtml;
 }
 
 // Filters the cached client list by name as the clinician types — case- and
@@ -9197,6 +9307,13 @@ updateOnlineStatus();
 
 </body>
 </html>
+
+
+
+
+
+
+
 
 
 
