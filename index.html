@@ -5,45 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="NutriFlow - Smart Nutrition Software">
-<meta name="theme-color" content="#0F6E56">
-<title>NutriFlow - Smart Nutrition Software</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%230F6E56'/%3E%3Ctext x='50' y='62' font-size='50' text-anchor='middle'%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
+<meta name="apple-mobile-web-app-title" content="Nutrese - Smart Nutrition Software">
+<meta name="theme-color" content="#4CAF50">
+<title>Nutrese — Smart Nutrition Software</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%234CAF50'/%3E%3Ctext x='50' y='62' font-size='50' text-anchor='middle'%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E">
 <style>
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* ─── LIGHT MODE TOKENS ─── */
 :root {
-  --teal-50: #E1F5EE; --teal-100: #9FE1CB; --teal-400: #1D9E75;
-  --teal-600: #0F6E56; --teal-800: #085041;
-  --bg-page: #F1F3F5; --bg-surface: #ffffff; --bg-sidebar: #ffffff;
-  --bg-input: #ffffff; --bg-hover: #F1F3F5; --bg-active: #E1F5EE;
+  --teal-50: #E8F5E9; --teal-100: #C8E6C9; --teal-400: #66BB6A;
+  --teal-600: #4CAF50; --teal-800: #2E7D32;
+  --bg-page: #F7F9F6; --bg-surface: #ffffff; --bg-sidebar: #ffffff;
+  --bg-input: #ffffff; --bg-hover: #F7F9F6; --bg-active: #E8F5E9;
   --border: #E9ECEF; --border-strong: #DEE2E6;
-  --text-primary: #212529; --text-secondary: #6C757D; --text-muted: #ADB5BD;
-  --text-active: #085041; --text-link: #0F6E56;
+  --text-primary: #1A1A1A; --text-secondary: #5F6B5F; --text-muted: #9AA39A;
+  --text-active: #2E7D32; --text-link: #2E7D32;
   --amber-bg: #FFF8E1; --amber-border: #FFE8A3; --amber-text: #E67700;
   --red-bg: #FFF5F5; --red-border: #FFC9C9; --red-text: #C92A2A; --red-badge: #FA5252;
   --green-bg: #EBFBEE; --green-border: #B2F2BB; --green-text: #2F9E44; --green-badge: #40C057;
   --blue-bg: #E7F5FF; --blue-border: #A5D8FF; --blue-text: #1971C2;
   --metric-bg: #ffffff;
   --nav-w: 230px; --radius: 8px; --radius-lg: 12px;
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-logo: "Cormorant Garamond", Georgia, serif;
 }
 
 /* ─── DARK MODE TOKENS ─── */
 [data-theme="dark"] {
-  --bg-page: #0f1117; --bg-surface: #1a1d27; --bg-sidebar: #151820;
-  --bg-input: #20232f; --bg-hover: #20232f; --bg-active: #0d2e22;
-  --border: #2a2d3a; --border-strong: #363944;
-  --text-primary: #e8eaf0; --text-secondary: #8b8fa8; --text-muted: #555870;
-  --text-active: #9FE1CB; --text-link: #1D9E75;
+  --bg-page: #0F1A13; --bg-surface: #17241B; --bg-sidebar: #101D14;
+  --bg-input: #1D2B21; --bg-hover: #1D2B21; --bg-active: #203D27;
+  --border: #2D3A31; --border-strong: #3A4A3F;
+  --text-primary: #F5F5F5; --text-secondary: #B8C4B9; --text-muted: #7F8B80;
+  --text-active: #E8F5E9; --text-link: #81C784;
   --amber-bg: #2a1f00; --amber-border: #4a3500; --amber-text: #F59F00;
   --red-bg: #2a0f0f; --red-border: #4a1818; --red-text: #FA5252; --red-badge: #FA5252;
-  --green-bg: #0a2010; --green-border: #1a4020; --green-text: #40C057; --green-badge: #40C057;
+  --green-bg: #132A18; --green-border: #2E7D32; --green-text: #A5D6A7; --green-badge: #4CAF50;
   --blue-bg: #0a1a2a; --blue-border: #1a304a; --blue-text: #228BE6;
-  --metric-bg: #1a1d27;
-  --teal-50: #0d2e22; --teal-100: #0f3d2c;
+  --metric-bg: #17241B;
+  --teal-50: #203D27; --teal-100: #2E7D32;
 }
 
 body { font-family: var(--font); background: var(--bg-page); color: var(--text-primary); font-size: 14px; line-height: 1.5; transition: background .2s, color .2s; }
@@ -65,8 +69,9 @@ select option { background-color: var(--bg-surface); color: var(--text-primary);
 /* ─── SIDEBAR ELEMENTS ─── */
 .logo-area { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
 .logo-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--teal-600); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff; font-size: 16px; }
-.logo-text { font-weight: 700; font-size: 13px; color: var(--text-primary); line-height: 1.2; }
-.logo-text span { font-weight: 400; font-size: 11px; color: var(--text-muted); display: block; }
+.logo-text { font-family: var(--font-logo); font-weight: 600; font-size: 19px; color: var(--text-active); line-height: 1.05; letter-spacing: .01em; }
+[data-theme="dark"] .logo-text { color: #F5F5F5; }
+.logo-text span { font-family: var(--font); font-weight: 400; font-size: 11px; color: var(--text-muted); display: block; letter-spacing: 0; margin-top: 1px; }
 .client-chip { margin: 10px; background: var(--teal-50); border: 1px solid var(--teal-100); border-radius: var(--radius); padding: 9px 11px; }
 .client-chip .cc-label { font-size: 10px; color: var(--teal-600); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px; }
 .client-chip .cc-name { font-size: 13px; font-weight: 700; color: var(--text-active); }
@@ -211,7 +216,7 @@ html[data-theme="dark"] #condition-guidance a {
 }
 .form-field .field-note { font-size: 11px; color: var(--text-muted); }
 .form-field .field-note.suggested { color: var(--text-muted); font-style: italic; }
-.section-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .07em; margin: 16px 0 9px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.section-label { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .07em; margin: 16px 0 9px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 
 /* ─── TABLES ─── */
 .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -235,7 +240,7 @@ tr:hover td { background: var(--bg-hover); }
 }
 [data-week-theme="light"] .week-summary-table tbody tr:last-child {
   background: #eef8f4 !important;
-  border-top-color: #0F6E56 !important;
+  border-top-color: #4CAF50 !important;
 }
 [data-week-theme="light"] .week-summary-table td {
   color: #374151 !important;
@@ -246,7 +251,7 @@ tr:hover td { background: var(--bg-hover); }
   font-weight: 900 !important;
 }
 [data-week-theme="light"] .week-summary-table td:last-child {
-  color: #0F6E56 !important;
+  color: #4CAF50 !important;
 }
 [data-week-theme="dark"] .week-summary-table,
 [data-week-theme="dark"] .week-summary-table tbody tr {
@@ -325,7 +330,7 @@ html[data-theme="dark"] .week-summary-table td:last-child {
 }
 [data-week-theme="light"] .week-summary-table tbody tr:last-child {
   background: #eef8f4 !important;
-  border-top-color: #0F6E56 !important;
+  border-top-color: #4CAF50 !important;
 }
 [data-week-theme="light"] .week-summary-table td {
   color: #374151 !important;
@@ -336,7 +341,7 @@ html[data-theme="dark"] .week-summary-table td:last-child {
   font-weight: 900 !important;
 }
 [data-week-theme="light"] .week-summary-table td:last-child {
-  color: #0F6E56 !important;
+  color: #4CAF50 !important;
 }
 
 /* ─── BADGES ─── */
@@ -587,6 +592,16 @@ html[data-theme="dark"] .week-summary-table td:last-child {
 
 /* ─── RESPONSIVE — MOBILE ─── */
 @media (max-width: 640px) {
+  html[data-theme="light"],
+  html[data-theme="light"] body,
+  html[data-theme="light"] .app,
+  html[data-theme="light"] .main,
+  html[data-theme="light"] .content {
+    background: #F7F9F6 !important;
+  }
+  html[data-theme="light"] {
+    --bg-page: #F7F9F6;
+  }
   :root { --nav-w: 260px; }
   .sidebar { position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); transition: transform .25s; box-shadow: 4px 0 20px rgba(0,0,0,.2); }
   .sidebar.open { transform: translateX(0); }
@@ -657,6 +672,10 @@ table th,
   letter-spacing: 0.5px !important;
 }
 
+#labs-table table {
+  font-size: 12px !important;
+}
+
 </style>
 
 <link rel="manifest" id="pwa-manifest">
@@ -673,7 +692,7 @@ table th,
   <div class="auth-card">
     <div class="auth-logo">
       <div class="icon">🌿</div>
-      <div class="title">NutriFlow</div>
+      <div class="title">Nutrese</div>
       <div class="sub">Smart Nutrition Software</div>
     </div>
     <div class="auth-tabs">
@@ -699,12 +718,12 @@ table th,
   <div class="auth-card">
     <div class="auth-logo">
       <div class="icon">🌿</div>
-      <div class="title">NutriFlow</div>
+      <div class="title">Nutrese</div>
       <div class="sub">Smart Nutrition Software</div>
     </div>
     <div class="subscription-status" id="subscription-message">Checking subscription…</div>
     <div class="subscription-plan">
-      <strong>NutriFlow Professional</strong>
+      <strong>Nutrese Professional</strong>
       <div id="subscription-plan-copy" style="font-size:13px;color:var(--text-muted);line-height:1.5">Client profiles, exchange system, 1-day and 7-day plans, blood analysis, tracking, recipes, and reports for your dietetic practice. Start with a 7-day free trial; card required upfront.</div>
       <div style="margin-top:12px;display:grid;gap:8px">
         <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface)">
@@ -728,7 +747,7 @@ table th,
 <nav class="sidebar">
   <div class="logo-area">
     <div class="logo-icon">🌿</div>
-    <div class="logo-text">NutriFlow <span>Smart Nutrition Software</span></div>
+    <div class="logo-text">Nutrese <span>Smart Nutrition Software</span></div>
   </div>
   <div class="client-chip">
     <div class="cc-label">Active client</div>
@@ -755,7 +774,7 @@ table th,
   <div class="nav-group-label">Clinical</div>
   <button class="nav-item" onclick="nav('account')">💳 Account / Subscription</button>
   <button class="nav-item" onclick="openFeedbackModal()">💬 Feedback</button>
-  <div class="sidebar-footer">NutriFlow v1 · Your clinical nutrition tool</div>
+  <div class="sidebar-footer">Nutrese v1 · Your clinical nutrition tool</div>
 </nav>
 
 <div class="main">
@@ -966,7 +985,7 @@ table th,
                 <option value="3">3ο Τρίμηνο (28+ εβδ.)</option>
               </select>
             </div>
-            <div class="field-note">Leave unselected for a general/healthy population plan. NutriFlow supports one primary condition at a time for clearer clinical logic.</div>
+            <div class="field-note">Leave unselected for a general/healthy population plan. Nutrese supports one primary condition at a time for clearer clinical logic.</div>
           </div>
           <div class="form-field"><label>Goal</label>
             <select id="p-goal" onchange="calcAll()">
@@ -1422,8 +1441,8 @@ table th,
   <div class="feedback-card">
     <div class="feedback-card-header">
       <div>
-        <div class="feedback-card-title" id="feedback-title">Help shape NutriFlow — your suggestions matter</div>
-        <div class="feedback-card-sub">Send a note directly to the NutriFlow team.</div>
+        <div class="feedback-card-title" id="feedback-title">Help shape Nutrese — your suggestions matter</div>
+        <div class="feedback-card-sub">Send a note directly to the Nutrese team.</div>
       </div>
       <button class="feedback-close" onclick="closeFeedbackModal()" aria-label="Close feedback">×</button>
     </div>
@@ -1545,7 +1564,7 @@ async function handleAuthSubmit(){
       const {error}=result;
       if(error){
         if(error.message === 'signin timeout'){
-          console.error('[NutriFlow auth] signInWithPassword timeout');
+          console.error('[Nutrese auth] signInWithPassword timeout');
           setAuthMessage('Sign in is taking longer than expected. Please try again.','error');
         } else {
           setAuthMessage(friendlyAuthError(error),'error');
@@ -1553,7 +1572,7 @@ async function handleAuthSubmit(){
         btn.disabled=false; btn.textContent='Sign In'; return;
       }
     }catch(err){
-      console.error('[NutriFlow auth] signInWithPassword failed unexpectedly', err);
+      console.error('[Nutrese auth] signInWithPassword failed unexpectedly', err);
       setAuthMessage(friendlyAuthError(err),'error');
       btn.disabled=false; btn.textContent='Sign In'; return;
     }
@@ -1567,7 +1586,7 @@ async function handleAuthSubmit(){
         options:{emailRedirectTo:AUTH_EMAIL_REDIRECT_URL}
       });
     }catch(err){
-      console.error('[NutriFlow auth] signUp failed unexpectedly', err);
+      console.error('[Nutrese auth] signUp failed unexpectedly', err);
       setAuthMessage(friendlyAuthError(err, 'Sign up failed. Please try again.'),'error');
       btn.disabled=false; btn.textContent='Create Account'; return;
     }
@@ -1599,15 +1618,15 @@ async function resendConfirmationEmail(){
 }
 
 async function handleSignOut(){
-  console.log('[NutriFlow auth] handleSignOut called');
+  console.log('[Nutrese auth] handleSignOut called');
   if(!confirm('Sign out?')) return;
   isIntentionalNavigation = true;
   intentionalSignOut = true;
-  console.log('[NutriFlow auth] Sign out requested');
+  console.log('[Nutrese auth] Sign out requested');
   try{
-    supabaseClient.auth.signOut().catch(err=>console.error('[NutriFlow auth] Fire-and-forget signOut failed', err));
+    supabaseClient.auth.signOut().catch(err=>console.error('[Nutrese auth] Fire-and-forget signOut failed', err));
   }catch(err){
-    console.error('[NutriFlow auth] Fire-and-forget signOut threw synchronously', err);
+    console.error('[Nutrese auth] Fire-and-forget signOut threw synchronously', err);
   }
   clearLocalStorageAfterSignOut();
   intentionalSignOut = false;
@@ -1623,12 +1642,12 @@ function clearLocalStorageAfterSignOut(){
       if(key.startsWith('nutriflow_') || key.startsWith('sb-') || key.startsWith('supabase')) localStorage.removeItem(key);
     });
   }catch(e){
-    console.warn('[NutriFlow auth] Could not clear local storage after sign out', e);
+    console.warn('[Nutrese auth] Could not clear local storage after sign out', e);
   }
   try{
     if(window.sessionStorage) window.sessionStorage.clear();
   }catch(e){
-    console.warn('[NutriFlow auth] Could not clear session storage after sign out', e);
+    console.warn('[Nutrese auth] Could not clear session storage after sign out', e);
   }
 }
 
@@ -1784,7 +1803,7 @@ function saveSubscriptionCache(){
   try{
     localStorage.setItem(key, JSON.stringify({...subscriptionState, cachedAt:new Date().toISOString()}));
   }catch(e){
-    console.warn('[NutriFlow subscription] Could not save subscription cache', e);
+    console.warn('[Nutrese subscription] Could not save subscription cache', e);
   }
 }
 function loadSubscriptionCache(){
@@ -1805,7 +1824,7 @@ function loadSubscriptionCache(){
     updateAccountPage();
     return true;
   }catch(e){
-    console.warn('[NutriFlow subscription] Could not load subscription cache', e);
+    console.warn('[Nutrese subscription] Could not load subscription cache', e);
     return false;
   }
 }
@@ -1869,7 +1888,7 @@ async function submitFeedback(){
     if(textarea) textarea.value='';
     setFeedbackStatus('Thank you — your feedback was sent.', 'success');
   }catch(err){
-    console.error('[NutriFlow feedback] submit failed', err);
+    console.error('[Nutrese feedback] submit failed', err);
     setFeedbackStatus('Feedback could not be sent. Please try again.', 'error');
   }finally{
     if(btn){ btn.disabled=false; btn.textContent='Submit feedback'; }
@@ -1879,7 +1898,7 @@ async function fetchSubscriptionStatusWithRetry(){
   try{
     return await withTimeout(fetchSubscriptionStatus(), 3500, 'fetchSubscriptionStatus');
   }catch(err){
-    console.warn('[NutriFlow subscription] fetchSubscriptionStatus timed out/failed; retrying once', err);
+    console.warn('[Nutrese subscription] fetchSubscriptionStatus timed out/failed; retrying once', err);
     return await withTimeout(fetchSubscriptionStatus(), 3500, 'fetchSubscriptionStatus retry');
   }
 }
@@ -1889,7 +1908,7 @@ async function refreshSubscriptionGate(){
     subscriptionState = await fetchSubscriptionStatusWithRetry();
     saveSubscriptionCache();
   }catch(err){
-    console.error('[NutriFlow subscription] refreshSubscriptionGate failed after retry', err);
+    console.error('[Nutrese subscription] refreshSubscriptionGate failed after retry', err);
     subscriptionState = subscriptionState || {status:'Unable to refresh subscription', active:false};
   }
   updateAccountPage();
@@ -1899,7 +1918,7 @@ async function refreshSubscriptionGate(){
   } else {
     const msg = subscriptionState.trialExpired
       ? 'Your free trial has ended. Subscribe to continue.'
-      : 'No active subscription. Subscribe to unlock NutriFlow for your practice.';
+      : 'No active subscription. Subscribe to unlock Nutrese for your practice.';
     showSubscriptionScreen(msg);
   }
   updateTrialBanner();
@@ -1918,23 +1937,23 @@ function isStripeCheckoutReturn(){
 }
 function handleStripeReturnRefresh(){
   if(!isStripeCheckoutReturn()) return;
-  console.log('[NutriFlow checkout] Stripe return detected; refreshing subscription after webhook delay');
+  console.log('[Nutrese checkout] Stripe return detected; refreshing subscription after webhook delay');
   setEl('subscription-message','Checkout complete. Refreshing subscription status…');
   setTimeout(()=>{
     refreshSubscriptionGate()
       .then(()=>{
         updateTrialBanner();
         updateAccountPage();
-        console.log('[NutriFlow checkout] subscriptionState after Stripe return refresh', subscriptionState);
+        console.log('[Nutrese checkout] subscriptionState after Stripe return refresh', subscriptionState);
       })
-      .catch(err=>console.error('[NutriFlow checkout] Stripe return refresh failed', err));
+      .catch(err=>console.error('[Nutrese checkout] Stripe return refresh failed', err));
   }, 2000);
 }
 function handleSignedOutReturn(){
   try{
     const params=new URLSearchParams(window.location.search || '');
     if(params.get('signedout') !== '1') return false;
-    console.log('[NutriFlow auth] signedout=1 detected; showing clean sign-in screen');
+    console.log('[Nutrese auth] signedout=1 detected; showing clean sign-in screen');
     currentUser=null;
     subscriptionState = {status:'signed_out', active:false, currentPeriodEnd:null, trialDaysRemaining:null, trialActive:false, trialExpired:false};
     hideSubscriptionScreen();
@@ -1944,17 +1963,17 @@ function handleSignedOutReturn(){
     window.history.replaceState({}, document.title, window.location.pathname);
     return true;
   }catch(err){
-    console.error('[NutriFlow auth] signedout=1 handling failed', err);
+    console.error('[Nutrese auth] signedout=1 handling failed', err);
     return false;
   }
 }
 async function refreshAccountSubscriptionPage(){
-  console.log('[NutriFlow account] refreshAccountSubscriptionPage called');
+  console.log('[Nutrese account] refreshAccountSubscriptionPage called');
   try{
     const {data, error}=await supabaseClient.auth.getSession();
-    if(error) console.error('[NutriFlow account] getSession failed', error);
+    if(error) console.error('[Nutrese account] getSession failed', error);
     const session=data&&data.session;
-    console.log('[NutriFlow account] getSession result', {hasSession:!!session, email:session?.user?.email || null});
+    console.log('[Nutrese account] getSession result', {hasSession:!!session, email:session?.user?.email || null});
     currentUser = session ? session.user : currentUser;
     if(!currentUser){
       subscriptionState = {status:'signed_out', active:false, currentPeriodEnd:null, trialDaysRemaining:null, trialActive:false, trialExpired:false};
@@ -1974,14 +1993,14 @@ async function refreshAccountSubscriptionPage(){
     setTimeout(updateAccountPage, 50);
     updateTrialBanner();
   }catch(err){
-    console.error('[NutriFlow account] refresh failed', err);
+    console.error('[Nutrese account] refresh failed', err);
     updateAccountPage();
   }
 }
 async function startStripeCheckout(priceId){
-  console.log('[NutriFlow checkout] startStripeCheckout clicked', {priceId, currentUser: currentUser ? {id:currentUser.id,email:currentUser.email} : null});
+  console.log('[Nutrese checkout] startStripeCheckout clicked', {priceId, currentUser: currentUser ? {id:currentUser.id,email:currentUser.email} : null});
   if(!currentUser){
-    console.warn('[NutriFlow checkout] No signed-in user; showing auth screen.');
+    console.warn('[Nutrese checkout] No signed-in user; showing auth screen.');
     showAuthScreen();
     return;
   }
@@ -1989,24 +2008,24 @@ async function startStripeCheckout(priceId){
   setEl('subscription-message','Creating secure checkout…');
   try{
     const payload={price_id:selectedPriceId,user_id:currentUser.id,email:currentUser.email};
-    console.log('[NutriFlow checkout] invoking Edge Function', STRIPE_CHECKOUT_FUNCTION, payload);
+    console.log('[Nutrese checkout] invoking Edge Function', STRIPE_CHECKOUT_FUNCTION, payload);
     const {data, error} = await supabaseClient.functions.invoke(STRIPE_CHECKOUT_FUNCTION, {body:payload});
-    console.log('[NutriFlow checkout] Edge Function response', {data,error});
+    console.log('[Nutrese checkout] Edge Function response', {data,error});
     if(error){
-      console.error('[NutriFlow checkout] Edge Function error', error);
+      console.error('[Nutrese checkout] Edge Function error', error);
       setEl('subscription-message','Checkout unavailable: '+(error.message || 'Edge Function error. Check browser console and Supabase function logs.'));
       return;
     }
     if(data && data.url){
-      console.log('[NutriFlow checkout] redirecting to Stripe Checkout', data.url);
+      console.log('[Nutrese checkout] redirecting to Stripe Checkout', data.url);
       isIntentionalNavigation = true;
       window.location.href=data.url;
       return;
     }
-    console.error('[NutriFlow checkout] Missing checkout URL', data);
+    console.error('[Nutrese checkout] Missing checkout URL', data);
     setEl('subscription-message','Checkout function did not return a URL. Check Supabase function logs.');
   }catch(err){
-    console.error('[NutriFlow checkout] Unexpected checkout failure', err);
+    console.error('[Nutrese checkout] Unexpected checkout failure', err);
     setEl('subscription-message','Checkout failed: '+(err.message || 'Unexpected error. Check browser console.'));
   }
 }
@@ -2021,7 +2040,7 @@ async function openBillingPortal(){
   setEl('subscription-message','Billing portal function did not return a URL.');
 }
 function updateAccountPage(){
-  console.log('[NutriFlow account] account DOM fields', {
+  console.log('[Nutrese account] account DOM fields', {
     emailField:!!document.getElementById('acct-email'),
     statusField:!!document.getElementById('acct-subscription'),
     detailField:!!document.getElementById('account-subscription-detail'),
@@ -2072,7 +2091,7 @@ let hadSession = false; // tracks whether a session existed before, to detect un
 let recoveringSession = false; // true if we just had an unexpected sign-out and need to restore on next sign-in
 let intentionalSignOut = false; // true only when the user deliberately clicks Sign out
 supabaseClient.auth.onAuthStateChange(async (event, session)=>{
-  console.log('[NutriFlow auth] onAuthStateChange', {event, hasSession:!!session, email:session?.user?.email || null});
+  console.log('[Nutrese auth] onAuthStateChange', {event, hasSession:!!session, email:session?.user?.email || null});
   currentUser = session ? session.user : null;
   if(currentUser){
     hadSession = true;
@@ -2085,19 +2104,19 @@ supabaseClient.auth.onAuthStateChange(async (event, session)=>{
       await refreshSubscriptionGate();
       updateTrialBanner();
       updateAccountPage();
-      console.log('[NutriFlow auth] subscriptionState after refreshSubscriptionGate', subscriptionState);
+      console.log('[Nutrese auth] subscriptionState after refreshSubscriptionGate', subscriptionState);
     }catch(err){
-      console.error('[NutriFlow auth] refreshSubscriptionGate failed during auth event', err);
+      console.error('[Nutrese auth] refreshSubscriptionGate failed during auth event', err);
       updateTrialBanner();
       updateAccountPage();
     }
     try{
       await migrateLocalClientsToSupabase();
     }catch(err){
-      console.error('[NutriFlow clients] migration on login failed', err);
+      console.error('[Nutrese clients] migration on login failed', err);
     }
     if(subscriptionState.active && document.getElementById('page-clients')?.classList.contains('active')) renderClientList();
-    loadCustomMeals({render:false}).then(()=>rebuildMealDropdownOptions()).catch(e=>console.error('[NutriFlow custom meals] auth load failed', e));
+    loadCustomMeals({render:false}).then(()=>rebuildMealDropdownOptions()).catch(e=>console.error('[Nutrese custom meals] auth load failed', e));
     if(currentUser){
       appointmentsLoadedFor=null;
       loadAppointments(true).then(()=>{
@@ -2965,7 +2984,7 @@ function printPage(){
     const reportHasSevenDay=S.reportOptions?.sevenDay!==false;
     printHtmlDocument({
       html: body ? body.innerHTML : '<div>Report content not found.</div>',
-      title:`NutriFlow - Client Report - ${S.name||'Client'}`,
+      title:`Nutrese - Client Report - ${S.name||'Client'}`,
       orientation: reportHasSevenDay ? 'landscape' : 'portrait'
     });
     return;
@@ -3009,7 +3028,7 @@ function printReportSevenDayLandscape(){
   buildReport();
   printHtmlDocument({
     html,
-    title:`NutriFlow - 7-Day Plan - ${S.name||'Client'}`,
+    title:`Nutrese - 7-Day Plan - ${S.name||'Client'}`,
     orientation:'landscape'
   });
 }
@@ -3024,7 +3043,7 @@ function printReportOneDayPortrait(){
   buildReport();
   printHtmlDocument({
     html,
-    title:`NutriFlow - 1-Day Plan - ${S.name||'Client'}`,
+    title:`Nutrese - 1-Day Plan - ${S.name||'Client'}`,
     orientation:'portrait'
   });
 }
@@ -3537,7 +3556,7 @@ function handleSnackOptionChange(cb){
   if(!cb) return;
   const group=cb.dataset.group;
   const container=cb.closest('#s-snack1,#s-snack2,#s-sleep,.snack-extras-group');
-  console.log('[NutriFlow snacks] checkbox changed', {
+  console.log('[Nutrese snacks] checkbox changed', {
     value: cb.value,
     checked: cb.checked,
     group,
@@ -3556,13 +3575,13 @@ function handleSnackOptionChange(cb){
     normalizeDairyExtrasForPlan(S.mealSel, slotFromExtrasKey(stateKey));
     syncSnackCheckboxUiFromMealSel();
     refreshSnackExtrasLabels();
-    console.log('[NutriFlow snacks] synced 1-day snack state', stateKey, S.mealSel[stateKey]);
+    console.log('[Nutrese snacks] synced 1-day snack state', stateKey, S.mealSel[stateKey]);
   }
   if(document.getElementById('page-oneday')?.classList.contains('active')){
-    console.log('[NutriFlow snacks] recalculating 1-day plan after snack change');
+    console.log('[Nutrese snacks] recalculating 1-day plan after snack change');
     buildOneDayPlan();
   } else if(document.getElementById('page-dashboard')?.classList.contains('active')){
-    console.log('[NutriFlow snacks] recalculating dashboard 1-day preview after snack change');
+    console.log('[Nutrese snacks] recalculating dashboard 1-day preview after snack change');
     buildOneDayPlan();
   }
 }
@@ -4480,7 +4499,7 @@ function nav(id) {
   if(id==='fooddb') { loadRecipes({render:false, mergeLocal:true}); }
   if(id==='recipes') { renderRecipeDraft(); loadRecipes(); }
   if(id==='appointments') { loadAppointments(true).then(renderAppointments); }
-  if(id==='account') { setTimeout(()=>refreshAccountSubscriptionPage().catch(err=>console.error('[NutriFlow account] deferred refresh failed', err)), 0); }
+  if(id==='account') { setTimeout(()=>refreshAccountSubscriptionPage().catch(err=>console.error('[Nutrese account] deferred refresh failed', err)), 0); }
   if(id==='profile') { renderConditionRadios(); calcBodyComp(); refreshConditionVisualState(); }
   if(id==='macros') renderClinicalMacroSuggestions();
   if(id==='exchanges') renderExchanges();
@@ -5083,13 +5102,13 @@ function buildOneDayPlan(){
   const displayedTotalKcal=visibleMeals.reduce((sum,m)=>sum+Number(m.kcal||0),0);
   const displayedGap=displayedTotalKcal-day.target;
   if(displayedTotalKcal!==day.totalKcal){
-    console.log('[NutriFlow snacks] visible meal kcal sum differs from engine total', {
+    console.log('[Nutrese snacks] visible meal kcal sum differs from engine total', {
       engineTotal: day.totalKcal,
       displayedTotal: displayedTotalKcal,
       meals: visibleMeals.map(m=>({slot:m.slot,kcal:m.kcal}))
     });
   } else {
-    console.log('[NutriFlow snacks] 1-day total recalculated from visible meals', {
+    console.log('[Nutrese snacks] 1-day total recalculated from visible meals', {
       displayedTotal: displayedTotalKcal,
       snack1: day.snk1Kcal,
       snack2: day.snk2Kcal,
@@ -5277,7 +5296,7 @@ function buildSevenDay(){
     const gapOk=Math.abs(dt.gap)<=100;
     const dayLabel=weekDayLabel(p, di, lang);
     html+=`<th style="background:var(--teal-600);color:#fff;padding:8px;min-width:190px;text-align:center">
-      ${dayLabel}<div style="font-size:10px;font-weight:400;margin-top:2px;color:${gapOk?'#9FE1CB':'#FFD580'}">${dt.totalKcal} kcal ${gapOk?'✅':dt.gap>0?'▲':'▼'}</div>
+      ${dayLabel}<div style="font-size:10px;font-weight:400;margin-top:2px;color:${gapOk?'#E8F5E9':'#FFD580'}">${dt.totalKcal} kcal ${gapOk?'✅':dt.gap>0?'▲':'▼'}</div>
       <button type="button" class="btn seven-day-expand-btn" data-day-index="${di}" style="margin-top:5px;padding:3px 7px;font-size:10px;background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.35)">${lang==='EN'?'Expand':'Άνοιγμα'}</button>
     </th>`;
   });
@@ -5395,7 +5414,7 @@ function openSevenDayModal(dayIndex){
         <div style="font-size:18px;font-weight:900">${safeHtml(dayLabel)}</div>
         <div style="font-size:12px;opacity:.9">${lang==='EN'?'Daily total':'Σύνολο ημέρας'}: ${dt.totalKcal} kcal · ${lang==='EN'?'Target':'Στόχος'}: ${dt.target} · ${dt.gap>0?'+':''}${dt.gap}</div>
       </div>
-      <button type="button" class="btn" aria-label="Close expanded day" title="Close" style="background:#ffffff!important;color:#0F6E56!important;border:2px solid #0F6E56!important;font-size:18px;font-weight:900;line-height:1;min-width:34px;height:34px;padding:4px 9px;display:flex;align-items:center;justify-content:center" onclick="closeSevenDayModal()">✕</button>
+      <button type="button" class="btn" aria-label="Close expanded day" title="Close" style="background:#ffffff!important;color:#4CAF50!important;border:2px solid #4CAF50!important;font-size:18px;font-weight:900;line-height:1;min-width:34px;height:34px;padding:4px 9px;display:flex;align-items:center;justify-content:center" onclick="closeSevenDayModal()">✕</button>
     </div>
     <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
       ${rows.map(([label,text,kcal])=>`<div style="display:grid;grid-template-columns:150px 1fr;gap:12px;padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-page)">
@@ -5521,12 +5540,12 @@ function strictApplySnackStarchReplacement(slots, plan){
     slots[slot].starch=(slots[slot].starch||0)+1;
     if((slots.lun.starch||0)>0) slots.lun.starch--;
     else if((slots.din.starch||0)>0) slots.din.starch--;
-    else console.warn('[NutriFlow strict ledger] Starch snack selected but no main-meal starch was available to replace.', {slot, plan});
+    else console.warn('[Nutrese strict ledger] Starch snack selected but no main-meal starch was available to replace.', {slot, plan});
     if(starchSnackIncludesFat(starchValue)){
       slots[slot].fat=(slots[slot].fat||0)+1;
       if((slots.lun.fat||0)>0) slots.lun.fat--;
       else if((slots.din.fat||0)>0) slots.din.fat--;
-      else console.warn('[NutriFlow strict ledger] Starch+fat snack selected but no main-meal fat was available to replace.', {slot, plan});
+      else console.warn('[Nutrese strict ledger] Starch+fat snack selected but no main-meal fat was available to replace.', {slot, plan});
     }
   });
 }
@@ -5588,7 +5607,7 @@ function strictFallbackLedger(dayPlan, dayIndex){
   });
   const totalKcal=Object.values(slots).reduce((sum,exch)=>sum+strictSlotKcal(exch),0);
   if(Object.keys(diff).length || totalKcal!==1581){
-    console.error('[NutriFlow strict ledger] 7-day fallback ledger failed', {dayIndex, day:dayPlan?.day, totals, diff, totalKcal, slots});
+    console.error('[Nutrese strict ledger] 7-day fallback ledger failed', {dayIndex, day:dayPlan?.day, totals, diff, totalKcal, slots});
     return {valid:false, slots, totals, diff, totalKcal};
   }
   return {valid:true, slots, totals, diff, totalKcal};
@@ -5881,7 +5900,7 @@ async function saveWeeklyPlan(){
     if(document.getElementById('page-report')?.classList.contains('active')) buildReport();
     await renderClientList();
   }catch(e){
-    console.error('[NutriFlow weekly plan] save failed; using local fallback', e);
+    console.error('[Nutrese weekly plan] save failed; using local fallback', e);
     upsertLocalClient(localRow);
     S_isDirty=false;
     setWeeklyPlanSaveStatus('✅ Το πλάνο αποθηκεύτηκε τοπικά', true);
@@ -6001,7 +6020,7 @@ function buildSevenDay(){
     <div style="display:flex;gap:8px">
       <button class="btn ${lang==='EN'?'':'primary'}" id="meal-lang-gr-7day" onclick="setMealLanguage('GR')">GR</button>
       <button class="btn ${lang==='EN'?'primary':''}" id="meal-lang-en-7day" onclick="setMealLanguage('EN')">EN</button>
-      ${isWeek?`<button class="btn" title="${weekTheme==='dark'?'Week view dark mode':'Week view light mode'}" onclick="toggleWeekViewTheme()">${weekTheme==='dark'?'🌙':'☀️'}</button>`:''}
+      ${isWeek?`<button class="btn" title="${weekTheme==='dark'?'Switch week view to light mode':'Switch week view to dark mode'}" onclick="toggleWeekViewTheme()">${weekTheme==='dark'?'☀️':'🌙'}</button>`:''}
     </div>
   </div>
   <div style="padding:10px 12px;border:1px solid var(--teal-100);background:var(--teal-50);border-radius:8px;margin-bottom:12px;color:var(--teal-800);font-size:13px;font-weight:700">✨ AI-generated plan — clinical review required before sharing with client.</div>
@@ -6211,7 +6230,7 @@ async function generateAiSevenDayPlan(){
     applyAiSevenDayPlan(plan);
     S.aiPlanStatus='✨ AI plan generated — please review each day and adjust as needed before sharing with client.';
   }catch(err){
-    console.error('[NutriFlow AI plan]', err);
+    console.error('[Nutrese AI plan]', err);
     S.aiPlanStatus=`AI generation is unavailable: ${err.message || err}. You can still edit each meal manually with the pencil button.`;
   }
   buildSevenDay();
@@ -6261,7 +6280,7 @@ function openFlexibleMealEditor(dayIndex, slotKey){
   overlay.innerHTML=`<div style="width:min(820px,96vw);max-height:90vh;overflow:auto;background:var(--bg-surface);color:var(--text-primary);border:1px solid var(--border);border-radius:10px;box-shadow:0 18px 70px rgba(0,0,0,.35)">
     <div style="position:sticky;top:0;background:var(--teal-600);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:1">
       <div><div style="font-size:18px;font-weight:900">${safeHtml(weekDayLabel(dayPlan,dayIndex,lang))} — ${safeHtml(lang==='EN'?slot.labelEN:slot.labelGR)}</div><div style="font-size:12px;opacity:.9">Edit meal text and kcal; daily total updates immediately.</div></div>
-      <button class="btn" style="background:#fff!important;color:#0F6E56!important;font-size:18px;font-weight:900" onclick="closeFlexibleMealEditor()">✕</button>
+      <button class="btn" style="background:#fff!important;color:#4CAF50!important;font-size:18px;font-weight:900" onclick="closeFlexibleMealEditor()">✕</button>
     </div>
     <div style="padding:16px;display:grid;gap:12px">
       <div class="form-grid two">
@@ -6534,7 +6553,7 @@ function buildReport(){
       </div>
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
       <div>
-        <div style="font-size:20px;font-weight:700;color:var(--teal-800)">NutriFlow</div>
+        <div style="font-size:20px;font-weight:700;color:var(--teal-800)">Nutrese</div>
         <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Smart Nutrition Software</div>
       </div>
       <div style="text-align:right;font-size:12px;color:var(--text-muted)">
@@ -6826,7 +6845,7 @@ function renderTrackingChart(){
   const chrono=S.tracking.slice().reverse();
   const weightData=chrono.map(e=>({date:e.date, value:e.weight}));
   const bfData=chrono.map(e=>({date:e.date, value:e.bf}));
-  const weightSvg=drawLineChart(weightData,'#1D9E75','kg');
+  const weightSvg=drawLineChart(weightData,'#4CAF50','kg');
   const bfSvg=drawLineChart(bfData,'#E67700','%');
   if(!weightSvg && !bfSvg){
     el.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:16px;font-size:13px">Log at least 2 visits with Weight or Body Fat % to see progress charts.</div>';
@@ -7596,7 +7615,7 @@ async function loadRecipes(options={}){
         return;
       }
     }catch(e){
-      console.error('[NutriFlow recipes] Supabase load failed', e);
+      console.error('[Nutrese recipes] Supabase load failed', e);
     }
   }
   S.recipes=localRecipes;
@@ -7624,7 +7643,7 @@ async function saveRecipe(){
         if(data){ recipe.id=data.id; savedToCloud=true; }
       }
     }catch(e){
-      console.error('[NutriFlow recipes] Supabase save failed', e);
+      console.error('[Nutrese recipes] Supabase save failed', e);
     }
   }
   const existing=(S.recipes||[]).filter(r=>String(r.id)!==String(editingId || recipe.id));
@@ -7685,7 +7704,7 @@ function printRecipe(id){
   area.innerHTML=`<div style="font-family:Arial,sans-serif;color:#111;padding:18px">
     <div style="border-bottom:3px solid #0f6e56;padding-bottom:10px;margin-bottom:14px">
       <div style="font-size:22px;font-weight:800;color:#0f6e56">${safeHtml(r.name||'Recipe')}</div>
-      <div style="font-size:12px;color:#555">NutriFlow Recipe Card · ${servings} serving${servings===1?'':'s'}</div>
+      <div style="font-size:12px;color:#555">Nutrese Recipe Card · ${servings} serving${servings===1?'':'s'}</div>
     </div>
     <div style="font-size:15px;font-weight:700;margin:10px 0 6px">Ingredients</div>
     <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px">
@@ -7708,7 +7727,7 @@ function printRecipe(id){
         <div>Fat: ${formatFoodNumber(per.fat,'g')}</div>
       </div>
     </div>
-    <div style="margin-top:18px;border-top:1px solid #ddd;padding-top:8px;font-size:11px;color:#777;text-align:center">NutriFlow · Smart Nutrition Software</div>
+    <div style="margin-top:18px;border-top:1px solid #ddd;padding-top:8px;font-size:11px;color:#777;text-align:center">Nutrese · Smart Nutrition Software</div>
   </div>`;
   document.body.appendChild(area);
   let styleEl=document.getElementById('recipe-print-style');
@@ -7719,7 +7738,7 @@ function printRecipe(id){
     #recipe-print-area { display:block !important; }
   }
   @media screen { #recipe-print-area { display:none; } }`;
-  document.title=`NutriFlow - Recipe - ${r.name||'Recipe'}`;
+  document.title=`Nutrese - Recipe - ${r.name||'Recipe'}`;
   setTimeout(()=>{
     window.print();
     setTimeout(()=>{ document.title=oldTitle; area.remove(); }, 500);
@@ -7741,7 +7760,7 @@ async function loadCustomMeals(opts={}){
       if(error) throw error;
       S.customMeals=(data||[]).map(r=>({id:r.id,name:r.name,ingredients:Array.isArray(r.ingredients)?r.ingredients:[],nutrition:r.nutrition||recipeTotals(r.ingredients||[]),updated_at:r.updated_at}));
       persistCustomMealsLocal();
-    }catch(e){ console.error('[NutriFlow custom meals] load failed', e); }
+    }catch(e){ console.error('[Nutrese custom meals] load failed', e); }
   }
   if(opts.render!==false){
     rebuildMealDropdownOptions();
@@ -7824,7 +7843,7 @@ async function saveCustomMeal(){
       const {data,error}=await supabaseClient.from('custom_meals').insert(row).select().maybeSingle();
       if(error) throw error;
       if(data) meal={id:data.id,name:data.name,ingredients:data.ingredients||S.customMealDraft,nutrition:data.nutrition||nutrition,updated_at:data.updated_at,localOnly:false};
-    }catch(e){ console.error('[NutriFlow custom meals] save failed', e); setEl('custom-meal-save-status','Saved locally. Supabase custom_meals table may not be configured yet.'); }
+    }catch(e){ console.error('[Nutrese custom meals] save failed', e); setEl('custom-meal-save-status','Saved locally. Supabase custom_meals table may not be configured yet.'); }
   }
   S.customMeals=[meal,...(S.customMeals||[]).filter(m=>String(m.id)!==String(meal.id))];
   persistCustomMealsLocal();
@@ -7943,7 +7962,7 @@ async function loadAppointments(force=false){
         5000,
         'loadAppointments'
       );
-      if(error) console.error('[NutriFlow appointments] Supabase load failed', error);
+      if(error) console.error('[Nutrese appointments] Supabase load failed', error);
       if(!error && data){
         const remote=data.map(normalizeAppointment);
         const localOnly=(S.appointments||[]).filter(a=>a.localOnly || String(a.id).startsWith('appt_'));
@@ -7952,13 +7971,13 @@ async function loadAppointments(force=false){
           .sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
         appointmentsLoadedFor=scope;
         persistAppointmentsLocal();
-        console.log('[NutriFlow appointments] loaded from Supabase', {user_id:currentUser.id, count:remote.length, rows:remote});
+        console.log('[Nutrese appointments] loaded from Supabase', {user_id:currentUser.id, count:remote.length, rows:remote});
         renderDashboardAppointments();
         if(document.getElementById('page-appointments')?.classList.contains('active')) renderAppointments();
         return S.appointments;
       }
     }catch(e){
-      console.error('[NutriFlow appointments] Supabase load exception', e);
+      console.error('[Nutrese appointments] Supabase load exception', e);
       // local appointments are already loaded above
     }
   }
@@ -7998,7 +8017,7 @@ function renderAppointments(){
     const iso=dateToISO(d);
     const muted=calendarView==='month' && d.getMonth()!==calendarCursor.getMonth();
     const items=appointmentsForDate(iso);
-    if(items.length || iso===today) console.log('[NutriFlow appointments] render day', iso, items);
+    if(items.length || iso===today) console.log('[Nutrese appointments] render day', iso, items);
     const blocks=items.map(a=>`<button class="appointment-block ${appointmentClass(a.type)}" onclick="event.stopPropagation();openAppointmentForm('${iso}','${safeHtml(a.id)}')" title="${safeHtml(a.type)} · ${safeHtml(a.notes)}"><strong>${safeHtml(a.time)} ${safeHtml(a.client_name||'Unnamed')}</strong><span>${safeHtml(a.type)} · ${a.duration} min</span></button>`).join('');
     return `<div class="calendar-day ${muted?'muted':''} ${iso===today?'today':''} ${calendarView==='week'?'week':''}" onclick="openAppointmentForm('${iso}')">
       <div class="calendar-day-number">${d.getDate()}</div>
@@ -8086,24 +8105,24 @@ function appointmentClientUuid(){
       }
       if(!result.error && result.data) saved=normalizeAppointment(result.data);
       else {
-        console.error('[NutriFlow appointments] Supabase save failed', result.error);
+        console.error('[Nutrese appointments] Supabase save failed', result.error);
         saved.localOnly=true;
       }
     }catch(e){
-      console.error('[NutriFlow appointments] Supabase save exception', e);
+      console.error('[Nutrese appointments] Supabase save exception', e);
       saved.localOnly=true;
     }
   }
   S.appointments=[saved,...(S.appointments||[]).filter(a=>String(a.id)!==String(id))].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
-  console.log('[NutriFlow appointments] saved appointment', saved);
-  console.log('[NutriFlow appointments] S.appointments after save', S.appointments);
+  console.log('[Nutrese appointments] saved appointment', saved);
+  console.log('[Nutrese appointments] S.appointments after save', S.appointments);
   persistAppointmentsLocal();
   appointmentsLoadedFor=currentUser ? currentUser.id : 'local';
   calendarCursor=parseISODate(saved.date);
   clearAppointmentForm();
   const note=document.getElementById('appointments-save-note');
   if(note) note.textContent = saved.localOnly ? 'Appointment saved locally. Supabase appointments storage is unavailable.' : 'Appointment saved';
-  console.log('[NutriFlow appointments] calling renderAppointments after save');
+  console.log('[Nutrese appointments] calling renderAppointments after save');
   renderAppointments();
   renderDashboardAppointments();
 }
@@ -8293,7 +8312,7 @@ async function getNextClientReference(){
       if(error) throw error;
       (data||[]).forEach(c=>{ if(c.client_ref) refs.push(c.client_ref); });
     }catch(e){
-      console.error('[NutriFlow clients] could not read remote refs for next client number', e);
+      console.error('[Nutrese clients] could not read remote refs for next client number', e);
     }
   }
   const max=refs.reduce((highest, ref)=>Math.max(highest, clientReferenceNumber(ref)), 0);
@@ -8327,7 +8346,7 @@ function loadLocalClients(){
     const parsed=JSON.parse(scoped || fallback || '[]');
     return Array.isArray(parsed) ? parsed.map(normalizeClientRow) : [];
   }catch(e){
-    console.error('[NutriFlow clients] local load failed', e);
+    console.error('[Nutrese clients] local load failed', e);
     return [];
   }
 }
@@ -8337,7 +8356,7 @@ function saveLocalClients(clients){
     localStorage.setItem(clientStorageKey(), JSON.stringify(rows));
     localStorage.setItem('nutriflow_clients_local', JSON.stringify(rows));
   }catch(e){
-    console.error('[NutriFlow clients] local save failed', e);
+    console.error('[Nutrese clients] local save failed', e);
   }
 }
 function upsertLocalClient(row){
@@ -8394,7 +8413,7 @@ async function upsertClientToSupabase(row, options={}){
 
   // Fallback for projects where upsert permissions/configuration fail: update
   // by the internal UUID only, never by the visible client reference.
-  console.warn('[NutriFlow clients] upsert fallback used', upsertResult.error);
+  console.warn('[Nutrese clients] upsert fallback used', upsertResult.error);
   if(isUuid(dbId)){
     const {data, error}=await supabaseClient.from('clients')
       .update({name:payload.name, data:payload.data, updated_at:payload.updated_at})
@@ -8428,16 +8447,16 @@ async function migrateLocalClientsToSupabase(){
       await upsertClientToSupabase({...row, id:remote?.id || (isUuid(row.id)?row.id:null), localOnly:false}, {updated_at:row.updated_at});
       migrated++;
     }catch(e){
-      console.error('[NutriFlow clients] local migration failed for '+(row.name||row.client_ref), e);
+      console.error('[Nutrese clients] local migration failed for '+(row.name||row.client_ref), e);
     }
   }
   if(migrated){
     try{
       const remote=await fetchSupabaseClients();
       saveLocalClients(remote.map(c=>({...c, localOnly:false})));
-      console.log('[NutriFlow clients] migrated local clients to Supabase', migrated);
+      console.log('[Nutrese clients] migrated local clients to Supabase', migrated);
     }catch(e){
-      console.error('[NutriFlow clients] refresh after migration failed', e);
+      console.error('[Nutrese clients] refresh after migration failed', e);
     }
   }
 }
@@ -8526,7 +8545,7 @@ async function saveCurrentClient(options={}){
     error=e;
   }
   if(error){
-    console.error('[NutriFlow clients] Supabase save failed', error);
+    console.error('[Nutrese clients] Supabase save failed', error);
     upsertLocalClient(localRow);
     S_isDirty=false;
     alert('✅ Client saved locally: '+name+'\n\nSupabase clients table is unavailable or not configured yet: '+(error.message||error));
@@ -8555,7 +8574,7 @@ async function loadClientById(rowId){
       data=normalizeClientRow({...result.data, localOnly:false});
       upsertLocalClient({...data, localOnly:false});
     }catch(e){
-      console.error('[NutriFlow clients] Supabase load failed, using local backup if available', e);
+      console.error('[Nutrese clients] Supabase load failed, using local backup if available', e);
       data=localFallback();
     }
   } else {
@@ -8577,13 +8596,13 @@ async function deleteClientById(rowId){
       if(error) throw error;
       deletedRemote=true;
     }catch(e){
-      console.error('[NutriFlow clients] Supabase delete failed', e);
+      console.error('[Nutrese clients] Supabase delete failed', e);
       alert('Could not delete this client from Supabase. Please try again.');
       return;
     }
   }
   saveLocalClients(loadLocalClients().filter(c=>String(c.id)!==String(rowId)));
-  if(deletedRemote) console.log('[NutriFlow clients] deleted from Supabase', rowId);
+  if(deletedRemote) console.log('[Nutrese clients] deleted from Supabase', rowId);
   renderClientList();
 }
 
@@ -8605,7 +8624,7 @@ async function renderClientList(){
     saveLocalClients(remote.map(c=>({...c, localOnly:false})));
     renderClientListRows(S.clientListCache);
   }catch(e){
-    console.error('[NutriFlow clients] Supabase list failed, showing local backup', e);
+    console.error('[Nutrese clients] Supabase list failed, showing local backup', e);
     S.clientListCache=localClients;
     renderClientListRows(S.clientListCache);
     const note=document.createElement('div');
@@ -8661,7 +8680,7 @@ async function exportAllClients(){
     alert('No saved clients to back up yet. Save at least one client first ("💾 Save Client" on Client Profile).');
     return;
   }
-  const backup={app:'NutriFlow', version:'v1', exportedAt:new Date().toISOString(), clients:clients.map(c=>({id:c.id, client_ref:c.client_ref, name:c.name, state:c.data}))};
+  const backup={app:'Nutrese', version:'v1', exportedAt:new Date().toISOString(), clients:clients.map(c=>({id:c.id, client_ref:c.client_ref, name:c.name, state:c.data}))};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
@@ -8684,7 +8703,7 @@ function importClientsFile(input){
       const data=JSON.parse(e.target.result);
       const imported = data.clients || (Array.isArray(data) ? data : null);
       if(!imported || !Array.isArray(imported)){
-        alert('⚠️ This file doesn\'t look like a NutriFlow backup.');
+        alert('⚠️ This file doesn\'t look like a Nutrese backup.');
         return;
       }
       let added=0, updated=0;
@@ -8700,7 +8719,7 @@ function importClientsFile(input){
       renderClientList();
       alert(`✅ Restore complete.\n\nAdded: ${added}\nUpdated: ${updated}`);
     }catch(err){
-      alert('⚠️ Could not read this file — make sure it\'s an unmodified NutriFlow backup JSON.');
+      alert('⚠️ Could not read this file — make sure it\'s an unmodified Nutrese backup JSON.');
     }
     input.value='';
   };
@@ -8817,7 +8836,7 @@ window.onload=function(){
   renderConditionRadios();
   renderClinicalMacroSuggestions();
   calcAll(); calcMacros(); renderDashboard();
-  loadCustomMeals({render:false}).then(()=>rebuildMealDropdownOptions()).catch(e=>console.error('[NutriFlow custom meals] startup load failed', e));
+  loadCustomMeals({render:false}).then(()=>rebuildMealDropdownOptions()).catch(e=>console.error('[Nutrese custom meals] startup load failed', e));
   const handledSignedOutReturn = handleSignedOutReturn();
   if(!handledSignedOutReturn) handleStripeReturnRefresh();
   loadAppointments().then(renderDashboardAppointments);
@@ -8909,7 +8928,7 @@ function makeIcon(size) {
   ctx.lineTo(0, r);
   ctx.quadraticCurveTo(0,0,r,0);
   ctx.closePath();
-  ctx.fillStyle = '#0F6E56';
+  ctx.fillStyle = '#4CAF50';
   ctx.fill();
   ctx.font = `${Math.round(size*0.6)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
   ctx.textAlign = 'center';
@@ -8928,16 +8947,16 @@ if (appleIcon) appleIcon.href = icon192;
 
 // ── Inline Web App Manifest ──
 const manifest = {
-  name: "NutriFlow - Smart Nutrition Software",
-  short_name: "NutriFlow",
+  name: "Nutrese - Smart Nutrition Software",
+  short_name: "Nutrese",
   description: "Smart Nutrition Software",
   id: "./",
   start_url: "./",
   scope: "./",
   display: "standalone",
   orientation: "any",
-  background_color: "#0F6E56",
-  theme_color: "#0F6E56",
+  background_color: "#4CAF50",
+  theme_color: "#4CAF50",
   icons: [
     { src: icon192, sizes: "192x192", type: "image/png", purpose: "any" },
     { src: icon192, sizes: "192x192", type: "image/png", purpose: "maskable" },
@@ -8995,7 +9014,7 @@ if ('serviceWorker' in navigator) {
   const swScope = location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1) || '/';
   navigator.serviceWorker.register(swURL, {scope: swScope})
     .then(reg => {
-      console.log('NutriFlow SW registered', reg.scope);
+      console.log('Nutrese SW registered', reg.scope);
     })
     .catch(err => {
       // Blob SW may be blocked in some browsers — that's fine, app still works offline via cache
@@ -9017,15 +9036,15 @@ function showInstallBanner() {
   banner.id = 'install-banner';
   banner.style.cssText = `
     position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
-    background:#0F6E56;color:#fff;padding:12px 20px;border-radius:12px;
+    background:#4CAF50;color:#fff;padding:12px 20px;border-radius:12px;
     font-size:13px;font-weight:600;display:flex;align-items:center;gap:12px;
     box-shadow:0 4px 20px rgba(0,0,0,.3);z-index:200;max-width:320px;width:90%;
     animation:slideUp .3s ease;
   `;
   banner.innerHTML = `
     <span>📲</span>
-    <span style="flex:1">Add NutriFlow to your home screen</span>
-    <button onclick="installApp()" style="background:#fff;color:#0F6E56;border:none;padding:6px 12px;border-radius:7px;font-weight:700;cursor:pointer;font-size:12px">Install</button>
+    <span style="flex:1">Add Nutrese to your home screen</span>
+    <button onclick="installApp()" style="background:#fff;color:#4CAF50;border:none;padding:6px 12px;border-radius:7px;font-weight:700;cursor:pointer;font-size:12px">Install</button>
     <button onclick="this.closest('#install-banner').remove()" style="background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:0;line-height:1">×</button>
   `;
   document.body.appendChild(banner);
@@ -9068,6 +9087,9 @@ updateOnlineStatus();
 
 </body>
 </html>
+
+
+
 
 
 
