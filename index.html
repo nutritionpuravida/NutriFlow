@@ -185,6 +185,15 @@ select option { background-color: var(--bg-surface); color: var(--text-primary);
 .form-field { display: flex; flex-direction: column; gap: 5px; }
 .form-field.full { grid-column: span 2; }
 .form-field label { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+#page-profile .form-field > label,
+#page-intake .form-field > label {
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+}
+[data-theme="dark"] #page-profile .form-field > label,
+[data-theme="dark"] #page-intake .form-field > label {
+  color: var(--text-primary) !important;
+}
 .form-field input, .form-field select, .form-field textarea {
   padding: 9px 11px; border: 1px solid var(--border-strong); border-radius: 6px;
   background: var(--bg-input); color: var(--text-primary);
@@ -619,8 +628,11 @@ html[data-theme="dark"] .week-summary-table td:last-child {
   html[data-theme="light"] body,
   html[data-theme="light"] .app,
   html[data-theme="light"] .main,
-  html[data-theme="light"] .content {
+  html[data-theme="light"] .content,
+  html[data-theme="light"] .page,
+  html[data-theme="light"] .page.active {
     background: #F7F9F6 !important;
+    background-color: #F7F9F6 !important;
   }
   html[data-theme="light"] {
     --bg-page: #F7F9F6 !important;
@@ -629,6 +641,8 @@ html[data-theme="dark"] .week-summary-table td:last-child {
   html[data-theme="light"] #subscription-screen,
   html[data-theme="light"] .main,
   html[data-theme="light"] .content,
+  html[data-theme="light"] .page,
+  html[data-theme="light"] .page.active,
   html[data-theme="light"] .bottom-nav,
   html[data-theme="light"] .topbar {
     background-color: #F7F9F6 !important;
@@ -731,11 +745,11 @@ table th,
       <div class="auth-tab" id="tab-signup" onclick="setAuthTab('signup')">Sign Up</div>
     </div>
     <div id="auth-message"></div>
-    <div class="auth-field">
+    <div class="auth-field" id="auth-email-field">
       <label>Email</label>
       <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email">
     </div>
-    <div class="auth-field">
+    <div class="auth-field" id="auth-password-field">
       <label>Password</label>
       <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password">
     </div>
@@ -1564,12 +1578,24 @@ let currentUser = null;
 let authTab = 'signin';
 let subscriptionState = {status:'unknown', active:false, currentPeriodEnd:null, trialDaysRemaining:null, trialActive:false, trialExpired:false};
 let isIntentionalNavigation = false;
+let isPasswordRecoveryFlow = false;
+
+function isPasswordRecoveryUrl(){
+  try{
+    const search=new URLSearchParams(window.location.search || '');
+    const hash=new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
+    return search.get('type') === 'recovery' || hash.get('type') === 'recovery';
+  }catch(e){
+    return false;
+  }
+}
 
 function setAuthTab(tab){
   authTab = tab;
   document.getElementById('tab-signin').classList.toggle('active', tab==='signin');
   document.getElementById('tab-signup').classList.toggle('active', tab==='signup');
   document.getElementById('auth-submit-btn').textContent = tab==='signin' ? 'Sign In' : 'Create Account';
+  hidePasswordResetPanel();
   const resendBtn=document.getElementById('resend-confirmation-btn');
   if(resendBtn) resendBtn.style.display='none';
   setEl('auth-message','');
@@ -1669,25 +1695,43 @@ async function resendConfirmationEmail(){
 }
 
 function showPasswordResetPanel(){
+  isPasswordRecoveryFlow = true;
   authTab='signin';
   document.getElementById('tab-signin')?.classList.add('active');
   document.getElementById('tab-signup')?.classList.remove('active');
   const panel=document.getElementById('password-reset-panel');
+  const emailField=document.getElementById('auth-email-field');
+  const emailInput=document.getElementById('auth-email');
+  const passwordField=document.getElementById('auth-password-field');
   const forgot=document.getElementById('forgot-password-btn');
   const submit=document.getElementById('auth-submit-btn');
   const resend=document.getElementById('resend-confirmation-btn');
+  if(emailField) emailField.style.display='block';
+  if(emailInput){
+    emailInput.readOnly=true;
+    emailInput.style.background='var(--bg-page)';
+  }
+  if(passwordField) passwordField.style.display='none';
   if(panel) panel.style.display='block';
   if(forgot) forgot.style.display='none';
   if(submit) submit.style.display='none';
   if(resend) resend.style.display='none';
+  hideSubscriptionScreen();
   showAuthScreen();
   setAuthMessage('Enter your new password below.','success');
 }
 function hidePasswordResetPanel(){
   const panel=document.getElementById('password-reset-panel');
+  const emailInput=document.getElementById('auth-email');
+  const passwordField=document.getElementById('auth-password-field');
   const forgot=document.getElementById('forgot-password-btn');
   const submit=document.getElementById('auth-submit-btn');
   if(panel) panel.style.display='none';
+  if(emailInput){
+    emailInput.readOnly=false;
+    emailInput.style.background='';
+  }
+  if(passwordField) passwordField.style.display='block';
   if(forgot) forgot.style.display = authTab==='signin' ? 'block' : 'none';
   if(submit) submit.style.display='block';
 }
@@ -1722,6 +1766,7 @@ async function completePasswordReset(){
     const result=await withTimeout(supabaseClient.auth.updateUser({password:p1}),10000,'update password');
     if(result.error) throw result.error;
     setAuthMessage('Password updated. You can now sign in with your new password.','success');
+    isPasswordRecoveryFlow = false;
     hidePasswordResetPanel();
     supabaseClient.auth.signOut().catch(()=>{});
   }catch(err){
@@ -2017,6 +2062,11 @@ async function fetchSubscriptionStatusWithRetry(){
   }
 }
 async function refreshSubscriptionGate(){
+  if(isPasswordRecoveryFlow){
+    hideSubscriptionScreen();
+    showAuthScreen();
+    return;
+  }
   if(!SUBSCRIPTION_REQUIRED){ subscriptionState={status:'disabled',active:true}; hideSubscriptionScreen(); updateTrialBanner(); updateAccountPage(); return; }
   try{
     subscriptionState = await fetchSubscriptionStatusWithRetry();
@@ -2204,9 +2254,11 @@ function updateAccountPage(){
 let hadSession = false; // tracks whether a session existed before, to detect unexpected sign-outs
 let recoveringSession = false; // true if we just had an unexpected sign-out and need to restore on next sign-in
 let intentionalSignOut = false; // true only when the user deliberately clicks Sign out
+isPasswordRecoveryFlow = isPasswordRecoveryUrl();
 supabaseClient.auth.onAuthStateChange(async (event, session)=>{
   console.log('[Nutrese auth] onAuthStateChange', {event, hasSession:!!session, email:session?.user?.email || null});
-  if(event==='PASSWORD_RECOVERY' && session?.user){
+  if((event==='PASSWORD_RECOVERY' || isPasswordRecoveryFlow || isPasswordRecoveryUrl()) && session?.user){
+    isPasswordRecoveryFlow = true;
     currentUser=session.user;
     showPasswordResetPanel();
     return;
