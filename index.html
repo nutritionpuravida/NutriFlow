@@ -69,7 +69,7 @@ select option { background-color: var(--bg-surface); color: var(--text-primary);
 .topbar { height: 56px; background: rgba(255,255,255,.72); backdrop-filter: saturate(180%) blur(14px); -webkit-backdrop-filter: saturate(180%) blur(14px); border-bottom: none; box-shadow: 0 1px 3px rgba(0,0,0,.05); display: flex; align-items: center; padding: 0 16px; gap: 10px; flex-shrink: 0; position: sticky; top: 0; z-index: 50; }
 [data-theme="dark"] .topbar { background: rgba(26,29,39,.72); box-shadow: none; border-bottom: 1px solid var(--border); }
 .topbar-logo { width: 26px; height: 26px; flex-shrink: 0; display:flex; align-items:center; justify-content:center; font-size:22px; line-height:1; }
-.content { flex: 1; overflow-y: auto; padding: 16px; }
+.content { flex: 1; overflow-y: auto; padding: 28px 16px 16px; }
 
 /* ─── SIDEBAR ELEMENTS ─── */
 .logo-area { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 10px; }
@@ -78,7 +78,7 @@ select option { background-color: var(--bg-surface); color: var(--text-primary);
 .topbar-logo { filter: saturate(1.25) contrast(1.08); }
 .auth-logo .icon { width: auto; height: auto; border-radius: 0; background: transparent; border: 0; display: flex; align-items: center; justify-content: center; margin: 0; flex-shrink: 0; filter: saturate(1.25) contrast(1.08); }
 [data-theme="dark"] .auth-logo .icon { background: transparent; border-color: transparent; }
-.logo-text { font-family: var(--font); font-weight: 700; font-size: 13px; color: var(--text-primary); line-height: 1.2; letter-spacing: 0; }
+.logo-text { font-family: var(--font); font-weight: 700; font-size: 16px; color: var(--text-primary); line-height: 1.2; letter-spacing: 0; }
 [data-theme="dark"] .logo-text { color: #F5F5F5; }
 .logo-text span { font-family: var(--font); font-weight: 400; font-size: 11px; color: var(--text-muted); display: block; letter-spacing: 0; margin-top: 1px; }
 .client-chip { margin: 10px; background: var(--teal-50); border: 1px solid var(--teal-100); border-radius: var(--radius); padding: 9px 11px; }
@@ -718,7 +718,7 @@ html[data-theme="dark"] .week-summary-table td:last-child {
   .two-col { grid-template-columns: 1fr; }
   .form-grid, .form-grid.three { grid-template-columns: 1fr; }
   .form-field.full { grid-column: span 1; }
-  .content { padding: 12px 12px 80px; }
+  .content { padding: 24px 12px 80px; }
   .bottom-nav { display: flex; }
   .meal-row { grid-template-columns: 90px 1fr; }
   table { font-size: 12px; }
@@ -876,10 +876,7 @@ table th,
     </div>
     <div class="topbar-actions">
       <span class="no-print" style="font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:6px;padding:4px 10px" title="Opened-on date — this is today's date, whenever you happen to open this file. Build fingerprint is computed fresh from this file's exact content, so identical content always produces an identical fingerprint."><i class="ti ti-info-circle" aria-hidden="true"></i> <span id="opened-date-topbar">—</span><span style="opacity:.5">·</span><span id="build-date-topbar" style="font-family:monospace">—</span></span>
-      <div class="user-chip no-print" id="user-chip" style="display:none">
-        <span id="user-email"></span>
-        <button onclick="handleSignOut()">Sign out</button>
-      </div>
+      <span class="no-print" id="user-email" style="display:none"></span>
       <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle dark mode"><i class="ti ti-moon" aria-hidden="true"></i> Dark</button>
       <button class="btn primary no-print" onclick="saveCurrentClient()" id="topbar-save-client-btn" title="Save complete current client state"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save Client</button>
       <button class="btn" onclick="printPage()" id="topbar-print-btn" title="Print current page"><i class="ti ti-printer" aria-hidden="true"></i> Print</button>
@@ -1580,6 +1577,7 @@ table th,
         <div class="form-grid two">
           <div class="form-field"><label>Signed in as</label><input type="text" id="acct-email" readonly style="background:var(--bg-page);cursor:not-allowed"></div>
           <div class="form-field"><label>Subscription status</label><input type="text" id="acct-subscription" readonly style="background:var(--bg-page);cursor:not-allowed"></div>
+          <div class="form-field"><label>Session</label><button class="btn" onclick="handleSignOut()" style="width:fit-content"><i class="ti ti-logout" aria-hidden="true"></i> Log out</button></div>
         </div>
         <div id="account-subscription-detail" class="subscription-status">Subscription status will appear here after sign in.</div>
         <button class="btn primary" onclick="startStripeCheckout('price_1ToMPVDwBpsAKvLemjXMV2Rg')" id="account-monthly-trial-btn">Start monthly trial</button>
@@ -1918,7 +1916,6 @@ function completeSignedOutUi(wasIntentionalSignOut=false){
 
 function showAuthScreen(){
   document.getElementById('auth-screen').classList.remove('hidden');
-  document.getElementById('user-chip').style.display='none';
 }
 function hideAuthScreen(){
   document.getElementById('auth-screen').classList.add('hidden');
@@ -4769,6 +4766,7 @@ const PAGE_INFO = {
 };
 
 const CLIENT_TAB_PAGES = ['profile','bodycomp','intake','labs','macros','exchanges','sevenday','tracking','report'];
+const PRINT_PAGES = ['report','sevenday','equivalents'];
 
 function nav(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -4785,8 +4783,10 @@ function nav(id) {
       t.classList.toggle('active', t.getAttribute('data-tab-for')===id);
     });
   }
-  const printBtn=document.getElementById('topbar-print-btn');
-  if(printBtn) printBtn.style.display = id==='report' ? 'none' : '';
+  const saveBtn = document.getElementById('topbar-save-client-btn');
+  if(saveBtn) saveBtn.style.display = CLIENT_TAB_PAGES.includes(id) ? 'inline-flex' : 'none';
+  const printBtn = document.getElementById('topbar-print-btn');
+  if(printBtn) printBtn.style.display = PRINT_PAGES.includes(id) ? 'inline-flex' : 'none';
   const info = PAGE_INFO[id]||{title:id,sub:''};
   setEl('page-title',info.title); setEl('page-sub',info.sub);
   if(id==='dashboard') renderDashboard();
