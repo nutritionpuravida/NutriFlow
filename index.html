@@ -832,18 +832,11 @@ table th,
   <button class="nav-item" onclick="nav('clients')">🗂️ My Clients</button>
   <div class="nav-group-label">Workflow</div>
   <button class="nav-item active" onclick="nav('dashboard')">📊 Dashboard</button>
-  <button class="nav-item" onclick="nav('profile')">👤 Client Profile <span style="font-size:10px;color:var(--text-muted);font-weight:400">+ Body Comp</span></button>
-  <button class="nav-item" onclick="nav('intake')">📝 Client Notes / Intake</button>
-  <button class="nav-item" onclick="nav('labs')">🩸 Blood Analysis</button>
-  <button class="nav-item" onclick="nav('macros')">⚡ Macro Targets</button>
-  <button class="nav-item" onclick="nav('exchanges')">🔄 Exchange System</button>
-  <button class="nav-item" onclick="nav('sevenday')">📅 7-Day Plan</button>
-  <button class="nav-item" onclick="nav('report')">📄 Client Report</button>
+  <button class="nav-item" onclick="nav('profile')">👤 Client Profile</button>
   <button class="nav-item" onclick="nav('fooddb')">🔍 Food Database</button>
   <button class="nav-item" onclick="nav('recipes')">🍽️ Recipes</button>
   <button class="nav-item" onclick="nav('appointments')">📆 Appointments</button>
   <div class="nav-group-label">Reports & Tracking</div>
-  <button class="nav-item" onclick="nav('tracking')">📈 Progress Tracking</button>
   <button class="nav-item" onclick="nav('equivalents')">📋 Equivalents Guide</button>
   <div class="nav-group-label">Clinical</div>
   <button class="nav-item" onclick="nav('account')">💳 Account / Subscription</button>
@@ -878,6 +871,7 @@ table th,
 
   <div class="client-tabbar no-print" id="client-tabbar">
     <button class="client-tab" data-tab-for="profile" onclick="nav('profile')">👤 Profile</button>
+    <button class="client-tab" data-tab-for="bodycomp" onclick="nav('bodycomp')">📐 Body Comp</button>
     <button class="client-tab" data-tab-for="intake" onclick="nav('intake')">📝 Notes</button>
     <button class="client-tab" data-tab-for="labs" onclick="nav('labs')">🩸 Labs</button>
     <button class="client-tab" data-tab-for="macros" onclick="nav('macros')">⚡ Targets</button>
@@ -1141,12 +1135,14 @@ table th,
         <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px"><button class="btn" id="meal-lang-gr-profile" onclick="setClinicalLanguage('GR')">GR</button><button class="btn" id="meal-lang-en-profile" onclick="setClinicalLanguage('EN')">EN</button></div>
         <div id="condition-guidance" style="padding:12px;background:var(--teal-50);border:1px solid var(--teal-100);border-radius:var(--radius);font-size:13px;color:var(--teal-800);margin-top:8px"></div>
         <div style="margin-top:14px;display:flex;gap:8px;">
-          <button class="btn primary" onclick="nav('macros')">Continue to Macro Targets →</button>
+          <button class="btn primary" onclick="nav('bodycomp')">Continue to Body Composition →</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- BODY COMP (merged below Client Profile per dietitian feedback — same page now, just a second card) -->
+  <!-- BODY COMP -->
+  <div class="page" id="page-bodycomp">
     <div class="card">
       <div class="card-header"><span class="card-title">⚖️ INPUT — Body Composition</span></div>
       <div class="card-body">
@@ -1169,6 +1165,7 @@ table th,
         <div style="margin-top:14px;display:flex;gap:8px;">
           <button class="btn primary" onclick="saveBodyComp()">💾 Save Measurements</button>
           <button class="btn" onclick="nav('tracking')">View history →</button>
+          <button class="btn" onclick="nav('macros')">Continue to Targets →</button>
         </div>
       </div>
     </div>
@@ -4714,7 +4711,8 @@ const PAGE_INFO = {
   dashboard:{title:'Dashboard',sub:'Quick overview · Engine status · Today\'s plan'},
   clients:{title:'My Clients',sub:'Saved clients on your account'},
   intake:{title:'Client Intake',sub:'ΠΡΩΤΗ ΑΞΙΟΛΟΓΗΣΗ — First consultation questionnaire + Clinical Notes'},
-  profile:{title:'Client Profile',sub:'Demographics · Anthropometrics · Auto BMR/TDEE/BMI/IBW + Body Composition'},
+  profile:{title:'Client Profile',sub:'Demographics · Anthropometrics · Auto BMR/TDEE/BMI/IBW'},
+  bodycomp:{title:'Body Composition',sub:'Body fat, water, muscle mass, visceral fat and metabolic age'},
   macros:{title:'Macro Targets',sub:'Calorie split · Carbs / Protein / Fat breakdown'},
   exchanges:{title:'Exchange System',sub:'Σύστημα Ισοδυνάμων · Auto-calculated from macro targets'},
   oneday:{title:'1-Day Auto Plan',sub:'Exchange-based daily meal plan with meal dropdowns'},
@@ -4729,7 +4727,7 @@ const PAGE_INFO = {
   equivalents:{title:'Equivalents Guide',sub:'Printable food exchange list for clients — EN / GR'},
 };
 
-const CLIENT_TAB_PAGES = ['profile','intake','labs','macros','exchanges','sevenday','tracking','report'];
+const CLIENT_TAB_PAGES = ['profile','bodycomp','intake','labs','macros','exchanges','sevenday','tracking','report'];
 
 function nav(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -4758,7 +4756,8 @@ function nav(id) {
   if(id==='recipes') { renderRecipeDraft(); loadRecipes(); }
   if(id==='appointments') { loadAppointments(true).then(renderAppointments); }
   if(id==='account') { setTimeout(()=>refreshAccountSubscriptionPage().catch(err=>console.error('[Nutrese account] deferred refresh failed', err)), 0); }
-  if(id==='profile') { renderConditionRadios(); calcBodyComp(); refreshConditionVisualState(); }
+  if(id==='profile') { renderConditionRadios(); refreshConditionVisualState(); }
+  if(id==='bodycomp') calcBodyComp();
   if(id==='macros') renderClinicalMacroSuggestions();
   if(id==='exchanges') renderExchanges();
   // Always sync exchange inputs → S.ex before building meal plans
