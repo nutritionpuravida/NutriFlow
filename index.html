@@ -192,7 +192,7 @@ select option { background-color: var(--bg-surface); color: var(--text-primary);
 .bento-eyebrow { font-size: 13px; color: var(--text-muted); margin: 0 0 4px; }
 .bento-title { font-size: 22px; font-weight: 600; margin: 0; color: var(--text-primary); }
 .bento-stats { display: flex; gap: 24px; }
-.bento-stats > div { cursor: pointer; text-align: right; }
+.bento-stats > div { cursor: pointer; text-align: center; }
 .bento-stats .bs-value { display: block; font-size: 22px; font-weight: 600; color: var(--text-primary); line-height: 1; }
 .bento-stats .bs-label { font-size: 12px; color: var(--text-muted); }
 .bento-accent { background: var(--bg-page); border: none; }
@@ -857,7 +857,7 @@ table th,
     <button class="nav-item" onclick="nav('equivalents')"><i class="ti ti-clipboard-list" aria-hidden="true"></i> <span class="i18n" data-en="Equivalents Guide" data-gr="Οδηγός Ισοδυνάμων">Equivalents Guide</span></button>
   </div>
   <div class="nav-group-card">
-    <div class="nav-group-label"><span class="i18n" data-en="Clinical" data-gr="Κλινικά">Clinical</span></div>
+    <div class="nav-group-label"><span class="i18n" data-en="Settings" data-gr="Ρυθμίσεις">Settings</span></div>
     <button class="nav-item" onclick="nav('account')"><i class="ti ti-credit-card" aria-hidden="true"></i> <span class="i18n" data-en="Account / Subscription" data-gr="Λογαριασμός / Συνδρομή">Account / Subscription</span></button>
     <button class="nav-item" onclick="openFeedbackModal()"><i class="ti ti-message-circle" aria-hidden="true"></i> <span class="i18n" data-en="Feedback" data-gr="Σχόλια">Feedback</span></button>
   </div>
@@ -904,13 +904,11 @@ table th,
   <div class="page active" id="page-dashboard">
     <div id="dash-alert"></div>
     <div class="bento-grid">
-      <div class="bento-tile bento-span-2 bento-header">
-        <div>
-          <p class="bento-eyebrow"><span class="i18n" data-en="Overview" data-gr="Επισκόπηση">Overview</span></p>
-          <p class="bento-title"><span class="i18n" data-en="Your practice" data-gr="Το Ιατρείο σας">Your practice</span></p>
-        </div>
+      <div class="bento-tile bento-span-2 bento-header" style="justify-content:space-evenly">
         <div class="bento-stats">
           <div onclick="nav('clients')"><span class="bs-value" id="d-total-clients">—</span><span class="bs-label"><span class="i18n" data-en="Clients" data-gr="Πελάτες">Clients</span></span></div>
+        </div>
+        <div class="bento-stats">
           <div onclick="nav('appointments')"><span class="bs-value" id="d-today-appts">—</span><span class="bs-label" id="d-today-appts-sub"><span class="i18n" data-en="Today" data-gr="Σήμερα">Today</span></span></div>
         </div>
       </div>
@@ -1519,7 +1517,10 @@ table th,
   <!-- APPOINTMENTS -->
   <div class="page" id="page-appointments">
     <div class="card">
-      <div class="card-header"><span class="card-title"><i class="ti ti-calendar" aria-hidden="true"></i> Calendar</span><span class="card-action" onclick="openAppointmentForm(todayISO())">+ New appointment</span></div>
+      <div class="card-header"><span class="card-title"><i class="ti ti-calendar" aria-hidden="true"></i> Calendar</span>
+        <button class="btn" onclick="connectGoogleCalendar()" id="account-connect-calendar-btn" style="padding:6px 10px;font-size:12px;margin-left:auto"><i class="ti ti-brand-google" aria-hidden="true"></i> <span class="i18n" data-en="Connect Google Calendar" data-gr="Σύνδεση Google Calendar">Connect Google Calendar</span></button>
+        <span class="card-action" onclick="openAppointmentForm(todayISO())">+ New appointment</span></div>
+      <div id="calendar-connect-status" style="font-size:12px;color:var(--text-muted);padding:0 16px 8px"></div>
       <div class="card-body">
         <div class="calendar-toolbar">
           <div class="calendar-title" id="calendar-title">Appointments</div>
@@ -1581,8 +1582,6 @@ table th,
         <button class="btn primary" onclick="startStripeCheckout('price_1ToMPVDwBpsAKvLemjXMV2Rg')" id="account-monthly-trial-btn"><span class="i18n" data-en="Start monthly trial" data-gr="Έναρξη μηνιαίας δοκιμής">Start monthly trial</span></button>
         <button class="btn primary" onclick="startStripeCheckout('price_1ToMPWDwBpsAKvLe4Ial8JRS')" id="account-yearly-trial-btn"><span class="i18n" data-en="Start yearly trial" data-gr="Έναρξη ετήσιας δοκιμής">Start yearly trial</span></button>
         <button class="btn" onclick="openBillingPortal()" id="account-manage-billing-btn" style="display:none"><span class="i18n" data-en="Manage billing" data-gr="Διαχείριση χρέωσης">Manage billing</span></button>
-        <button class="btn" onclick="connectGoogleCalendar()" id="account-connect-calendar-btn"><span class="i18n" data-en="Connect Google Calendar" data-gr="Σύνδεση Google Calendar">Connect Google Calendar</span></button>
-        <div id="calendar-connect-status" style="font-size:12px;color:var(--text-muted);margin-top:6px"></div>
       </div>
     </div>
   </div>
@@ -4812,7 +4811,7 @@ function nav(id) {
   if(id==='labs') renderLabsTable();
   if(id==='fooddb') { loadRecipes({render:false, mergeLocal:true}); }
   if(id==='recipes') { renderRecipeDraft(); loadRecipes(); }
-  if(id==='appointments') { loadAppointments(true).then(()=>{renderAppointments(); if(!document.getElementById('appt-id')?.value) openAppointmentForm(todayISO());}); }
+  if(id==='appointments') { loadAppointments(true).then(()=>{renderAppointments(); if(!document.getElementById('appt-id')?.value) openAppointmentForm(todayISO());}); checkCalendarConnectionStatus(); }
   if(id==='account') { setTimeout(()=>refreshAccountSubscriptionPage().catch(err=>console.error('[Nutrese account] deferred refresh failed', err)), 0); }
   if(id==='profile') { renderConditionRadios(); refreshConditionVisualState(); }
   if(id==='bodycomp') calcBodyComp();
