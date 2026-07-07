@@ -871,14 +871,14 @@ table th,
 
   <div class="client-tabbar no-print" id="client-tabbar">
     <button class="client-tab" data-tab-for="profile" onclick="nav('profile')">👤 Profile</button>
-    <button class="client-tab" data-tab-for="bodycomp" onclick="nav('bodycomp')">📐 Body Comp</button>
+    <button class="client-tab" data-tab-for="bodycomp" onclick="nav('bodycomp')">⚖️ Body Comp</button>
     <button class="client-tab" data-tab-for="intake" onclick="nav('intake')">📝 Notes</button>
     <button class="client-tab" data-tab-for="labs" onclick="nav('labs')">🩸 Labs</button>
-    <button class="client-tab" data-tab-for="macros" onclick="nav('macros')">⚡ Targets</button>
+    <button class="client-tab" data-tab-for="macros" onclick="nav('macros')">🎯 Targets</button>
     <button class="client-tab" data-tab-for="exchanges" onclick="nav('exchanges')">🔄 Exchanges</button>
     <button class="client-tab" data-tab-for="sevenday" onclick="nav('sevenday')">📅 7-Day Plan</button>
     <button class="client-tab" data-tab-for="tracking" onclick="nav('tracking')">📈 Follow-up</button>
-    <button class="client-tab" data-tab-for="report" onclick="nav('report')">📄 Client Report</button>
+    <button class="client-tab" data-tab-for="report" onclick="nav('report')">🖨️ Client Report</button>
   </div>
 
   <div class="content">
@@ -1403,6 +1403,17 @@ table th,
           <div class="form-field" style="display:flex;align-items:flex-end"><button class="btn primary" onclick="searchFoodDatabase()">Search foods</button></div>
         </div>
         <div class="field-note" style="margin-top:10px;margin-bottom:10px">Search tip: use specific terms like 'chicken breast' or 'grilled chicken' for better results.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+          <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-right:2px">Quick search:</span>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('rice')">Rice</button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('chicken breast')">Chicken breast</button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('olive oil')">Olive oil</button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('feta cheese')">Feta cheese</button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('greek yogurt')">Greek yogurt</button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('egg')">Egg</button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('oats')">Oats</button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('lentils')">Lentils</button>
+        </div>
         <div id="fooddb-status" class="field-note"></div>
         <div id="fooddb-results"></div>
       </div>
@@ -7803,6 +7814,11 @@ async function fetchWithRetryOnce(url, options={}, delayMs=2000){
     await new Promise(resolve=>setTimeout(resolve, delayMs));
     return await fetch(url, options);
   }
+}
+function quickFoodSearch(term){
+  const el=document.getElementById('food-search');
+  if(el) el.value=term;
+  searchFoodDatabase();
 }
 async function searchFoodDatabase(){
   const query=(v('food-search')||'').trim();
