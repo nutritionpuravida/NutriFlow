@@ -90,6 +90,9 @@ select option { background-color: var(--bg-surface); color: var(--text-primary);
 .nav-badge { margin-left: auto; font-size: 10px; padding: 2px 6px; border-radius: 10px; background: var(--red-bg); color: var(--red-badge); font-weight: 700; }
 .nav-badge.ok { background: var(--green-bg); color: var(--green-badge); }
 .sidebar-footer { margin-top: auto; padding: 10px 13px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); text-align: center; }
+.nav-group-card { background: var(--bg-page); border-radius: var(--radius); padding: 4px; margin: 0 5px 10px; }
+.nav-group-card .nav-group-label { padding: 7px 9px 5px; margin: 0; }
+.nav-group-card .nav-item { margin: 1px 0; width: 100%; }
 
 /* ─── CLIENT TAB BAR ─── */
 .client-tabbar { display: none; align-items: center; gap: 2px; padding: 0 20px; background: var(--bg-surface); border-bottom: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -828,19 +831,27 @@ table th,
       <div class="cc-meta" id="sidebar-meta">Fill Client Profile to begin</div>
     </div>
   </div>
-  <div class="nav-group-label">Clients</div>
-  <button class="nav-item" onclick="nav('clients')">👥 My Clients</button>
-  <div class="nav-group-label">Workflow</div>
-  <button class="nav-item active" onclick="nav('dashboard')">📊 Dashboard</button>
-  <button class="nav-item" onclick="nav('profile')">👤 Client Profile</button>
-  <button class="nav-item" onclick="nav('fooddb')">🔍 Food Database</button>
-  <button class="nav-item" onclick="nav('recipes')">🍽️ Recipes</button>
-  <button class="nav-item" onclick="nav('appointments')">📆 Appointments</button>
-  <div class="nav-group-label">Reports & Tracking</div>
-  <button class="nav-item" onclick="nav('equivalents')">📋 Equivalents Guide</button>
-  <div class="nav-group-label">Clinical</div>
-  <button class="nav-item" onclick="nav('account')">💳 Account / Subscription</button>
-  <button class="nav-item" onclick="openFeedbackModal()">💬 Feedback</button>
+  <div class="nav-group-card">
+    <div class="nav-group-label">Clients</div>
+    <button class="nav-item" onclick="nav('clients')">👥 My Clients</button>
+  </div>
+  <div class="nav-group-card">
+    <div class="nav-group-label">Workflow</div>
+    <button class="nav-item active" onclick="nav('dashboard')">📊 Dashboard</button>
+    <button class="nav-item" onclick="nav('profile')">👤 Client Profile</button>
+    <button class="nav-item" onclick="nav('fooddb')">🔍 Food Database</button>
+    <button class="nav-item" onclick="nav('recipes')">🍽️ Recipes</button>
+    <button class="nav-item" onclick="nav('appointments')">📆 Appointments</button>
+  </div>
+  <div class="nav-group-card">
+    <div class="nav-group-label">Reports & Tracking</div>
+    <button class="nav-item" onclick="nav('equivalents')">📋 Equivalents Guide</button>
+  </div>
+  <div class="nav-group-card">
+    <div class="nav-group-label">Clinical</div>
+    <button class="nav-item" onclick="nav('account')">💳 Account / Subscription</button>
+    <button class="nav-item" onclick="openFeedbackModal()">💬 Feedback</button>
+  </div>
   <div class="sidebar-footer">Nutrese v1 · Your clinical nutrition tool</div>
 </nav>
 
@@ -5297,32 +5308,46 @@ function calcBodyComp(){
   }
   if(metage!==null&&S.age) setEl('bc-metage-note',metage<=S.age?'✅ Favorable':'⚠ Metabolic age above chronological');
 
-  const visceralFatScaleHtml=score=>{
-    const n=Number(score);
+  const rangeBarHtml=(value,min,max,b1,b2,colors,labels)=>{
+    const n=Number(value);
     if(!Number.isFinite(n)) return '';
-    const clamped=Math.max(1, Math.min(16, n));
-    const marker=((clamped-1)/15)*100;
+    const clamped=Math.max(min, Math.min(max, n));
+    const marker=((clamped-min)/(max-min))*100;
+    const seg1=b1-min, seg2=b2-b1, seg3=max-b2;
     return `<div style="margin-top:9px">
-      <div style="height:9px;border-radius:999px;overflow:hidden;position:relative;display:grid;grid-template-columns:8fr 4fr 4fr;border:1px solid var(--border);box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)">
-        <span style="background:#22c55e"></span>
-        <span style="background:#facc15"></span>
-        <span style="background:#ef4444"></span>
+      <div style="height:9px;border-radius:999px;overflow:hidden;position:relative;display:grid;grid-template-columns:${seg1}fr ${seg2}fr ${seg3}fr;border:1px solid var(--border);box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)">
+        <span style="background:${colors[0]}"></span>
+        <span style="background:${colors[1]}"></span>
+        <span style="background:${colors[2]}"></span>
         <span aria-hidden="true" style="position:absolute;left:calc(${marker}% - 5px);top:-4px;width:10px;height:17px;border-radius:999px;background:var(--text-primary);border:2px solid var(--bg-surface);box-shadow:0 1px 4px rgba(0,0,0,.25)"></span>
       </div>
       <div style="display:flex;justify-content:space-between;gap:6px;margin-top:4px;font-size:9px;color:var(--text-muted);line-height:1.2">
-        <span>1–8 Healthy</span><span>9–12 Borderline</span><span>13+ High</span>
+        <span>${labels[0]}</span><span>${labels[1]}</span><span>${labels[2]}</span>
       </div>
     </div>`;
   };
+  const visceralFatScaleHtml=score=>rangeBarHtml(score,0,16,8,12,['#22c55e','#facc15','#ef4444'],['1–8 Healthy','9–12 Borderline','13+ High']);
+  const bodyFatScaleHtml=val=>isMale
+    ? rangeBarHtml(val,0,30,10,20,['#facc15','#22c55e','#facc15'],['<10% Low','10–20% Healthy','20%+ High'])
+    : rangeBarHtml(val,0,40,18,28,['#facc15','#22c55e','#facc15'],['<18% Low','18–28% Healthy','28%+ High']);
+  const bodyWaterScaleHtml=val=>isMale
+    ? rangeBarHtml(val,30,80,50,65,['#facc15','#22c55e','#facc15'],['<50% Low','50–65% Healthy','65%+ High'])
+    : rangeBarHtml(val,25,75,45,60,['#facc15','#22c55e','#facc15'],['<45% Low','45–60% Healthy','60%+ High']);
   const fields=[['Body Fat',bf,'%',isMale?'10–20%':'18–28%'],['Body Water',water,'%',isMale?'50–65%':'45–60%'],
     ['Fat Mass',fatmass!==null?fatmass.toFixed(1):null,'kg','Auto'],['Fat-Free Mass',ffm!==null?ffm.toFixed(1):null,'kg','Weight − fat mass'],
     ['Muscle Mass',muscle!==null?muscle.toFixed(1):null,'kg','Measured / manual'],
     ['Bone Mass',bone!==null?bone.toFixed(1):null,'kg','Measured / Tanita'],
     ['Visceral Fat',visceral,'score','1–8 healthy · 9–12 borderline · 13+ high'],['Metabolic Age',metage,'y','≤ chronological age']];
+  const scaleHtmlFor=(label,val)=>{
+    if(label==='Visceral Fat') return visceralFatScaleHtml(val);
+    if(label==='Body Fat') return bodyFatScaleHtml(val);
+    if(label==='Body Water') return bodyWaterScaleHtml(val);
+    return '';
+  };
   setEl('bc-interpretation','<div class="metrics-grid">'+fields.map(([l,val,u,ref])=>{
     const visceralClass=l==='Visceral Fat'&&val!=null ? (val<=8?'ok':val<=12?'warn':'err') : '';
     const valueText=val!=null ? `${val}${u?' '+u:''}` : '—';
-    return `<div class="metric"><div class="m-label">${l}</div><div class="m-value ${visceralClass}" style="font-size:20px">${valueText}</div><div class="m-sub">Ref: ${ref}</div>${l==='Visceral Fat'?visceralFatScaleHtml(val):''}</div>`;
+    return `<div class="metric"><div class="m-label">${l}</div><div class="m-value ${visceralClass}" style="font-size:20px">${valueText}</div><div class="m-sub">Ref: ${ref}</div>${scaleHtmlFor(l,val)}</div>`;
   }).join('')+'</div>');
 
   const goal=S.goal || v('p-goal') || 'Maintenance';
