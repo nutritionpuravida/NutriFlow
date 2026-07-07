@@ -172,8 +172,10 @@ i.ti-circle-x { color: var(--red-text); }
 /* ─── BUTTONS ─── */
 .btn { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-surface); color: var(--text-secondary); cursor: pointer; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: all .12s; }
 .btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+.btn:active { background: var(--bg-active); transform: scale(.96); transition: all .05s; }
 .btn.primary { background: var(--teal-600); color: #fff; border-color: var(--teal-600); }
 .btn.primary:hover { background: var(--teal-800); }
+.btn.primary:active { background: var(--teal-800); transform: scale(.96); transition: all .05s; filter: brightness(.9); }
 
 /* ─── PAGES / CARDS ─── */
 .page { display: none; }
@@ -1044,7 +1046,7 @@ table th,
   <!-- PROFILE -->
   <div class="page" id="page-profile">
     <div class="card">
-      <div class="card-header"><span class="card-title"><i class="ti ti-user" aria-hidden="true"></i> INPUT — Client Profile</span><span class="card-action" onclick="saveCurrentClient()" style="margin-left:auto"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save Client</span></div>
+      <div class="card-header"><span class="card-title"><i class="ti ti-user" aria-hidden="true"></i> INPUT — Client Profile</span></div>
       <div class="card-body">
         <div class="section-label">PHOTO</div>
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
@@ -1066,7 +1068,7 @@ table th,
         </div>
         <div class="form-grid three">
           <div class="form-field"><label><span class="i18n" data-en="Age (years)" data-gr="Ηλικία (έτη)">Age (years)</span></label><input type="number" id="p-age" placeholder="—" oninput="calcAll()"></div>
-          <div class="form-field"><label><span class="i18n" data-en="Sex" data-gr="Φύλο">Sex</span></label><select id="p-sex" onchange="calcAll()"><option value="M">Male / Άρρεν</option><option value="F">Female / Θήλυ</option></select></div>
+          <div class="form-field"><label><span class="i18n" data-en="Sex" data-gr="Φύλο">Sex</span></label><select id="p-sex" onchange="calcAll()"><option value="M">Male</option><option value="F">Female</option></select></div>
           <div class="form-field"><label><span class="i18n" data-en="Activity Level" data-gr="Επίπεδο Δραστηριότητας">Activity Level</span></label>
             <select id="p-activity" onchange="calcAll()">
               <option value="1.2">Sedentary (1.2)</option>
@@ -1088,7 +1090,7 @@ table th,
         <div class="section-label"><span class="i18n" data-en="Clinical Settings" data-gr="Κλινικές Ρυθμίσεις">Clinical Settings</span></div>
         <div class="form-grid">
           <div class="form-field full">
-            <label>Primary condition (select one)</label>
+            <label><span class="i18n" data-en="Primary condition (select one)" data-gr="Κύρια πάθηση (επιλέξτε μία)">Primary condition (select one)</span></label>
             <div id="p-conditions" style="display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:6px;background:var(--bg-input)">
               <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="Obesity" onclick="onConditionRadioClick(this)" style="width:auto"> Weight Management</label>
               <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="Diabetes" onclick="onConditionRadioClick(this)" style="width:auto"> Diabetes Type 2</label>
@@ -1109,48 +1111,48 @@ table th,
               <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="General" onclick="onConditionRadioClick(this)" style="width:auto"> Healthy Eating (no condition)</label>
             </div>
             <div id="pregnancy-trimester-field" class="form-field" style="display:none;margin-top:10px;max-width:260px">
-              <label>Pregnancy stage / Στάδιο εγκυμοσύνης</label>
+              <label><span class="i18n" data-en="Pregnancy stage" data-gr="Στάδιο εγκυμοσύνης">Pregnancy stage</span></label>
               <select id="p-trimester" onchange="calcAll()">
-                <option value="1">1ο Τρίμηνο (1–13 εβδ.)</option>
-                <option value="2">2ο Τρίμηνο (14–27 εβδ.)</option>
-                <option value="3">3ο Τρίμηνο (28+ εβδ.)</option>
+                <option value="1">1st Trimester (1–13 wks)</option>
+                <option value="2">2nd Trimester (14–27 wks)</option>
+                <option value="3">3rd Trimester (28+ wks)</option>
               </select>
             </div>
-            <div class="field-note">Leave unselected for a general/healthy population plan. Nutrese supports one primary condition at a time for clearer clinical logic.</div>
+            <div class="field-note"><span class="i18n" data-en="Leave unselected for a general/healthy population plan. Nutrese supports one primary condition at a time for clearer clinical logic." data-gr="Αφήστε το κενό για γενικό/υγιεινό πληθυσμιακό πλάνο. Το Nutrese υποστηρίζει μία κύρια πάθηση κάθε φορά για σαφέστερη κλινική λογική.">Leave unselected for a general/healthy population plan. Nutrese supports one primary condition at a time for clearer clinical logic.</span></div>
           </div>
           <div class="form-field"><label><span class="i18n" data-en="Goal" data-gr="Στόχος">Goal</span></label>
             <select id="p-goal" onchange="calcAll()">
-              <option value="Maintenance">Maintenance / Συντήρηση</option>
-              <option value="Weight Loss">Weight Loss / Απώλεια βάρους</option>
-              <option value="Weight Gain">Weight Gain / Αύξηση βάρους</option>
-              <option value="Muscle Gain">Muscle Gain / Αύξηση μυϊκής μάζας</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Weight Loss">Weight Loss</option>
+              <option value="Weight Gain">Weight Gain</option>
+              <option value="Muscle Gain">Muscle Gain</option>
             </select>
           </div>
           <div class="form-field"><label><span class="i18n" data-en="Meat Type" data-gr="Τύπος Κρέατος">Meat Type</span></label>
             <select id="p-meat" onchange="calcAll()">
-              <option value="Lean">Lean / Άπαχο</option>
-              <option value="Medium-fat">Medium-fat / Μέτριο</option>
-              <option value="High-fat">High-fat / Λιπαρό</option>
+              <option value="Lean">Lean</option>
+              <option value="Medium-fat">Medium-fat</option>
+              <option value="High-fat">High-fat</option>
             </select>
           </div>
           <div class="form-field"><label><span class="i18n" data-en="Dairy Type" data-gr="Τύπος Γαλακτοκομικών">Dairy Type</span></label>
             <select id="p-dairy" onchange="calcAll()">
-              <option value="Low-fat">Low-fat / Χαμηλό λίπος</option>
-              <option value="Moderate-fat" selected>Moderate-fat / Μέτριο</option>
-              <option value="Full-fat">Full-fat / Πλήρες</option>
+              <option value="Low-fat">Low-fat</option>
+              <option value="Moderate-fat" selected>Moderate-fat</option>
+              <option value="Full-fat">Full-fat</option>
             </select>
           </div>
           <div class="form-field"><label><span class="i18n" data-en="Diet Type" data-gr="Τύπος Διατροφής">Diet Type</span></label>
             <select id="p-diet" onchange="onDietTypeChange()">
-              <option value="Omnivore">Omnivore / Παμφάγος</option>
-              <option value="Pescatarian">Pescatarian / Ψαροφάγος</option>
-              <option value="Vegetarian">Vegetarian / Χορτοφάγος</option>
-              <option value="Vegan">Vegan / Αυστηρά Χορτοφάγος</option>
+              <option value="Omnivore">Omnivore</option>
+              <option value="Pescatarian">Pescatarian</option>
+              <option value="Vegetarian">Vegetarian</option>
+              <option value="Vegan">Vegan</option>
             </select>
             <div id="diet-type-note"></div>
           </div>
         </div>
-        <div class="section-label">AUTO-CALCULATED RESULTS (Mifflin-St Jeor)</div>
+        <div class="section-label"><span class="i18n" data-en="Auto-Calculated Results (Mifflin-St Jeor)" data-gr="Αυτόματα Υπολογισμένα Αποτελέσματα (Mifflin-St Jeor)">Auto-Calculated Results (Mifflin-St Jeor)</span></div>
         <div class="metrics-grid">
           <div class="metric"><div class="m-label">BMI</div><div class="m-value" id="r-bmi">—</div><div class="m-sub" id="r-bmi-cat">—</div></div>
           <div class="metric"><div class="m-label">Ideal Body Weight</div><div class="m-value" id="r-ibw">—</div><div class="m-sub" id="r-ibw-sub">Devine formula</div></div>
@@ -1311,31 +1313,37 @@ table th,
         <span class="card-title" id="report-options-title"><i class="ti ti-settings" aria-hidden="true"></i> Report Options — Choose what to print</span>
       </div>
       <div class="card-body">
-        <div style="display:grid;grid-template-columns:1fr 190px;gap:20px;align-items:start;margin-bottom:14px">
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer">
-              <input type="checkbox" id="rep-include-blood" checked onchange="onReportOptionsChange()" style="width:16px;height:16px;accent-color:var(--teal-600)">
-              <span id="report-include-blood-label">Include Blood Analysis summary</span>
-            </label>
-            <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer">
-              <input type="checkbox" id="rep-include-equivalents" onchange="onReportOptionsChange()" style="width:16px;height:16px;accent-color:var(--teal-600)">
-              <span id="report-include-equivalents-label">Include Equivalents Guide in report</span>
-            </label>
+        <div style="display:grid;grid-template-columns:1fr 190px;gap:20px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer">
+                <input type="checkbox" id="rep-include-blood" checked onchange="onReportOptionsChange()" style="width:16px;height:16px;accent-color:var(--teal-600)">
+                <span id="report-include-blood-label">Include Blood Analysis summary</span>
+              </label>
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer">
+                <input type="checkbox" id="rep-include-equivalents" onchange="onReportOptionsChange()" style="width:16px;height:16px;accent-color:var(--teal-600)">
+                <span id="report-include-equivalents-label">Include Equivalents Guide in report</span>
+              </label>
+            </div>
+            <div style="padding-top:12px;border-top:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+                <span style="font-size:13px;font-weight:800;color:var(--text-secondary)">Report logo:</span>
+                <input type="file" id="report-logo-input" accept="image/png,image/jpeg" onchange="handleReportLogoUpload(this)" style="max-width:260px">
+                <button class="btn" type="button" onclick="removeReportLogo()">Remove logo</button>
+                <span id="report-logo-status" class="field-note" style="margin-left:0"></span>
+              </div>
+              <div id="report-logo-preview" style="width:100%;display:none"></div>
+            </div>
           </div>
           <div style="border:1px solid var(--border);border-radius:10px;padding:12px">
             <div id="report-days-title" style="font-size:12px;font-weight:800;color:var(--text-secondary);margin-bottom:8px">Print days from 7-day plan:</div>
             <div id="report-day-selector" style="display:flex;flex-direction:column;gap:7px"></div>
           </div>
         </div>
-        <div class="field-note" style="margin:0 0 14px" id="report-days-note">Select one or more days to print from the weekly plan. Single-day print hides the weekday name.</div>
-                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;width:100%;padding-top:6px;border-top:1px solid var(--border)">
-            <span style="font-size:13px;font-weight:800;color:var(--text-secondary)">Report logo:</span>
-            <input type="file" id="report-logo-input" accept="image/png,image/jpeg" onchange="handleReportLogoUpload(this)" style="max-width:260px">
-            <button class="btn" type="button" onclick="removeReportLogo()">Remove logo</button>
-            <span id="report-logo-status" class="field-note" style="margin-left:0"></span>
-            <div id="report-logo-preview" style="width:100%;display:none;margin-top:4px"></div>
-          </div>
+        <div class="field-note" style="margin:14px 0 0" id="report-days-note">Select one or more days to print from the weekly plan. Single-day print hides the weekday name.</div>
+        <div style="margin-top:16px">
           <button class="btn primary" onclick="printPage()" id="report-print-btn"><i class="ti ti-printer" aria-hidden="true"></i> Print Full Report</button>
+        </div>
         <div class="field-note" id="report-options-note" style="margin-top:8px">Check/uncheck to choose which meal plan appears in the printed report. Use Print / Save PDF and choose “Save as PDF” in the browser print dialog.</div>
       </div>
     </div>
@@ -4043,7 +4051,7 @@ function setMealLanguage(lang){
   refreshMealDropdownLabels();
   refreshSnackExtrasLabels();
   setEl('condition-guidance', renderCombinedGuidance(S.conditions));
-  if(document.getElementById('page-labs')?.classList.contains('active')) renderVitaminSuggestions();
+  if(document.getElementById('page-labs')?.classList.contains('active')) renderLabsTable();
   if(document.getElementById('page-oneday')?.classList.contains('active')) buildOneDayPlan();
   if(document.getElementById('page-sevenday')?.classList.contains('active')) buildSevenDay();
   if(document.getElementById('page-report')?.classList.contains('active')) buildReport();
@@ -7608,13 +7616,17 @@ function labStatus(test, val){
 }
 
 function renderLabsTable(){
+  const isGr = window.appLang!=='en';
   let html='<div class="table-wrap"><table><thead><tr><th>Test</th><th>Value</th><th>Unit</th><th>Reference range</th><th>Status</th><th>Note</th></tr></thead><tbody>';
   LAB_TESTS.forEach(t=>{
     const id='lab-'+t.key;
     const val=S.labValues[t.key];
     const status=labStatus(t,val);
+    const labelHtml = isGr
+      ? `<strong style="font-size:14px !important;font-weight:600 !important">${t.gr}</strong><div style="font-size:12px;font-weight:600;color:var(--text-muted)">${t.en}</div>`
+      : `<strong style="font-size:14px !important;font-weight:600 !important">${t.en}</strong>`;
     html+=`<tr>
-      <td><strong style="font-size:14px !important;font-weight:600 !important">${t.gr}</strong><div style="font-size:12px;font-weight:600;color:var(--text-muted)">${t.en}</div></td>
+      <td>${labelHtml}</td>
       <td><input type="number" id="${id}" value="${val!=null?val:''}" step="0.1" style="width:80px;padding:5px;text-align:center;border:1px solid var(--border-strong);border-radius:5px;background:var(--bg-input);color:var(--text-primary)" oninput="onLabInput('${t.key}')"></td>
       <td style="font-size:12px;color:var(--text-muted)">${t.unit}</td>
       <td style="font-size:12px">${t.low}–${t.high}</td>
@@ -9551,9 +9563,58 @@ function toggleTheme() {
 })();
 
 // ─── LANGUAGE ───
+const DROPDOWN_TRANSLATIONS = {
+  'p-sex': { 'M':{en:'Male',gr:'Άρρεν'}, 'F':{en:'Female',gr:'Θήλυ'} },
+  'p-activity': {
+    '1.2':{en:'Sedentary (1.2)',gr:'Καθιστική ζωή (1.2)'},
+    '1.375':{en:'Light (1.375)',gr:'Ελαφριά δραστηριότητα (1.375)'},
+    '1.55':{en:'Moderate (1.55)',gr:'Μέτρια δραστηριότητα (1.55)'},
+    '1.725':{en:'Active (1.725)',gr:'Έντονη δραστηριότητα (1.725)'},
+    '1.9':{en:'Athlete (1.9)',gr:'Αθλητής (1.9)'},
+  },
+  'p-goal': {
+    'Maintenance':{en:'Maintenance',gr:'Συντήρηση'},
+    'Weight Loss':{en:'Weight Loss',gr:'Απώλεια βάρους'},
+    'Weight Gain':{en:'Weight Gain',gr:'Αύξηση βάρους'},
+    'Muscle Gain':{en:'Muscle Gain',gr:'Αύξηση μυϊκής μάζας'},
+  },
+  'p-meat': {
+    'Lean':{en:'Lean',gr:'Άπαχο'},
+    'Medium-fat':{en:'Medium-fat',gr:'Μέτριο'},
+    'High-fat':{en:'High-fat',gr:'Λιπαρό'},
+  },
+  'p-dairy': {
+    'Low-fat':{en:'Low-fat',gr:'Χαμηλό λίπος'},
+    'Moderate-fat':{en:'Moderate-fat',gr:'Μέτριο'},
+    'Full-fat':{en:'Full-fat',gr:'Πλήρες'},
+  },
+  'p-diet': {
+    'Omnivore':{en:'Omnivore',gr:'Παμφάγος'},
+    'Pescatarian':{en:'Pescatarian',gr:'Ψαροφάγος'},
+    'Vegetarian':{en:'Vegetarian',gr:'Χορτοφάγος'},
+    'Vegan':{en:'Vegan',gr:'Αυστηρά Χορτοφάγος'},
+  },
+  'p-trimester': {
+    '1':{en:'1st Trimester (1–13 wks)',gr:'1ο Τρίμηνο (1–13 εβδ.)'},
+    '2':{en:'2nd Trimester (14–27 wks)',gr:'2ο Τρίμηνο (14–27 εβδ.)'},
+    '3':{en:'3rd Trimester (28+ wks)',gr:'3ο Τρίμηνο (28+ εβδ.)'},
+  },
+};
+function applyDropdownLanguage(){
+  const isGr = window.appLang!=='en';
+  Object.keys(DROPDOWN_TRANSLATIONS).forEach(selId=>{
+    const sel=document.getElementById(selId); if(!sel) return;
+    const map=DROPDOWN_TRANSLATIONS[selId];
+    Array.from(sel.options).forEach(opt=>{
+      const t=map[opt.value];
+      if(t) opt.textContent = isGr ? t.gr : t.en;
+    });
+  });
+}
 window.appLang = 'en';
 function applyLanguage(lang){
   window.appLang = lang;
+  applyDropdownLanguage();
   setMealLanguage(lang==='gr'?'GR':'EN');
   document.querySelectorAll('.i18n').forEach(el=>{
     const val = lang==='gr' ? el.getAttribute('data-gr') : el.getAttribute('data-en');
@@ -9594,7 +9655,8 @@ function toggleLanguage(){
   try {
     const savedLang = localStorage.getItem('nutrese-lang');
     if(savedLang==='gr' || savedLang==='en') applyLanguage(savedLang);
-  } catch(e) {}
+    else applyDropdownLanguage();
+  } catch(e) { applyDropdownLanguage(); }
 })();
 
 // ─── MOBILE SIDEBAR ───
