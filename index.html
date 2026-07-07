@@ -91,6 +91,13 @@ select option { background-color: var(--bg-surface); color: var(--text-primary);
 .nav-badge.ok { background: var(--green-bg); color: var(--green-badge); }
 .sidebar-footer { margin-top: auto; padding: 10px 13px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); text-align: center; }
 
+/* ─── CLIENT TAB BAR ─── */
+.client-tabbar { display: none; align-items: center; gap: 2px; padding: 0 20px; background: var(--bg-surface); border-bottom: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.client-tabbar.show { display: flex; }
+.client-tab { display: flex; align-items: center; gap: 6px; padding: 11px 14px; font-size: 13px; color: var(--text-secondary); border: none; background: none; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; transition: all .12s; flex-shrink: 0; }
+.client-tab:hover { color: var(--text-primary); }
+.client-tab.active { color: var(--text-active); border-bottom-color: var(--text-active); font-weight: 700; }
+
 /* ─── TOPBAR ─── */
 .hamburger { display: none; background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-primary); padding: 4px; flex-shrink: 0; }
 .topbar-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
@@ -867,6 +874,17 @@ table th,
   <div class="trial-banner no-print" id="trial-banner">
     <span id="trial-banner-text">🎁 Free trial — 0 days remaining. Subscribe to continue after your trial.</span>
     <button onclick="openTrialSubscribe()">Subscribe now</button>
+  </div>
+
+  <div class="client-tabbar no-print" id="client-tabbar">
+    <button class="client-tab" data-tab-for="profile" onclick="nav('profile')">👤 Profile</button>
+    <button class="client-tab" data-tab-for="intake" onclick="nav('intake')">📝 Notes</button>
+    <button class="client-tab" data-tab-for="labs" onclick="nav('labs')">🩸 Labs</button>
+    <button class="client-tab" data-tab-for="macros" onclick="nav('macros')">⚡ Targets</button>
+    <button class="client-tab" data-tab-for="exchanges" onclick="nav('exchanges')">🔄 Exchanges</button>
+    <button class="client-tab" data-tab-for="sevenday" onclick="nav('sevenday')">📅 7-Day Plan</button>
+    <button class="client-tab" data-tab-for="tracking" onclick="nav('tracking')">📈 Follow-up</button>
+    <button class="client-tab" data-tab-for="report" onclick="nav('report')">📄 Client Report</button>
   </div>
 
   <div class="content">
@@ -4711,6 +4729,8 @@ const PAGE_INFO = {
   equivalents:{title:'Equivalents Guide',sub:'Printable food exchange list for clients — EN / GR'},
 };
 
+const CLIENT_TAB_PAGES = ['profile','intake','labs','macros','exchanges','sevenday','tracking','report'];
+
 function nav(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -4718,6 +4738,14 @@ function nav(id) {
   document.querySelectorAll('.nav-item').forEach(btn=>{
     if(btn.getAttribute('onclick')&&btn.getAttribute('onclick').includes("'"+id+"'")) btn.classList.add('active');
   });
+  const tabbar = document.getElementById('client-tabbar');
+  if(tabbar){
+    const showTabbar = CLIENT_TAB_PAGES.includes(id);
+    tabbar.classList.toggle('show', showTabbar);
+    document.querySelectorAll('.client-tab').forEach(t=>{
+      t.classList.toggle('active', t.getAttribute('data-tab-for')===id);
+    });
+  }
   const printBtn=document.getElementById('topbar-print-btn');
   if(printBtn) printBtn.style.display = id==='report' ? 'none' : '';
   const info = PAGE_INFO[id]||{title:id,sub:''};
