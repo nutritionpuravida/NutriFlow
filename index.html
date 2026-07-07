@@ -1311,22 +1311,23 @@ table th,
         <span class="card-title" id="report-options-title"><i class="ti ti-settings" aria-hidden="true"></i> Report Options — Choose what to print</span>
       </div>
       <div class="card-body">
-        <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:center">
-          <div style="display:flex;gap:8px;margin-right:auto">
+        <div style="display:grid;grid-template-columns:1fr 190px;gap:20px;align-items:start;margin-bottom:14px">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer">
+              <input type="checkbox" id="rep-include-blood" checked onchange="onReportOptionsChange()" style="width:16px;height:16px;accent-color:var(--teal-600)">
+              <span id="report-include-blood-label">Include Blood Analysis summary</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer">
+              <input type="checkbox" id="rep-include-equivalents" onchange="onReportOptionsChange()" style="width:16px;height:16px;accent-color:var(--teal-600)">
+              <span id="report-include-equivalents-label">Include Equivalents Guide in report</span>
+            </label>
           </div>
-          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-            <span id="report-days-title" style="font-size:13px;font-weight:800;color:var(--text-secondary)">Print days from 7-day plan:</span>
-            <div id="report-day-selector" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+          <div style="border:1px solid var(--border);border-radius:10px;padding:12px">
+            <div id="report-days-title" style="font-size:12px;font-weight:800;color:var(--text-secondary);margin-bottom:8px">Print days from 7-day plan:</div>
+            <div id="report-day-selector" style="display:flex;flex-direction:column;gap:7px"></div>
           </div>
-          <div class="field-note" style="width:100%;margin:2px 0 0" id="report-days-note">Select one or more days to print from the weekly plan. Single-day print hides the weekday name.</div>
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer">
-            <input type="checkbox" id="rep-include-blood" checked onchange="onReportOptionsChange()" style="width:16px;height:16px;accent-color:var(--teal-600)">
-            <span id="report-include-blood-label">Include Blood Analysis summary</span>
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer">
-            <input type="checkbox" id="rep-include-equivalents" onchange="onReportOptionsChange()" style="width:16px;height:16px;accent-color:var(--teal-600)">
-            <span id="report-include-equivalents-label">Include Equivalents Guide in report</span>
-          </label>
+        </div>
+        <div class="field-note" style="margin:0 0 14px" id="report-days-note">Select one or more days to print from the weekly plan. Single-day print hides the weekday name.</div>
                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;width:100%;padding-top:6px;border-top:1px solid var(--border)">
             <span style="font-size:13px;font-weight:800;color:var(--text-secondary)">Report logo:</span>
             <input type="file" id="report-logo-input" accept="image/png,image/jpeg" onchange="handleReportLogoUpload(this)" style="max-width:260px">
@@ -1335,7 +1336,6 @@ table th,
             <div id="report-logo-preview" style="width:100%;display:none;margin-top:4px"></div>
           </div>
           <button class="btn primary" onclick="printPage()" id="report-print-btn"><i class="ti ti-printer" aria-hidden="true"></i> Print Full Report</button>
-        </div>
         <div class="field-note" id="report-options-note" style="margin-top:8px">Check/uncheck to choose which meal plan appears in the printed report. Use Print / Save PDF and choose “Save as PDF” in the browser print dialog.</div>
       </div>
     </div>
@@ -2024,7 +2024,7 @@ function updateTrialBanner(){
   const days=subscriptionState.trialDaysRemaining;
   const show=subscriptionState.trialActive && days<=10 && !subscriptionState.ownerBypass;
   banner.style.display=show ? 'flex' : 'none';
-  if(show && text) text.textContent=`<i class="ti ti-gift" aria-hidden="true"></i> Free trial — ${days} day${days===1?'':'s'} remaining. Subscribe to continue after your trial.`;
+  if(show && text) text.innerHTML=`<i class="ti ti-gift" aria-hidden="true"></i> Free trial — ${days} day${days===1?'':'s'} remaining. Subscribe to continue after your trial.`;
 }
 function updateSubscriptionCheckoutButtons(){
   const trialAlreadyUsed=!!(subscriptionState?.trialUsedExpired || subscriptionState?.trialExpired);
@@ -2597,7 +2597,7 @@ const MEALS_EN = {
   BRK_CEREAL:      (ex,p) => `Oats (5 tbsp / ~40g) - 1 cup 1.5% milk`,
   BRK_OATS_VEGAN:  (ex,p) => `Oats (5 tbsp / ~40g) - 1 cup fortified plant milk (almond/soy)`,
   BRK_BOILED_EGGS_2:(ex,p) => `Boiled eggs (2 eggs) + 1 slice wholegrain bread + cucumber/cherry tomatoes`,
-  BRK_RUSKS_ANTHOTYRO:(ex,p) => `Rusks (2) + anthotyros cheese (~40g) + cherry tomatoes`,
+  BRK_RUSKS_ANTHOTYRO:(ex,p) => `Rusks (2) + ricotta cheese (~40g) + cherry tomatoes`,
   BRK_YOGURT_HONEY_WALNUTS:(ex,p) => `Greek yogurt 2% (~170g) + honey (1 tsp) + walnuts (4) + fruit`,
   LUN_CHICKEN_RICE:   (ex,p) => 'Chicken + rice' + mealSuffixEn(ex,p,'salad',null,'rice'),
   LUN_FISH_POTATO:    (ex,p) => 'Fish + potato' + mealSuffixEn(ex,p,'salad',null,'potato','fish',true),
@@ -3473,7 +3473,7 @@ const EQUIVALENTS_DATA = [
       {gr:'30g ψάρι (φρέσκο ή κονσέρβα σε νερό)', en:'30g fish (fresh or canned in water)'},
       {gr:'30g άπαχο μοσχάρι/χοιρινό', en:'30g lean beef/pork'},
       {gr:'1 αυγό', en:'1 egg'},
-      {gr:'30g τυρί light (π.χ. ανθότυρο, light κίτρινο)', en:'30g light cheese (e.g. anthotyro, light yellow cheese)'},
+      {gr:'30g τυρί light (π.χ. ανθότυρο, light κίτρινο)', en:'30g light cheese (e.g. ricotta, light yellow cheese)'},
       {gr:'¼ φλ. cottage cheese', en:'¼ cup cottage cheese'},
       {gr:'½ φλ. όσπρια μαγειρεμένα (μετράει επίσης ως άμυλο)', en:'½ cup cooked legumes (also counts as starch)'},
       {gr:'30g τόφου σφιχτό', en:'30g firm tofu'},
@@ -3761,7 +3761,7 @@ const SNACK_EXTRAS = [
   {v:'yogurt',     group:'dairy', gr:'🍦 Γιαούρτι 2% (~170g)',       en:'🍦 Yogurt 2% (~170g)'},             // 1 dairy exchange
   {v:'snk_fruit_crackers_cottage', group:'combo', slots:['snk1'], gr:'🍎 1 φρούτο + κράκερ (4) + τυρί cottage (~100g)', en:'🍎 1 fruit + crackers (4) + cottage cheese (~100g)'}, // 1 fruit + 1 starch + 1 protein
   {v:'snk_fruit_ricecakes_tahini_nuts', group:'combo', slots:['snk1'], gr:'🍎 1 φρούτο + 2 ρυζογκοφρέτες + 1 κ.γ. ταχίνι + 6 αμύγδαλα ή 4 καρύδια', en:'🍎 1 fruit + 2 rice cakes + 1 tsp tahini + 6 almonds or 4 walnuts'}, // 1 fruit + 1 starch + 2 fat
-  {v:'snk_anthotyro_rusk_fruit', group:'combo', slots:['snk1'], gr:'🧀 Ανθότυρο (~40g) + παξιμάδι (1) + φρούτο', en:'🧀 Anthotyros cheese (~40g) + rusk (1) + fruit'}, // 1 protein + 1 starch + 1 fruit
+  {v:'snk_anthotyro_rusk_fruit', group:'combo', slots:['snk1'], gr:'🧀 Ανθότυρο (~40g) + παξιμάδι (1) + φρούτο', en:'🧀 Ricotta cheese (~40g) + rusk (1) + fruit'}, // 1 protein + 1 starch + 1 fruit
   {v:'snk_hummus_veg', group:'combo', slots:['snk1','snk2'], gr:'🥣 Χούμους (2 κ.σ.) + λαχανικά (αγγούρι, καρότο, πιπεριά)', en:'🥣 Hummus (2 tbsp) + vegetables (cucumber, carrot, pepper)'}, // 1 starch + 1 fat + 1 vegetable
   {v:'snk_crackers_cheese', group:'combo', slots:['snk2'], gr:'🍞 4 κράκερ ολικής + 1 φέτα τυρί light', en:'🍞 4 wholegrain crackers + 1 slice light cheese'}, // 1 starch + 1 protein
   {v:'sleep_milk_glass', group:'combo', slots:['sleep'], gr:'🥛 1 ποτήρι γάλα 1,5% (~240ml)', en:'🥛 1 glass semi-skimmed milk 1.5% (~240ml)'}, // 1 dairy
@@ -5240,9 +5240,10 @@ function refreshExchangePlansNow(){
   // Brief visual confirmation
   const btn=document.querySelector('button[onclick="refreshExchangePlansNow()"]');
   if(btn){
-    const orig=btn.textContent;
-    btn.textContent='<i class="ti ti-circle-check" aria-hidden="true"></i> Applied!';
-    setTimeout(()=>{btn.textContent=orig;},1500);
+    const orig=btn.innerHTML;
+    const isGr = window.appLang==='gr';
+    btn.innerHTML=`<i class="ti ti-circle-check" aria-hidden="true"></i> ${isGr?'Εφαρμόστηκε!':'Applied!'}`;
+    setTimeout(()=>{btn.innerHTML=orig;},1500);
   }
 }
 
@@ -8123,7 +8124,7 @@ function removeRecipeIngredient(index){
 }
 function updateRecipeSaveButton(){
   const btn=document.getElementById('save-recipe-btn');
-  if(btn) btn.textContent = S.editingRecipeId ? '<i class="ti ti-device-floppy" aria-hidden="true"></i> Save updated recipe' : '<i class="ti ti-device-floppy" aria-hidden="true"></i> Save recipe';
+  if(btn) btn.innerHTML = S.editingRecipeId ? '<i class="ti ti-device-floppy" aria-hidden="true"></i> Save updated recipe' : '<i class="ti ti-device-floppy" aria-hidden="true"></i> Save recipe';
 }
 function clearRecipeDraft(){
   S.recipeDraft=[];
