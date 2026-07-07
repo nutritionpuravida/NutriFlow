@@ -66,19 +66,19 @@ select option { background-color: var(--bg-surface); color: var(--text-primary);
 .app { display: flex; height: 100vh; overflow: hidden; }
 .sidebar { width: var(--nav-w); background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; transition: transform .25s; z-index: 100; }
 .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.topbar { height: 56px; background: rgba(255,255,255,.72); backdrop-filter: saturate(180%) blur(14px); -webkit-backdrop-filter: saturate(180%) blur(14px); border-bottom: none; box-shadow: 0 1px 3px rgba(0,0,0,.05); display: flex; align-items: center; padding: 0 16px; gap: 10px; flex-shrink: 0; position: sticky; top: 0; z-index: 50; }
+.topbar { min-height: 56px; padding: 12px 16px; background: rgba(255,255,255,.72); backdrop-filter: saturate(180%) blur(14px); -webkit-backdrop-filter: saturate(180%) blur(14px); border-bottom: none; box-shadow: 0 1px 3px rgba(0,0,0,.05); display: flex; align-items: center; gap: 10px; flex-shrink: 0; position: sticky; top: 0; z-index: 50; }
 [data-theme="dark"] .topbar { background: rgba(26,29,39,.72); box-shadow: none; border-bottom: 1px solid var(--border); }
 .topbar-logo { width: 26px; height: 26px; flex-shrink: 0; display:flex; align-items:center; justify-content:center; font-size:22px; line-height:1; }
 .content { flex: 1; overflow-y: auto; padding: 28px 16px 16px; }
 
 /* ─── SIDEBAR ELEMENTS ─── */
-.logo-area { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 10px; }
-.logo-icon { width: 32px; height: 32px; border-radius: 0; background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 25px; border: 0; filter: saturate(1.25) contrast(1.08); }
+.logo-area { padding: 20px 16px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 10px; }
+.logo-icon { width: 36px; height: 36px; border-radius: 0; background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 25px; border: 0; filter: saturate(1.25) contrast(1.08); }
 [data-theme="dark"] .logo-icon { background: transparent; border-color: transparent; }
 .topbar-logo { filter: saturate(1.25) contrast(1.08); }
 .auth-logo .icon { width: auto; height: auto; border-radius: 0; background: transparent; border: 0; display: flex; align-items: center; justify-content: center; margin: 0; flex-shrink: 0; filter: saturate(1.25) contrast(1.08); }
 [data-theme="dark"] .auth-logo .icon { background: transparent; border-color: transparent; }
-.logo-text { font-family: var(--font); font-weight: 700; font-size: 16px; color: var(--text-primary); line-height: 1.2; letter-spacing: 0; }
+.logo-text { font-family: var(--font); font-weight: 700; font-size: 18px; color: var(--text-primary); line-height: 1.2; letter-spacing: 0; }
 [data-theme="dark"] .logo-text { color: #F5F5F5; }
 .logo-text span { font-family: var(--font); font-weight: 400; font-size: 11px; color: var(--text-muted); display: block; letter-spacing: 0; margin-top: 1px; }
 .client-chip { margin: 10px; background: var(--teal-50); border: 1px solid var(--teal-100); border-radius: var(--radius); padding: 9px 11px; }
@@ -851,7 +851,7 @@ table th,
     <div class="nav-group-label"><span class="i18n" data-en="Workflow" data-gr="Ροή Εργασίας">Workflow</span></div>
     <button class="nav-item active" onclick="nav('dashboard')"><i class="ti ti-chart-bar" aria-hidden="true"></i> <span class="i18n" data-en="Dashboard" data-gr="Πίνακας Ελέγχου">Dashboard</span></button>
     <button class="nav-item" onclick="nav('profile')"><i class="ti ti-user" aria-hidden="true"></i> <span class="i18n" data-en="Client Profile" data-gr="Προφίλ Πελάτη">Client Profile</span></button>
-    <button class="nav-item" onclick="nav('fooddb')"><i class="ti ti-search" aria-hidden="true"></i> <span class="i18n" data-en="Food Database" data-gr="Βάση Τροφίμων">Food Database</span></button>
+    <button class="nav-item" onclick="nav('fooddb')"><i class="ti ti-search" aria-hidden="true"></i> <span class="i18n" data-en="Food Database" data-gr="Αναζήτηση Τροφίμων">Food Database</span></button>
     <button class="nav-item" onclick="nav('recipes')"><i class="ti ti-chef-hat" aria-hidden="true"></i> <span class="i18n" data-en="Recipes" data-gr="Συνταγές">Recipes</span></button>
     <button class="nav-item" onclick="nav('appointments')"><i class="ti ti-calendar-event" aria-hidden="true"></i> <span class="i18n" data-en="Calendar" data-gr="Ημερολόγιο">Calendar</span></button>
     <button class="nav-item" onclick="nav('equivalents')"><i class="ti ti-clipboard-list" aria-hidden="true"></i> <span class="i18n" data-en="Equivalents Guide" data-gr="Οδηγός Ισοδυνάμων">Equivalents Guide</span></button>
@@ -894,8 +894,8 @@ table th,
     <button class="client-tab" data-tab-for="macros" onclick="nav('macros')"><i class="ti ti-target" aria-hidden="true"></i> <span class="i18n" data-en="Targets" data-gr="Στόχοι">Targets</span></button>
     <button class="client-tab" data-tab-for="exchanges" onclick="nav('exchanges')"><i class="ti ti-refresh" aria-hidden="true"></i> <span class="i18n" data-en="Exchanges" data-gr="Ισοδύναμα">Exchanges</span></button>
     <button class="client-tab" data-tab-for="sevenday" onclick="nav('sevenday')"><i class="ti ti-calendar" aria-hidden="true"></i> <span class="i18n" data-en="7-Day Plan" data-gr="Πλάνο 7 Ημερών">7-Day Plan</span></button>
-    <button class="client-tab" data-tab-for="tracking" onclick="nav('tracking')"><i class="ti ti-trending-up" aria-hidden="true"></i> <span class="i18n" data-en="Follow-up" data-gr="Παρακολούθηση">Follow-up</span></button>
     <button class="client-tab" data-tab-for="report" onclick="nav('report')"><i class="ti ti-printer" aria-hidden="true"></i> <span class="i18n" data-en="Client Report" data-gr="Αναφορά Πελάτη">Client Report</span></button>
+    <button class="client-tab" data-tab-for="tracking" onclick="nav('tracking')"><i class="ti ti-trending-up" aria-hidden="true"></i> <span class="i18n" data-en="Follow-up" data-gr="Παρακολούθηση">Follow-up</span></button>
   </div>
 
   <div class="content">
@@ -971,44 +971,44 @@ table th,
   <!-- INTAKE -->
   <div class="page" id="page-intake">
     <div class="card">
-      <div class="card-header"><span class="card-title"><i class="ti ti-clipboard-list" aria-hidden="true"></i> CLIENT INTAKE | ΠΡΩΤΗ ΑΞΙΟΛΟΓΗΣΗ</span></div>
+      <div class="card-header"><span class="card-title"><i class="ti ti-clipboard-list" aria-hidden="true"></i> <span class="i18n" data-en="Client Intake" data-gr="Ιστορικό Πελάτη">Client Intake</span></span></div>
       <div class="card-body">
-        <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> Fill in during first consultation. Greek + English bilingual. Notes appear in Client Report.</div>
-        <div class="section-label">ΣΤΟΧΟΣ / GOAL</div>
+        <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Fill in during first consultation. Notes appear in Client Report." data-gr="Συμπληρώστε κατά την πρώτη συνεδρία. Οι σημειώσεις εμφανίζονται στην Αναφορά Πελάτη.">Fill in during first consultation. Notes appear in Client Report.</span></div>
+        <div class="section-label"><span class="i18n" data-en="Goal" data-gr="Στόχος">Goal</span></div>
         <div class="form-grid">
-          <div class="form-field full"><label>Βασικός στόχος / Main goal</label><input type="text" id="i-goal" placeholder="e.g. Weight loss, maintenance, muscle gain…" oninput="saveIntake()"></div>
-          <div class="form-field full"><label>Γιατί; / Why important?</label><input type="text" id="i-goal-why" placeholder="Motivation / personal context" oninput="saveIntake()"></div>
-          <div class="form-field full"><label>Προηγούμενες προσπάθειες / Have you tried anything before?</label><input type="text" id="i-goal-tried" placeholder="Previous attempts…" oninput="saveIntake()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Main goal" data-gr="Βασικός στόχος">Main goal</span></label><input type="text" id="i-goal" placeholder="e.g. Weight loss, maintenance, muscle gain…" oninput="saveIntake()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Why important?" data-gr="Γιατί;">Why important?</span></label><input type="text" id="i-goal-why" placeholder="Motivation / personal context" oninput="saveIntake()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Have you tried anything before?" data-gr="Προηγούμενες προσπάθειες">Have you tried anything before?</span></label><input type="text" id="i-goal-tried" placeholder="Previous attempts…" oninput="saveIntake()"></div>
         </div>
-        <div class="section-label">ΤΡΟΠΟΣ ΖΩΗΣ / LIFESTYLE</div>
+        <div class="section-label"><span class="i18n" data-en="Lifestyle" data-gr="Τρόπος Ζωής">Lifestyle</span></div>
         <div class="form-grid">
-          <div class="form-field full"><label>Τυπική ημέρα / Typical day</label><input type="text" id="i-lifestyle" placeholder="Describe a typical day…" oninput="saveIntake()"></div>
-          <div class="form-field"><label>Άσκηση / Exercise type & frequency</label><input type="text" id="i-exercise" placeholder="e.g. Walking 3×/week" oninput="saveIntake()"></div>
-          <div class="form-field"><label>Βήματα / Daily steps</label><input type="text" id="i-steps" placeholder="~8000" oninput="saveIntake()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Typical day" data-gr="Τυπική ημέρα">Typical day</span></label><input type="text" id="i-lifestyle" placeholder="Describe a typical day…" oninput="saveIntake()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Exercise type & frequency" data-gr="Άσκηση">Exercise type & frequency</span></label><input type="text" id="i-exercise" placeholder="e.g. Walking 3×/week" oninput="saveIntake()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Daily steps" data-gr="Βήματα">Daily steps</span></label><input type="text" id="i-steps" placeholder="~8000" oninput="saveIntake()"></div>
         </div>
-        <div class="section-label">ΥΠΝΟΣ & STRESS</div>
+        <div class="section-label"><span class="i18n" data-en="Sleep & Stress" data-gr="Ύπνος & Άγχος">Sleep & Stress</span></div>
         <div class="form-grid">
-          <div class="form-field"><label>Ώρες ύπνου / Sleep hours</label><input type="number" id="i-sleep" placeholder="7" oninput="saveIntake()"></div>
-          <div class="form-field"><label>Άγχος 1–10 / Stress level</label><input type="number" id="i-stress" min="1" max="10" placeholder="5" oninput="saveIntake()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Sleep hours" data-gr="Ώρες ύπνου">Sleep hours</span></label><input type="number" id="i-sleep" placeholder="7" oninput="saveIntake()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Stress level (1–10)" data-gr="Άγχος (1–10)">Stress level (1–10)</span></label><input type="number" id="i-stress" min="1" max="10" placeholder="5" oninput="saveIntake()"></div>
         </div>
-        <div class="section-label">ΔΙΑΤΡΟΦΙΚΕΣ ΣΥΝΗΘΕΙΕΣ / NUTRITION HABITS</div>
+        <div class="section-label"><span class="i18n" data-en="Nutrition Habits" data-gr="Διατροφικές Συνήθειες">Nutrition Habits</span></div>
         <div class="form-grid">
-          <div class="form-field full"><label>Τυπική ημέρα διατροφής / Typical eating day</label><textarea id="i-typical-diet" rows="3" placeholder="Breakfast, lunch, dinner, snacks…" oninput="saveIntake()" style="resize:vertical"></textarea></div>
-          <div class="form-field"><label>Παραλείπεις γεύματα; / Skip meals?</label>
+          <div class="form-field full"><label><span class="i18n" data-en="Typical eating day" data-gr="Τυπική ημέρα διατροφής">Typical eating day</span></label><textarea id="i-typical-diet" rows="3" placeholder="Breakfast, lunch, dinner, snacks…" oninput="saveIntake()" style="resize:vertical"></textarea></div>
+          <div class="form-field"><label><span class="i18n" data-en="Skip meals?" data-gr="Παραλείπεις γεύματα;">Skip meals?</span></label>
             <select id="i-skip-meals" onchange="saveIntake()"><option value="">—</option><option>No, eat regularly</option><option>Sometimes skip breakfast</option><option>Often skip meals</option></select>
           </div>
-          <div class="form-field"><label>Λιγούρες / Cravings</label><input type="text" id="i-cravings" placeholder="Sweet, salty, chocolate…" oninput="saveIntake()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Cravings" data-gr="Λιγούρες">Cravings</span></label><input type="text" id="i-cravings" placeholder="Sweet, salty, chocolate…" oninput="saveIntake()"></div>
         </div>
-        <div class="section-label">ΔΥΣΑΝΕΞΙΕΣ / INTOLERANCES</div>
+        <div class="section-label"><span class="i18n" data-en="Intolerances" data-gr="Δυσανεξίες">Intolerances</span></div>
         <div class="form-grid">
-          <div class="form-field full"><label>Τρόφιμα που προκαλούν ενόχληση / Foods causing discomfort</label><input type="text" id="i-intolerances" placeholder="Lactose, gluten, legumes…" oninput="saveIntake()"></div>
-          <div class="form-field full"><label>Δυσπεψία / Digestion issues</label><input type="text" id="i-digestion" placeholder="Bloating, constipation, reflux…" oninput="saveIntake()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Foods causing discomfort" data-gr="Τρόφιμα που προκαλούν ενόχληση">Foods causing discomfort</span></label><input type="text" id="i-intolerances" placeholder="Lactose, gluten, legumes…" oninput="saveIntake()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Digestion issues" data-gr="Δυσπεψία">Digestion issues</span></label><input type="text" id="i-digestion" placeholder="Bloating, constipation, reflux…" oninput="saveIntake()"></div>
         </div>
-        <div class="section-label">ΣΗΜΕΙΩΣΕΙΣ ΔΙΑΙΤΟΛΟΓΟΥ / CLINICIAN NOTES</div>
-        <div class="form-field"><label>Ελεύθερες σημειώσεις / Free notes</label><textarea id="i-coach-notes" rows="4" placeholder="Internal notes, priorities, follow-up…" oninput="saveIntake()" style="resize:vertical;width:100%"></textarea></div>
+        <div class="section-label"><span class="i18n" data-en="Clinician Notes" data-gr="Σημειώσεις Διαιτολόγου">Clinician Notes</span></div>
+        <div class="form-field"><label><span class="i18n" data-en="Free notes" data-gr="Ελεύθερες σημειώσεις">Free notes</span></label><textarea id="i-coach-notes" rows="4" placeholder="Internal notes, priorities, follow-up…" oninput="saveIntake()" style="resize:vertical;width:100%"></textarea></div>
         <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <button class="btn primary" onclick="saveClientIntake()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save Intake</button>
-          <button class="btn" onclick="nav('macros')">Continue to Macro Targets →</button>
+          <button class="btn primary" onclick="saveClientIntake()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Save Intake" data-gr="Αποθήκευση Ιστορικού">Save Intake</span></button>
+          <button class="btn" onclick="nav('macros')"><span class="i18n" data-en="Continue to Macro Targets →" data-gr="Συνέχεια στους Στόχους →">Continue to Macro Targets →</span></button>
           <span id="intake-save-note" style="font-size:12px;color:var(--text-muted)"></span>
         </div>
       </div>
@@ -1016,22 +1016,22 @@ table th,
 
     <!-- CLINICAL NOTES (merged below Client Intake per dietitian feedback — same page now, just a second card) -->
     <div class="card">
-      <div class="card-header"><span class="card-title"><i class="ti ti-microscope" aria-hidden="true"></i> INPUT — Clinical Notes / Labs</span></div>
+      <div class="card-header"><span class="card-title"><i class="ti ti-microscope" aria-hidden="true"></i> <span class="i18n" data-en="Clinical Notes / Labs" data-gr="Κλινικές Σημειώσεις / Εξετάσεις">Clinical Notes / Labs</span></span></div>
       <div class="card-body">
-        <div class="section-label">DIAGNOSES & MEDICATION</div>
+        <div class="section-label"><span class="i18n" data-en="Diagnoses & Medication" data-gr="Διαγνώσεις & Φαρμακευτική Αγωγή">Diagnoses & Medication</span></div>
         <div class="form-grid">
-          <div class="form-field full"><label>Main diagnoses / conditions</label><input type="text" id="n-diagnoses" placeholder="Diabetes; CKD; Hypertension; Dyslipidemia" oninput="saveNotes()"></div>
-          <div class="form-field full"><label>Medication</label><input type="text" id="n-medication" placeholder="e.g. insulin, antihypertensives" oninput="saveNotes()"></div>
-          <div class="form-field"><label>Allergies</label><input type="text" id="n-allergies" placeholder="Foods to exclude" oninput="saveNotes()"></div>
-          <div class="form-field"><label>Dislikes / Avoid</label><input type="text" id="n-dislikes" placeholder="Foods the client refuses" oninput="saveNotes()"></div>
-          <div class="form-field full"><label>Cooperation / Adherence note</label><input type="text" id="n-adherence" placeholder="Useful for practical instructions" oninput="saveNotes()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Main diagnoses / conditions" data-gr="Κύριες διαγνώσεις / παθήσεις">Main diagnoses / conditions</span></label><input type="text" id="n-diagnoses" placeholder="Diabetes; CKD; Hypertension; Dyslipidemia" oninput="saveNotes()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Medication" data-gr="Φαρμακευτική αγωγή">Medication</span></label><input type="text" id="n-medication" placeholder="e.g. insulin, antihypertensives" oninput="saveNotes()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Allergies" data-gr="Αλλεργίες">Allergies</span></label><input type="text" id="n-allergies" placeholder="Foods to exclude" oninput="saveNotes()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Dislikes / Avoid" data-gr="Δεν αρέσουν / Αποφυγή">Dislikes / Avoid</span></label><input type="text" id="n-dislikes" placeholder="Foods the client refuses" oninput="saveNotes()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Cooperation / Adherence note" data-gr="Συνεργασία / Τήρηση οδηγιών">Cooperation / Adherence note</span></label><input type="text" id="n-adherence" placeholder="Useful for practical instructions" oninput="saveNotes()"></div>
         </div>
-        <div class="section-label">CLINICIAN NOTES</div>
-        <div class="form-field"><label>Free text</label><textarea id="n-clinician-notes" rows="5" placeholder="Clinical context, session summary, next steps…" oninput="saveNotes()" style="width:100%;resize:vertical"></textarea></div>
-        <div class="alert info" style="margin-top:14px"><i class="ti ti-info-circle" aria-hidden="true"></i> Blood test results have their own page — <a onclick="nav('labs')" style="color:inherit;text-decoration:underline;cursor:pointer">Blood Analysis →</a></div>
+        <div class="section-label"><span class="i18n" data-en="Clinician Notes" data-gr="Σημειώσεις Διαιτολόγου">Clinician Notes</span></div>
+        <div class="form-field"><label><span class="i18n" data-en="Free text" data-gr="Ελεύθερο κείμενο">Free text</span></label><textarea id="n-clinician-notes" rows="5" placeholder="Clinical context, session summary, next steps…" oninput="saveNotes()" style="width:100%;resize:vertical"></textarea></div>
+        <div class="alert info" style="margin-top:14px"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Blood test results have their own page —" data-gr="Τα αποτελέσματα εξετάσεων έχουν τη δική τους σελίδα —">Blood test results have their own page —</span> <a onclick="nav('labs')" style="color:inherit;text-decoration:underline;cursor:pointer"><span class="i18n" data-en="Blood Analysis →" data-gr="Αιματολογικός Έλεγχος →">Blood Analysis →</span></a></div>
         <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <button class="btn primary" onclick="saveClientIntake()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save Intake & Clinical Notes</button>
-          <button class="btn" onclick="nav('macros')">Continue to Macro Targets →</button>
+          <button class="btn primary" onclick="saveClientIntake()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Save Intake & Clinical Notes" data-gr="Αποθήκευση Ιστορικού & Κλινικών Σημειώσεων">Save Intake & Clinical Notes</span></button>
+          <button class="btn" onclick="nav('macros')"><span class="i18n" data-en="Continue to Macro Targets →" data-gr="Συνέχεια στους Στόχους →">Continue to Macro Targets →</span></button>
         </div>
       </div>
     </div>
@@ -1395,10 +1395,6 @@ table th,
       <div class="card-body">
         <div class="field-note" style="margin-bottom:8px">A printable food exchange list to give clients — shows what foods can be swapped 1-for-1 within each exchange category.</div>
         <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
-          <div style="display:flex;gap:6px">
-            <button class="btn primary" id="eq-btn-gr" onclick="setEquivalentsLang('gr')">Ελληνικά</button>
-            <button class="btn" id="eq-btn-en" onclick="setEquivalentsLang('en')">English</button>
-          </div>
           <button class="btn" onclick="printPage()"><i class="ti ti-printer" aria-hidden="true"></i> Print for client</button>
         </div>
         <div class="form-field" style="margin-top:12px">
@@ -1519,17 +1515,17 @@ table th,
     <div class="card">
       <div class="card-header"><span class="card-title"><i class="ti ti-calendar" aria-hidden="true"></i> Calendar</span>
         <button class="btn" onclick="connectGoogleCalendar()" id="account-connect-calendar-btn" style="padding:6px 10px;font-size:12px;margin-left:auto"><i class="ti ti-brand-google" aria-hidden="true"></i> <span class="i18n" data-en="Connect Google Calendar" data-gr="Σύνδεση Google Calendar">Connect Google Calendar</span></button>
-        <span class="card-action" onclick="openAppointmentForm(todayISO())">+ New appointment</span></div>
+        <span class="card-action" onclick="openAppointmentForm(todayISO())">+ <span class="i18n" data-en="New appointment" data-gr="Νέο ραντεβού">New appointment</span></span></div>
       <div id="calendar-connect-status" style="font-size:12px;color:var(--text-muted);padding:0 16px 8px"></div>
       <div class="card-body">
         <div class="calendar-toolbar">
           <div class="calendar-title" id="calendar-title">Appointments</div>
           <button class="btn" onclick="moveCalendar(-1)">←</button>
-          <button class="btn" onclick="goTodayCalendar()">Today</button>
+          <button class="btn" onclick="goTodayCalendar()"><span class="i18n" data-en="Today" data-gr="Σήμερα">Today</span></button>
           <button class="btn" onclick="moveCalendar(1)">→</button>
           <div class="view-toggle" aria-label="Calendar view">
-            <button id="calendar-view-month" class="active" onclick="setCalendarView('month')">Month</button>
-            <button id="calendar-view-week" onclick="setCalendarView('week')">Week</button>
+            <button id="calendar-view-month" class="active" onclick="setCalendarView('month')"><span class="i18n" data-en="Month" data-gr="Μήνας">Month</span></button>
+            <button id="calendar-view-week" onclick="setCalendarView('week')"><span class="i18n" data-en="Week" data-gr="Εβδομάδα">Week</span></button>
           </div>
         </div>
         <div class="calendar-shell">
@@ -1540,13 +1536,13 @@ table th,
             <div class="card-header"><span class="card-title" id="appointment-form-title">New appointment</span></div>
             <div class="card-body">
               <input type="hidden" id="appt-id">
-              <div class="form-field" style="margin-bottom:10px"><label>Date</label><input type="date" id="appt-date"></div>
-              <div class="form-field" style="margin-bottom:10px"><label>Client name</label><input type="text" id="appt-client" placeholder="Client name"></div>
+              <div class="form-field" style="margin-bottom:10px"><label><span class="i18n" data-en="Date" data-gr="Ημερομηνία">Date</span></label><input type="date" id="appt-date"></div>
+              <div class="form-field" style="margin-bottom:10px"><label><span class="i18n" data-en="Client name" data-gr="Όνομα πελάτη">Client name</span></label><input type="text" id="appt-client" class="i18n-ph" data-en-ph="Client name" data-gr-ph="Όνομα πελάτη" placeholder="Client name"></div>
               <div class="form-grid" style="margin-bottom:10px">
-                <div class="form-field"><label>Time</label><input type="time" id="appt-time" value="10:00"></div>
-                <div class="form-field"><label>Duration</label><select id="appt-duration"><option>30</option><option selected>45</option><option>60</option><option>90</option></select></div>
+                <div class="form-field"><label><span class="i18n" data-en="Time" data-gr="Ώρα">Time</span></label><input type="time" id="appt-time" value="10:00"></div>
+                <div class="form-field"><label><span class="i18n" data-en="Duration" data-gr="Διάρκεια">Duration</span></label><select id="appt-duration"><option>30</option><option selected>45</option><option>60</option><option>90</option></select></div>
               </div>
-              <div class="form-field" style="margin-bottom:10px"><label>Type</label>
+              <div class="form-field" style="margin-bottom:10px"><label><span class="i18n" data-en="Type" data-gr="Τύπος">Type</span></label>
                 <select id="appt-type">
                   <option>First consultation</option>
                   <option>Follow-up</option>
@@ -1554,13 +1550,13 @@ table th,
                   <option>Phone</option>
                 </select>
               </div>
-              <div class="form-field" style="margin-bottom:12px"><label>Notes</label><textarea id="appt-notes" rows="4" placeholder="Notes for this appointment" style="resize:vertical"></textarea></div>
+              <div class="form-field" style="margin-bottom:12px"><label><span class="i18n" data-en="Notes" data-gr="Σημειώσεις">Notes</span></label><textarea id="appt-notes" rows="4" class="i18n-ph" data-en-ph="Notes for this appointment" data-gr-ph="Σημειώσεις για αυτό το ραντεβού" placeholder="Notes for this appointment" style="resize:vertical"></textarea></div>
               <div style="display:flex;gap:8px;flex-wrap:wrap">
-                <button class="btn primary" onclick="saveAppointmentFromForm()">Save Appointment</button>
-                <button class="btn" id="appt-delete-btn" onclick="deleteAppointmentFromForm()" style="display:none">Delete</button>
-                <button class="btn" onclick="clearAppointmentForm()">Clear</button>
+                <button class="btn primary" onclick="saveAppointmentFromForm()"><span class="i18n" data-en="Save Appointment" data-gr="Αποθήκευση Ραντεβού">Save Appointment</span></button>
+                <button class="btn" id="appt-delete-btn" onclick="deleteAppointmentFromForm()" style="display:none"><span class="i18n" data-en="Delete" data-gr="Διαγραφή">Delete</span></button>
+                <button class="btn" onclick="clearAppointmentForm()"><span class="i18n" data-en="Clear" data-gr="Καθαρισμός">Clear</span></button>
               </div>
-              <div class="field-note" id="appointments-save-note" style="margin-top:10px">Saved to Supabase when signed in; local fallback is used if offline.</div>
+              <div class="field-note" id="appointments-save-note" style="margin-top:10px"></div>
             </div>
           </div>
         </div>
@@ -3577,7 +3573,7 @@ function equivalentsCompactTableHtml(lang='gr', searchQuery=''){
 }
 
 function buildEquivalents(){
-  const lang=equivalentsLang;
+  const lang=window.appLang==='gr' ? 'gr' : 'en';
   const query=(document.getElementById('eq-search')?.value||'').trim();
   const isEn=lang==='en';
   let html=`<div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> ${lang==='en'?'Within each category, foods can be swapped for one another in the listed amounts.':'Μέσα στην ίδια κατηγορία, τα τρόφιμα μπορούν να αντικατασταθούν μεταξύ τους στις αναγραφόμενες ποσότητες.'}</div>`;
@@ -4771,7 +4767,7 @@ const PAGE_INFO_GR = {
   exchanges:{title:'Σύστημα Ισοδυνάμων',sub:'Σύστημα Ισοδυνάμων · Αυτόματος υπολογισμός από στόχους'},
   oneday:{title:'Αυτόματο Πλάνο 1 Ημέρας',sub:'Ημερήσιο πλάνο βάσει ισοδυνάμων'},
   sevenday:{title:'Πλάνο 7 Ημερών',sub:'Πλήρες εβδομαδιαίο πρόγραμμα — όλες οι 7 παραλλαγές'},
-  fooddb:{title:'Βάση Τροφίμων',sub:'USDA FoodData Central · Μακροθρεπτικά ανά 100γρ'},
+  fooddb:{title:'Αναζήτηση Τροφίμων',sub:'USDA FoodData Central · Μακροθρεπτικά ανά 100γρ'},
   recipes:{title:'Συνταγές',sub:'Προσαρμοσμένες συνταγές · Αυτόματος υπολογισμός διατροφικής αξίας'},
   report:{title:'Αναφορά Πελάτη (Εκτύπωση)',sub:'PRINT — Κλινική Αναφορά Διατροφής'},
   tracking:{title:'Παρακολούθηση Προόδου',sub:'Ιστορικό σύστασης σώματος · Καταγραφή επισκέψεων'},
@@ -8537,19 +8533,21 @@ function renderAppointments(){
   const el=document.getElementById('appointments-calendar'); if(!el) return;
   document.getElementById('calendar-view-month')?.classList.toggle('active', calendarView==='month');
   document.getElementById('calendar-view-week')?.classList.toggle('active', calendarView==='week');
-  const weekdays=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const isGr = window.appLang==='gr';
+  const weekdays = isGr ? ['Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ','Κυρ'] : ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const locale = isGr ? 'el-GR' : 'en-US';
   const title=document.getElementById('calendar-title');
   const today=todayISO();
   let dates=[];
   if(calendarView==='week'){
     const start=startOfWeek(calendarCursor);
     for(let i=0;i<7;i++){ const d=new Date(start); d.setDate(start.getDate()+i); dates.push(d); }
-    if(title) title.textContent = dates[0].toLocaleDateString(undefined,{month:'short',day:'numeric'})+' - '+dates[6].toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+    if(title) title.textContent = dates[0].toLocaleDateString(locale,{month:'short',day:'numeric'})+' - '+dates[6].toLocaleDateString(locale,{month:'short',day:'numeric',year:'numeric'});
   } else {
     const first=new Date(calendarCursor.getFullYear(), calendarCursor.getMonth(), 1);
     const gridStart=startOfWeek(first);
     for(let i=0;i<42;i++){ const d=new Date(gridStart); d.setDate(gridStart.getDate()+i); dates.push(d); }
-    if(title) title.textContent = calendarCursor.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    if(title) title.textContent = calendarCursor.toLocaleDateString(locale,{month:'long',year:'numeric'});
   }
   const head=weekdays.map(w=>`<div class="calendar-weekday">${w}</div>`).join('');
   const cells=dates.map(d=>{
@@ -8557,7 +8555,7 @@ function renderAppointments(){
     const muted=calendarView==='month' && d.getMonth()!==calendarCursor.getMonth();
     const items=appointmentsForDate(iso);
     if(items.length || iso===today) console.log('[Nutrese appointments] render day', iso, items);
-    const blocks=items.map(a=>`<button class="appointment-block ${appointmentClass(a.type)}" onclick="event.stopPropagation();openAppointmentForm('${iso}','${safeHtml(a.id)}')" title="${safeHtml(a.type)} · ${safeHtml(a.notes)}"><strong>${safeHtml(a.time)} ${safeHtml(a.client_name||'Unnamed')}</strong><span>${safeHtml(a.type)} · ${a.duration} min</span></button>`).join('');
+    const blocks=items.map(a=>`<button class="appointment-block ${appointmentClass(a.type)}" onclick="event.stopPropagation();openAppointmentForm('${iso}','${safeHtml(a.id)}')" title="${safeHtml(a.type)} · ${safeHtml(a.notes)}"><strong>${safeHtml(a.time)} ${safeHtml(a.client_name||(isGr?'Χωρίς όνομα':'Unnamed'))}</strong><span>${safeHtml(a.type)} · ${a.duration} min</span></button>`).join('');
     return `<div class="calendar-day ${muted?'muted':''} ${iso===today?'today':''} ${calendarView==='week'?'week':''}" onclick="openAppointmentForm('${iso}')">
       <div class="calendar-day-number">${d.getDate()}</div>
       ${blocks}
@@ -8586,7 +8584,7 @@ function openAppointmentForm(date, id=''){
   if(card) card.style.display='block';
   const formTitle=document.getElementById('appointment-form-title');
   const delBtn=document.getElementById('appt-delete-btn');
-  if(formTitle) formTitle.textContent = appt ? 'Edit appointment' : 'New appointment';
+  if(formTitle) formTitle.textContent = appt ? (window.appLang==='gr'?'Επεξεργασία ραντεβού':'Edit appointment') : (window.appLang==='gr'?'Νέο ραντεβού':'New appointment');
   if(delBtn) delBtn.style.display = appt ? 'inline-flex' : 'none';
   const activeDate=appt?.date || date || todayISO();
   const activeTime=appt?.time || (new Date().toTimeString().slice(0,5));
@@ -9497,6 +9495,15 @@ function applyLanguage(lang){
     if(info){ setEl('page-title', info.title); setEl('page-sub', info.sub); }
   }
   if(document.getElementById('page-clients')?.classList.contains('active')) renderClientList();
+  if(document.getElementById('page-equivalents')?.classList.contains('active')) buildEquivalents();
+  if(document.getElementById('page-appointments')?.classList.contains('active')){
+    renderAppointments();
+    const formTitle=document.getElementById('appointment-form-title');
+    if(formTitle){
+      const isEdit = !!document.getElementById('appt-id')?.value;
+      formTitle.textContent = isEdit ? (lang==='gr'?'Επεξεργασία ραντεβού':'Edit appointment') : (lang==='gr'?'Νέο ραντεβού':'New appointment');
+    }
+  }
 }
 function toggleLanguage(){
   applyLanguage(window.appLang==='gr' ? 'en' : 'gr');
