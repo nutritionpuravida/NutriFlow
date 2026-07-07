@@ -869,6 +869,9 @@ table th,
     <button class="nav-item" onclick="nav('account')"><i class="ti ti-credit-card" aria-hidden="true"></i> <span class="i18n" data-en="Account / Subscription" data-gr="Λογαριασμός / Συνδρομή">Account / Subscription</span></button>
     <button class="nav-item" onclick="openFeedbackModal()"><i class="ti ti-message-circle" aria-hidden="true"></i> <span class="i18n" data-en="Feedback" data-gr="Σχόλια">Feedback</span></button>
   </div>
+  <div class="nav-group-card" style="margin-top:auto">
+    <button class="nav-item" onclick="handleSignOut()"><i class="ti ti-logout" aria-hidden="true"></i> <span class="i18n" data-en="Log out" data-gr="Αποσύνδεση">Log out</span></button>
+  </div>
   <div class="sidebar-footer"><span class="i18n" data-en="Nutrese v1 · Your clinical nutrition tool" data-gr="Nutrese v1 · Το κλινικό σας εργαλείο διατροφής">Nutrese v1 · Your clinical nutrition tool</span></div>
 </nav>
 
@@ -1013,7 +1016,7 @@ table th,
           <div class="form-field full"><label><span class="i18n" data-en="Digestion issues" data-gr="Δυσπεψία">Digestion issues</span></label><input type="text" id="i-digestion" class="i18n-ph" data-en-ph="Bloating, constipation, reflux…" data-gr-ph="Φούσκωμα, δυσκοιλιότητα, παλινδρόμηση…" placeholder="Bloating, constipation, reflux…" oninput="saveIntake()"></div>
         </div>
         <div class="section-label"><span class="i18n" data-en="Clinician Notes" data-gr="Σημειώσεις Διαιτολόγου">Clinician Notes</span></div>
-        <div class="form-field"><label><span class="i18n" data-en="Free notes" data-gr="Ελεύθερες σημειώσεις">Free notes</span></label><textarea id="i-coach-notes" rows="4" class="i18n-ph" data-en-ph="Internal notes, priorities, follow-up…" data-gr-ph="Εσωτερικές σημειώσεις, προτεραιότητες, παρακολούθηση…" placeholder="Internal notes, priorities, follow-up…" oninput="saveIntake()" style="resize:vertical;width:100%"></textarea></div>
+        <div class="form-field"><label><span class="i18n" data-en="Free notes" data-gr="Ελεύθερες σημειώσεις">Free notes</span></label><textarea id="i-coach-notes" rows="7" class="i18n-ph" data-en-ph="Internal notes, priorities, follow-up…" data-gr-ph="Εσωτερικές σημειώσεις, προτεραιότητες, παρακολούθηση…" placeholder="Internal notes, priorities, follow-up…" oninput="saveIntake()" style="resize:vertical;width:100%"></textarea></div>
         <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <button class="btn primary" onclick="saveClientIntake()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Save Intake" data-gr="Αποθήκευση Ιστορικού">Save Intake</span></button>
           <span id="intake-save-note" style="font-size:12px;color:var(--text-muted)"></span>
@@ -1027,14 +1030,14 @@ table th,
       <div class="card-body">
         <div class="section-label"><span class="i18n" data-en="Diagnoses & Medication" data-gr="Διαγνώσεις & Φαρμακευτική Αγωγή">Diagnoses & Medication</span></div>
         <div class="form-grid">
-          <div class="form-field full"><label><span class="i18n" data-en="Main diagnoses / conditions" data-gr="Κύριες διαγνώσεις / παθήσεις">Main diagnoses / conditions</span></label><input type="text" id="n-diagnoses" placeholder="Diabetes; CKD; Hypertension; Dyslipidemia" oninput="saveNotes()"></div>
-          <div class="form-field full"><label><span class="i18n" data-en="Medication" data-gr="Φαρμακευτική αγωγή">Medication</span></label><input type="text" id="n-medication" placeholder="e.g. insulin, antihypertensives" oninput="saveNotes()"></div>
-          <div class="form-field"><label><span class="i18n" data-en="Allergies" data-gr="Αλλεργίες">Allergies</span></label><input type="text" id="n-allergies" placeholder="Foods to exclude" oninput="saveNotes()"></div>
-          <div class="form-field"><label><span class="i18n" data-en="Dislikes / Avoid" data-gr="Δεν αρέσουν / Αποφυγή">Dislikes / Avoid</span></label><input type="text" id="n-dislikes" placeholder="Foods the client refuses" oninput="saveNotes()"></div>
-          <div class="form-field full"><label><span class="i18n" data-en="Cooperation / Adherence note" data-gr="Συνεργασία / Τήρηση οδηγιών">Cooperation / Adherence note</span></label><input type="text" id="n-adherence" placeholder="Useful for practical instructions" oninput="saveNotes()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Main diagnoses / conditions" data-gr="Κύριες διαγνώσεις / παθήσεις">Main diagnoses / conditions</span></label><input type="text" id="n-diagnoses" class="i18n-ph" data-en-ph="Diabetes; CKD; Hypertension; Dyslipidemia" data-gr-ph="Διαβήτης; ΧΝΝ; Υπέρταση; Δυσλιπιδαιμία" placeholder="Diabetes; CKD; Hypertension; Dyslipidemia" oninput="saveNotes()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Medication" data-gr="Φαρμακευτική αγωγή">Medication</span></label><input type="text" id="n-medication" class="i18n-ph" data-en-ph="e.g. insulin, antihypertensives" data-gr-ph="π.χ. ινσουλίνη, αντιυπερτασικά" placeholder="e.g. insulin, antihypertensives" oninput="saveNotes()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Allergies" data-gr="Αλλεργίες">Allergies</span></label><input type="text" id="n-allergies" class="i18n-ph" data-en-ph="Foods to exclude" data-gr-ph="Τρόφιμα προς αποκλεισμό" placeholder="Foods to exclude" oninput="saveNotes()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Dislikes / Avoid" data-gr="Δεν αρέσουν / Αποφυγή">Dislikes / Avoid</span></label><input type="text" id="n-dislikes" class="i18n-ph" data-en-ph="Foods the client refuses" data-gr-ph="Τρόφιμα που αρνείται ο πελάτης" placeholder="Foods the client refuses" oninput="saveNotes()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Cooperation / Adherence note" data-gr="Συνεργασία / Τήρηση οδηγιών">Cooperation / Adherence note</span></label><input type="text" id="n-adherence" class="i18n-ph" data-en-ph="Useful for practical instructions" data-gr-ph="Χρήσιμο για πρακτικές οδηγίες" placeholder="Useful for practical instructions" oninput="saveNotes()"></div>
         </div>
         <div class="section-label"><span class="i18n" data-en="Clinician Notes" data-gr="Σημειώσεις Διαιτολόγου">Clinician Notes</span></div>
-        <div class="form-field"><label><span class="i18n" data-en="Free text" data-gr="Ελεύθερο κείμενο">Free text</span></label><textarea id="n-clinician-notes" rows="5" placeholder="Clinical context, session summary, next steps…" oninput="saveNotes()" style="width:100%;resize:vertical"></textarea></div>
+        <div class="form-field"><label><span class="i18n" data-en="Free text" data-gr="Ελεύθερο κείμενο">Free text</span></label><textarea id="n-clinician-notes" rows="6" class="i18n-ph" data-en-ph="Clinical context, session summary, next steps…" data-gr-ph="Κλινικό πλαίσιο, σύνοψη συνεδρίας, επόμενα βήματα…" placeholder="Clinical context, session summary, next steps…" oninput="saveNotes()" style="width:100%;resize:vertical"></textarea></div>
         <div class="alert info" style="margin-top:14px"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Blood test results have their own page —" data-gr="Τα αποτελέσματα εξετάσεων έχουν τη δική τους σελίδα —">Blood test results have their own page —</span> <a onclick="nav('labs')" style="color:inherit;text-decoration:underline;cursor:pointer"><span class="i18n" data-en="Blood Analysis →" data-gr="Αιματολογικός Έλεγχος →">Blood Analysis →</span></a></div>
         <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <button class="btn primary" onclick="saveClientIntake()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Save Intake & Clinical Notes" data-gr="Αποθήκευση Ιστορικού & Κλινικών Σημειώσεων">Save Intake & Clinical Notes</span></button>
@@ -1155,10 +1158,10 @@ table th,
         <div class="section-label"><span class="i18n" data-en="Auto-Calculated Results (Mifflin-St Jeor)" data-gr="Αυτόματα Υπολογισμένα Αποτελέσματα (Mifflin-St Jeor)">Auto-Calculated Results (Mifflin-St Jeor)</span></div>
         <div class="metrics-grid">
           <div class="metric"><div class="m-label">BMI</div><div class="m-value" id="r-bmi">—</div><div class="m-sub" id="r-bmi-cat">—</div></div>
-          <div class="metric"><div class="m-label">Ideal Body Weight</div><div class="m-value" id="r-ibw">—</div><div class="m-sub" id="r-ibw-sub">Devine formula</div></div>
-          <div class="metric"><div class="m-label">BMR</div><div class="m-value" id="r-bmr">—</div><div class="m-sub">kcal/day</div></div>
-          <div class="metric"><div class="m-label">TDEE</div><div class="m-value" id="r-tdee">—</div><div class="m-sub">kcal/day</div></div>
-          <div class="metric"><div class="m-label">Goal Calories</div><div class="m-value" id="r-goal-kcal">—</div><div class="m-sub" id="r-goal-sub">kcal/day</div></div>
+          <div class="metric"><div class="m-label"><span class="i18n" data-en="Ideal Body Weight" data-gr="Ιδανικό Σωματικό Βάρος">Ideal Body Weight</span></div><div class="m-value" id="r-ibw">—</div><div class="m-sub" id="r-ibw-sub"><span class="i18n" data-en="Devine formula" data-gr="Τύπος Devine">Devine formula</span></div></div>
+          <div class="metric"><div class="m-label">BMR</div><div class="m-value" id="r-bmr">—</div><div class="m-sub"><span class="i18n" data-en="kcal/day" data-gr="kcal/ημέρα">kcal/day</span></div></div>
+          <div class="metric"><div class="m-label">TDEE</div><div class="m-value" id="r-tdee">—</div><div class="m-sub"><span class="i18n" data-en="kcal/day" data-gr="kcal/ημέρα">kcal/day</span></div></div>
+          <div class="metric"><div class="m-label"><span class="i18n" data-en="Goal Calories" data-gr="Στόχος Θερμίδων">Goal Calories</span></div><div class="m-value" id="r-goal-kcal">—</div><div class="m-sub" id="r-goal-sub"><span class="i18n" data-en="kcal/day" data-gr="kcal/ημέρα">kcal/day</span></div></div>
         </div>
         <div id="expected-progress-box" class="alert info" style="display:none;margin-top:-4px;margin-bottom:12px"></div>
                 <div id="condition-guidance" style="padding:12px;background:var(--teal-50);border:1px solid var(--teal-100);border-radius:var(--radius);font-size:13px;color:var(--teal-800);margin-top:8px"></div>
@@ -1171,17 +1174,17 @@ table th,
     <div class="card">
       <div class="card-header"><span class="card-title"><i class="ti ti-scale" aria-hidden="true"></i> <span class="i18n" data-en="Body Composition" data-gr="Σύσταση Σώματος">Body Composition</span></span></div>
       <div class="card-body">
-        <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> Enter Tanita or other device values. Fat mass auto-calculates from Weight × Body Fat % if left blank.</div>
+        <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Enter Tanita or other device values. Fat mass auto-calculates from Weight × Body Fat % if left blank." data-gr="Εισάγετε τιμές από Tanita ή άλλη συσκευή. Η μάζα λίπους υπολογίζεται αυτόματα από Βάρος × Ποσοστό Λίπους % αν αφεθεί κενό.">Enter Tanita or other device values. Fat mass auto-calculates from Weight × Body Fat % if left blank.</span></div>
         <div class="form-grid three">
-          <div class="form-field"><label><i class="ti ti-scale" aria-hidden="true"></i> <span class="i18n" data-en="Body Fat %" data-gr="Ποσοστό Λίπους %">Body Fat %</span></label><input type="number" id="bc-bf" placeholder="Men: 10–20%, Women: 18–28%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-bf-note"></div></div>
-          <div class="form-field"><label><i class="ti ti-droplet" aria-hidden="true"></i> <span class="i18n" data-en="Body Water %" data-gr="Ποσοστό Νερού %">Body Water %</span></label><input type="number" id="bc-water" placeholder="Men: 50–65%, Women: 45–60%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-water-note"></div></div>
-          <div class="form-field"><label><i class="ti ti-scale" aria-hidden="true"></i> <span class="i18n" data-en="Fat Mass kg (auto)" data-gr="Μάζα Λίπους κιλά (αυτόματο)">Fat Mass kg (auto)</span></label><input type="number" id="bc-fatmass" placeholder="Auto = Weight × BF%" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('fatmass')"></div>
-          <div class="form-field"><label><i class="ti ti-activity" aria-hidden="true"></i> <span class="i18n" data-en="Fat-Free Mass kg (auto)" data-gr="Άλιπη Μάζα κιλά (αυτόματο)">Fat-Free Mass kg (auto)</span></label><input type="number" id="bc-ffm" placeholder="Auto = Weight − Fat mass" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('ffm')"></div>
-          <div class="form-field"><label><i class="ti ti-barbell" aria-hidden="true"></i> <span class="i18n" data-en="Muscle Mass (kg)" data-gr="Μυϊκή Μάζα (κιλά)">Muscle Mass (kg)</span></label><input type="number" id="bc-muscle" placeholder="Manual Tanita/device value" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('muscle')"></div>
+          <div class="form-field"><label><i class="ti ti-scale" aria-hidden="true"></i> <span class="i18n" data-en="Body Fat %" data-gr="Ποσοστό Λίπους %">Body Fat %</span></label><input type="number" id="bc-bf" class="i18n-ph" data-en-ph="Men: 10–20%, Women: 18–28%" data-gr-ph="Άνδρες: 10–20%, Γυναίκες: 18–28%" placeholder="Men: 10–20%, Women: 18–28%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-bf-note"></div></div>
+          <div class="form-field"><label><i class="ti ti-droplet" aria-hidden="true"></i> <span class="i18n" data-en="Body Water %" data-gr="Ποσοστό Νερού %">Body Water %</span></label><input type="number" id="bc-water" class="i18n-ph" data-en-ph="Men: 50–65%, Women: 45–60%" data-gr-ph="Άνδρες: 50–65%, Γυναίκες: 45–60%" placeholder="Men: 50–65%, Women: 45–60%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-water-note"></div></div>
+          <div class="form-field"><label><i class="ti ti-scale" aria-hidden="true"></i> <span class="i18n" data-en="Fat Mass kg (auto)" data-gr="Μάζα Λίπους κιλά (αυτόματο)">Fat Mass kg (auto)</span></label><input type="number" id="bc-fatmass" class="i18n-ph" data-en-ph="Auto = Weight × BF%" data-gr-ph="Αυτόματο = Βάρος × ΠΛ%" placeholder="Auto = Weight × BF%" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('fatmass')"></div>
+          <div class="form-field"><label><i class="ti ti-activity" aria-hidden="true"></i> <span class="i18n" data-en="Fat-Free Mass kg (auto)" data-gr="Άλιπη Μάζα κιλά (αυτόματο)">Fat-Free Mass kg (auto)</span></label><input type="number" id="bc-ffm" class="i18n-ph" data-en-ph="Auto = Weight − Fat mass" data-gr-ph="Αυτόματο = Βάρος − Μάζα λίπους" placeholder="Auto = Weight − Fat mass" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('ffm')"></div>
+          <div class="form-field"><label><i class="ti ti-barbell" aria-hidden="true"></i> <span class="i18n" data-en="Muscle Mass (kg)" data-gr="Μυϊκή Μάζα (κιλά)">Muscle Mass (kg)</span></label><input type="number" id="bc-muscle" class="i18n-ph" data-en-ph="Manual Tanita/device value" data-gr-ph="Χειροκίνητη τιμή Tanita/συσκευής" placeholder="Manual Tanita/device value" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('muscle')"></div>
           <div class="form-field"><label><i class="ti ti-clock" aria-hidden="true"></i> <span class="i18n" data-en="Metabolic Age" data-gr="Μεταβολική Ηλικία">Metabolic Age</span></label><input type="number" id="bc-metage" placeholder="—" oninput="calcBodyComp()"><div class="field-note" id="bc-metage-note"></div></div>
-          <div class="form-field"><label><i class="ti ti-flame" aria-hidden="true"></i> <span class="i18n" data-en="Visceral Fat Score" data-gr="Δείκτης Σπλαχνικού Λίπους">Visceral Fat Score</span></label><input type="number" id="bc-visceral" placeholder="1–12 healthy, 13+ excess" oninput="calcBodyComp()"><div class="field-note" id="bc-visceral-note"></div></div>
-          <div class="form-field"><label><i class="ti ti-run" aria-hidden="true"></i> <span class="i18n" data-en="Physique Rating (1–9)" data-gr="Βαθμολογία Σωματότυπου (1–9)">Physique Rating (1–9)</span></label><input type="number" id="bc-physique" placeholder="Tanita 1–9" min="1" max="9"></div>
-          <div class="form-field"><label><i class="ti ti-bone" aria-hidden="true"></i> <span class="i18n" data-en="Bone Mass (kg)" data-gr="Οστική Μάζα (κιλά)">Bone Mass (kg)</span></label><input type="number" id="bc-bone" placeholder="Tanita/device value" step="0.1" oninput="calcBodyComp()"></div>
+          <div class="form-field"><label><i class="ti ti-flame" aria-hidden="true"></i> <span class="i18n" data-en="Visceral Fat Score" data-gr="Δείκτης Σπλαχνικού Λίπους">Visceral Fat Score</span></label><input type="number" id="bc-visceral" class="i18n-ph" data-en-ph="1–12 healthy, 13+ excess" data-gr-ph="1–12 υγιές, 13+ αυξημένο" placeholder="1–12 healthy, 13+ excess" oninput="calcBodyComp()"><div class="field-note" id="bc-visceral-note"></div></div>
+          <div class="form-field"><label><i class="ti ti-run" aria-hidden="true"></i> <span class="i18n" data-en="Physique Rating (1–9)" data-gr="Βαθμολογία Σωματότυπου (1–9)">Physique Rating (1–9)</span></label><input type="number" id="bc-physique" class="i18n-ph" data-en-ph="Tanita 1–9" data-gr-ph="Tanita 1–9" placeholder="Tanita 1–9" min="1" max="9"></div>
+          <div class="form-field"><label><i class="ti ti-bone" aria-hidden="true"></i> <span class="i18n" data-en="Bone Mass (kg)" data-gr="Οστική Μάζα (κιλά)">Bone Mass (kg)</span></label><input type="number" id="bc-bone" class="i18n-ph" data-en-ph="Tanita/device value" data-gr-ph="Τιμή Tanita/συσκευής" placeholder="Tanita/device value" step="0.1" oninput="calcBodyComp()"></div>
         </div>
         <div class="section-label"><span class="i18n" data-en="Auto Interpretation" data-gr="Αυτόματη Ερμηνεία">Auto Interpretation</span></div>
         <div id="bc-interpretation"></div>
@@ -1247,9 +1250,6 @@ table th,
         <div id="exchange-check"></div>
         <div class="section-label"><span class="i18n" data-en="Exchange Precision Control" data-gr="Έλεγχος Ακρίβειας Ισοδυνάμων">Exchange Precision Control</span></div>
         <div id="exchange-precision"></div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <button class="btn" onclick="nav('sevenday')">Build 7-Day Plan →</button>
-        </div>
       </div>
     </div>
   </div>
@@ -1313,23 +1313,23 @@ table th,
         <span class="card-title" id="report-options-title"><i class="ti ti-settings" aria-hidden="true"></i> Report Options — Choose what to print</span>
       </div>
       <div class="card-body">
-        <div style="display:grid;grid-template-columns:1fr 190px;gap:20px;align-items:start">
-          <div style="display:flex;flex-direction:column;gap:16px">
-            <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:grid;grid-template-columns:1fr 190px;gap:16px;align-items:stretch">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:8px">
               <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer">
-                <input type="checkbox" id="rep-include-blood" checked onchange="onReportOptionsChange()" style="width:16px;height:16px;accent-color:var(--teal-600)">
+                <input type="checkbox" id="rep-include-blood" checked onchange="onReportOptionsChange()" style="width:16px;height:16px;accent-color:var(--teal-600);flex-shrink:0">
                 <span id="report-include-blood-label">Include Blood Analysis summary</span>
               </label>
               <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer">
-                <input type="checkbox" id="rep-include-equivalents" onchange="onReportOptionsChange()" style="width:16px;height:16px;accent-color:var(--teal-600)">
+                <input type="checkbox" id="rep-include-equivalents" onchange="onReportOptionsChange()" style="width:16px;height:16px;accent-color:var(--teal-600);flex-shrink:0">
                 <span id="report-include-equivalents-label">Include Equivalents Guide in report</span>
               </label>
             </div>
-            <div style="padding-top:12px;border-top:1px solid var(--border)">
-              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-                <span style="font-size:13px;font-weight:800;color:var(--text-secondary)">Report logo:</span>
+            <div style="padding-top:10px;border-top:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+                <span style="font-size:13px;font-weight:800;color:var(--text-secondary)"><span class="i18n" data-en="Report logo:" data-gr="Λογότυπο αναφοράς:">Report logo:</span></span>
                 <input type="file" id="report-logo-input" accept="image/png,image/jpeg" onchange="handleReportLogoUpload(this)" style="max-width:260px">
-                <button class="btn" type="button" onclick="removeReportLogo()">Remove logo</button>
+                <button class="btn" type="button" onclick="removeReportLogo()"><span class="i18n" data-en="Remove logo" data-gr="Αφαίρεση λογότυπου">Remove logo</span></button>
                 <span id="report-logo-status" class="field-note" style="margin-left:0"></span>
               </div>
               <div id="report-logo-preview" style="width:100%;display:none"></div>
@@ -1340,8 +1340,8 @@ table th,
             <div id="report-day-selector" style="display:flex;flex-direction:column;gap:7px"></div>
           </div>
         </div>
-        <div class="field-note" style="margin:14px 0 0" id="report-days-note">Select one or more days to print from the weekly plan. Single-day print hides the weekday name.</div>
-        <div style="margin-top:16px">
+        <div class="field-note" style="margin:10px 0 0" id="report-days-note">Select one or more days to print from the weekly plan. Single-day print hides the weekday name.</div>
+        <div style="margin-top:12px">
           <button class="btn primary" onclick="printPage()" id="report-print-btn"><i class="ti ti-printer" aria-hidden="true"></i> Print Full Report</button>
         </div>
         <div class="field-note" id="report-options-note" style="margin-top:8px">Check/uncheck to choose which meal plan appears in the printed report. Use Print / Save PDF and choose “Save as PDF” in the browser print dialog.</div>
@@ -1383,7 +1383,7 @@ table th,
     <div class="card">
       <div class="card-header"><span class="card-title"><i class="ti ti-droplet" aria-hidden="true"></i> INPUT — Blood Analysis (Αιματολογικός Έλεγχος)</span></div>
       <div class="card-body">
-        <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> Enter available lab values. Reference ranges are general adult ranges — always confirm against the lab's own reference range. Status updates live as you type.</div>
+        <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Enter available lab values. Reference ranges are general adult ranges — always confirm against the lab's own reference range. Status updates live as you type." data-gr="Εισάγετε τις διαθέσιμες εργαστηριακές τιμές. Τα εύρη αναφοράς είναι γενικά για ενήλικες — πάντα επιβεβαιώνετε με το εύρος αναφοράς του εργαστηρίου. Η κατάσταση ενημερώνεται ζωντανά καθώς πληκτρολογείτε.">Enter available lab values. Reference ranges are general adult ranges — always confirm against the lab's own reference range. Status updates live as you type.</span></div>
         <div id="labs-table"></div>
         <div class="section-label">NUTRIENTS TO CONSIDER (CLINICAL REFERENCE ONLY)</div>
         <div id="vitamin-suggestions"></div>
@@ -1417,24 +1417,24 @@ table th,
   <!-- FOOD DATABASE -->
   <div class="page" id="page-fooddb">
     <div class="card">
-      <div class="card-header"><span class="card-title"><i class="ti ti-search" aria-hidden="true"></i> Food Database — USDA FoodData Central</span></div>
+      <div class="card-header"><span class="card-title"><i class="ti ti-search" aria-hidden="true"></i> <span class="i18n" data-en="Food Database — USDA FoodData Central" data-gr="Αναζήτηση Τροφίμων — USDA FoodData Central">Food Database — USDA FoodData Central</span></span></div>
       <div class="card-body">
-        <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> Search uses USDA FoodData Central Foundation/SR Legacy data. Values are per 100g and should be reviewed clinically before use.</div>
+        <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Search uses USDA FoodData Central Foundation/SR Legacy data. Values are per 100g and should be reviewed clinically before use." data-gr="Η αναζήτηση χρησιμοποιεί δεδομένα USDA FoodData Central Foundation/SR Legacy. Οι τιμές είναι ανά 100g και πρέπει να ελέγχονται κλινικά πριν τη χρήση.">Search uses USDA FoodData Central Foundation/SR Legacy data. Values are per 100g and should be reviewed clinically before use.</span></div>
         <div class="form-grid two">
-          <div class="form-field"><label>Food search</label><input type="text" id="food-search" placeholder="e.g. oats, yogurt, halloumi" onkeydown="if(event.key==='Enter') searchFoodDatabase()"></div>
-          <div class="form-field" style="display:flex;align-items:flex-end"><button class="btn primary" onclick="searchFoodDatabase()">Search foods</button></div>
+          <div class="form-field"><label><span class="i18n" data-en="Food search" data-gr="Αναζήτηση τροφίμου">Food search</span></label><input type="text" id="food-search" class="i18n-ph" data-en-ph="e.g. oats, yogurt, halloumi" data-gr-ph="π.χ. βρώμη, γιαούρτι, χαλλούμι" placeholder="e.g. oats, yogurt, halloumi" onkeydown="if(event.key==='Enter') searchFoodDatabase()"></div>
+          <div class="form-field" style="display:flex;align-items:flex-end"><button class="btn primary" onclick="searchFoodDatabase()"><span class="i18n" data-en="Search foods" data-gr="Αναζήτηση τροφίμων">Search foods</span></button></div>
         </div>
-        <div class="field-note" style="margin-top:10px;margin-bottom:10px">Search tip: use specific terms like 'chicken breast' or 'grilled chicken' for better results.</div>
+        <div class="field-note" style="margin-top:10px;margin-bottom:10px"><span class="i18n" data-en="Search tip: use specific terms like &#39;chicken breast&#39; or &#39;grilled chicken&#39; for better results." data-gr="Συμβουλή: χρησιμοποιήστε συγκεκριμένους όρους όπως &quot;στήθος κοτόπουλο&quot; ή &quot;ψητό κοτόπουλο&quot; για καλύτερα αποτελέσματα.">Search tip: use specific terms like &#39;chicken breast&#39; or &#39;grilled chicken&#39; for better results.</span></div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
-          <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-right:2px">Quick search:</span>
-          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('rice')">Rice</button>
-          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('chicken breast')">Chicken breast</button>
-          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('olive oil')">Olive oil</button>
-          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('feta cheese')">Feta cheese</button>
-          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('greek yogurt')">Greek yogurt</button>
-          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('egg')">Egg</button>
-          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('oats')">Oats</button>
-          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('lentils')">Lentils</button>
+          <span style="font-size:11px;color:var(--text-muted);align-self:center;margin-right:2px"><span class="i18n" data-en="Quick search:" data-gr="Γρήγορη αναζήτηση:">Quick search:</span></span>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('rice')"><span class="i18n" data-en="Rice" data-gr="Ρύζι">Rice</span></button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('chicken breast')"><span class="i18n" data-en="Chicken breast" data-gr="Στήθος κοτόπουλο">Chicken breast</span></button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('olive oil')"><span class="i18n" data-en="Olive oil" data-gr="Ελαιόλαδο">Olive oil</span></button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('feta cheese')"><span class="i18n" data-en="Feta cheese" data-gr="Φέτα">Feta cheese</span></button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('greek yogurt')"><span class="i18n" data-en="Greek yogurt" data-gr="Ελληνικό γιαούρτι">Greek yogurt</span></button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('egg')"><span class="i18n" data-en="Egg" data-gr="Αυγό">Egg</span></button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('oats')"><span class="i18n" data-en="Oats" data-gr="Βρώμη">Oats</span></button>
+          <button class="btn" style="padding:4px 10px;font-size:12px" onclick="quickFoodSearch('lentils')"><span class="i18n" data-en="Lentils" data-gr="Φακές">Lentils</span></button>
         </div>
         <div id="fooddb-status" class="field-note"></div>
         <div id="fooddb-results"></div>
@@ -1444,51 +1444,51 @@ table th,
   <!-- RECIPES -->
   <div class="page" id="page-recipes">
     <div class="card">
-      <div class="card-header"><span class="card-title">🍲 Recipes</span></div>
+      <div class="card-header"><span class="card-title">🍲 <span class="i18n" data-en="Recipes" data-gr="Συνταγές">Recipes</span></span></div>
       <div class="card-body">
-        <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> Build custom recipes from manual ingredients or foods found in USDA FoodData Central. Nutrition is calculated from kcal/carbs/protein/fat per 100g.</div>
-        <h3 style="margin:4px 0 14px;font-size:16px;color:var(--text-primary)">Create New Recipe</h3>
+        <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Build custom recipes from manual ingredients or foods found in USDA FoodData Central. Nutrition is calculated from kcal/carbs/protein/fat per 100g." data-gr="Δημιουργήστε προσαρμοσμένες συνταγές από χειροκίνητα συστατικά ή τρόφιμα από το USDA FoodData Central. Η διατροφική αξία υπολογίζεται από kcal/υδατάνθρακες/πρωτεΐνη/λίπος ανά 100g.">Build custom recipes from manual ingredients or foods found in USDA FoodData Central. Nutrition is calculated from kcal/carbs/protein/fat per 100g.</span></div>
+        <h3 style="margin:4px 0 14px;font-size:16px;color:var(--text-primary)"><span class="i18n" data-en="Create New Recipe" data-gr="Δημιουργία Νέας Συνταγής">Create New Recipe</span></h3>
         <div class="form-grid two">
-          <div class="form-field"><label>Recipe name</label><input type="text" id="recipe-name" placeholder="e.g. Chicken rice bowl" oninput="renderRecipeDraft()"></div>
-          <div class="form-field"><label>Servings</label><input type="number" id="recipe-servings" min="1" step="1" value="1" oninput="renderRecipeDraft()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Recipe name" data-gr="Όνομα συνταγής">Recipe name</span></label><input type="text" id="recipe-name" class="i18n-ph" data-en-ph="e.g. Chicken rice bowl" data-gr-ph="π.χ. Μπολ με κοτόπουλο και ρύζι" placeholder="e.g. Chicken rice bowl" oninput="renderRecipeDraft()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Servings" data-gr="Μερίδες">Servings</span></label><input type="number" id="recipe-servings" min="1" step="1" value="1" oninput="renderRecipeDraft()"></div>
         </div>
         <div class="form-field" style="margin-bottom:14px">
-          <label>Photo (optional)</label>
+          <label><span class="i18n" data-en="Photo (optional)" data-gr="Φωτογραφία (προαιρετικό)">Photo (optional)</span></label>
           <div style="display:flex;align-items:center;gap:12px">
             <div id="recipe-photo-preview" style="width:64px;height:64px;border-radius:10px;overflow:hidden;background:var(--bg-page);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-photo" aria-hidden="true" style="font-size:22px;color:var(--text-muted)"></i></div>
-            <label class="btn" style="cursor:pointer;margin:0"><i class="ti ti-upload" aria-hidden="true"></i> Upload photo<input type="file" accept="image/*" onchange="handleRecipePhotoUpload(this)" style="display:none"></label>
-            <button class="btn" onclick="removeRecipePhoto()">Remove</button>
+            <label class="btn" style="cursor:pointer;margin:0"><i class="ti ti-upload" aria-hidden="true"></i> <span class="i18n" data-en="Upload photo" data-gr="Ανέβασμα φωτογραφίας">Upload photo</span><input type="file" accept="image/*" onchange="handleRecipePhotoUpload(this)" style="display:none"></label>
+            <button class="btn" onclick="removeRecipePhoto()"><span class="i18n" data-en="Remove" data-gr="Αφαίρεση">Remove</span></button>
           </div>
         </div>
-        <div class="form-field" style="margin-bottom:14px"><label>Instructions (optional)</label><textarea id="recipe-instructions" rows="4" placeholder="Step-by-step preparation..." style="resize:vertical"></textarea></div>
-        <div class="section-label">Find ingredient from USDA</div>
+        <div class="form-field" style="margin-bottom:14px"><label><span class="i18n" data-en="Instructions (optional)" data-gr="Οδηγίες (προαιρετικό)">Instructions (optional)</span></label><textarea id="recipe-instructions" rows="4" class="i18n-ph" data-en-ph="Step-by-step preparation..." data-gr-ph="Βήμα προς βήμα προετοιμασία..." placeholder="Step-by-step preparation..." style="resize:vertical"></textarea></div>
+        <div class="section-label"><span class="i18n" data-en="Find ingredient from USDA" data-gr="Αναζήτηση συστατικού από USDA">Find ingredient from USDA</span></div>
         <div class="form-grid two">
-          <div class="form-field"><label>Ingredient search</label><input type="text" id="ing-search" placeholder="e.g. chicken breast, oats, apple" onkeydown="if(event.key==='Enter') searchIngredientFoods()"><div class="field-note">Select a result to auto-fill nutrition per 100g. Manual override remains available.</div></div>
-          <div class="form-field" style="display:flex;align-items:flex-end"><button class="btn" onclick="searchIngredientFoods()">Search ingredient</button></div>
+          <div class="form-field"><label><span class="i18n" data-en="Ingredient search" data-gr="Αναζήτηση συστατικού">Ingredient search</span></label><input type="text" id="ing-search" class="i18n-ph" data-en-ph="e.g. chicken breast, oats, apple" data-gr-ph="π.χ. στήθος κοτόπουλο, βρώμη, μήλο" placeholder="e.g. chicken breast, oats, apple" onkeydown="if(event.key==='Enter') searchIngredientFoods()"><div class="field-note"><span class="i18n" data-en="Select a result to auto-fill nutrition per 100g. Manual override remains available." data-gr="Επιλέξτε ένα αποτέλεσμα για αυτόματη συμπλήρωση της διατροφικής αξίας ανά 100g. Η χειροκίνητη προσαρμογή παραμένει διαθέσιμη.">Select a result to auto-fill nutrition per 100g. Manual override remains available.</span></div></div>
+          <div class="form-field" style="display:flex;align-items:flex-end"><button class="btn" onclick="searchIngredientFoods()"><span class="i18n" data-en="Search ingredient" data-gr="Αναζήτηση συστατικού">Search ingredient</span></button></div>
         </div>
         <div id="ingredient-search-status" class="field-note"></div>
         <div id="ingredient-search-results" style="margin-bottom:12px"></div>
-        <div class="section-label">Add ingredient manually</div>
+        <div class="section-label"><span class="i18n" data-en="Add ingredient manually" data-gr="Χειροκίνητη προσθήκη συστατικού">Add ingredient manually</span></div>
         <div class="form-grid six">
-          <div class="form-field"><label>Food</label><input type="text" id="ing-name" placeholder="Ingredient" onkeydown="if(event.key==='Enter') addManualIngredient()"></div>
-          <div class="form-field"><label>Grams used in recipe</label><input type="number" id="ing-grams" min="0" step="1" placeholder="e.g. 100" onkeydown="if(event.key==='Enter') addManualIngredient()"><div class="field-note">Enter the ingredient weight in grams.</div></div>
-          <div class="form-field"><label>kcal / 100g</label><input type="number" id="ing-kcal" min="0" step="0.1"></div>
-          <div class="form-field"><label>Carb / 100g</label><input type="number" id="ing-carbs" min="0" step="0.1"></div>
-          <div class="form-field"><label>Protein / 100g</label><input type="number" id="ing-protein" min="0" step="0.1"></div>
-          <div class="form-field"><label>Fat / 100g</label><input type="number" id="ing-fat" min="0" step="0.1"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Food" data-gr="Τρόφιμο">Food</span></label><input type="text" id="ing-name" class="i18n-ph" data-en-ph="Ingredient" data-gr-ph="Συστατικό" placeholder="Ingredient" onkeydown="if(event.key==='Enter') addManualIngredient()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Grams used in recipe" data-gr="Γραμμάρια στη συνταγή">Grams used in recipe</span></label><input type="number" id="ing-grams" min="0" step="1" class="i18n-ph" data-en-ph="e.g. 100" data-gr-ph="π.χ. 100" placeholder="e.g. 100" onkeydown="if(event.key==='Enter') addManualIngredient()"><div class="field-note"><span class="i18n" data-en="Enter the ingredient weight in grams." data-gr="Εισάγετε το βάρος του συστατικού σε γραμμάρια.">Enter the ingredient weight in grams.</span></div></div>
+          <div class="form-field"><label><span class="i18n" data-en="kcal / 100g" data-gr="kcal / 100g">kcal / 100g</span></label><input type="number" id="ing-kcal" min="0" step="0.1"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Carb / 100g" data-gr="Υδατ. / 100g">Carb / 100g</span></label><input type="number" id="ing-carbs" min="0" step="0.1"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Protein / 100g" data-gr="Πρωτ. / 100g">Protein / 100g</span></label><input type="number" id="ing-protein" min="0" step="0.1"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Fat / 100g" data-gr="Λίπος / 100g">Fat / 100g</span></label><input type="number" id="ing-fat" min="0" step="0.1"></div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px">
-          <button class="btn primary" onclick="addManualIngredient()">+ Add ingredient</button>
-          <button class="btn" onclick="clearRecipeDraft()">Clear draft</button>
+          <button class="btn primary" onclick="addManualIngredient()">+ <span class="i18n" data-en="Add ingredient" data-gr="Προσθήκη συστατικού">Add ingredient</span></button>
+          <button class="btn" onclick="clearRecipeDraft()"><span class="i18n" data-en="Clear draft" data-gr="Επαναφορά προσχεδίου">Clear draft</span></button>
         </div>
         <div id="recipe-draft"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0">
           <button class="btn primary" onclick="saveRecipe()" id="save-recipe-btn"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save recipe</button>
-          <button class="btn" onclick="loadRecipes()">↻ Refresh recipes</button>
+          <button class="btn" onclick="loadRecipes()">↻ <span class="i18n" data-en="Refresh recipes" data-gr="Ανανέωση συνταγών">Refresh recipes</span></button>
         </div>
         <div id="recipe-save-status" class="field-note"></div>
         <hr style="border:0;border-top:1px solid var(--border);margin:22px 0 16px">
-        <h3 style="margin:0 0 12px;font-size:16px;color:var(--text-primary)">Saved Recipes</h3>
+        <h3 style="margin:0 0 12px;font-size:16px;color:var(--text-primary)"><span class="i18n" data-en="Saved Recipes" data-gr="Αποθηκευμένες Συνταγές">Saved Recipes</span></h3>
         <div id="recipes-list"></div>
       </div>
     </div>
@@ -1566,7 +1566,7 @@ table th,
               <div style="display:flex;gap:8px;flex-wrap:wrap">
                 <button class="btn primary" onclick="saveAppointmentFromForm()"><span class="i18n" data-en="Save Appointment" data-gr="Αποθήκευση Ραντεβού">Save Appointment</span></button>
                 <button class="btn" id="appt-delete-btn" onclick="deleteAppointmentFromForm()" style="display:none"><span class="i18n" data-en="Delete" data-gr="Διαγραφή">Delete</span></button>
-                <button class="btn" onclick="clearAppointmentForm()"><span class="i18n" data-en="Clear" data-gr="Καθαρισμός">Clear</span></button>
+                <button class="btn" onclick="clearAppointmentForm()"><span class="i18n" data-en="Clear" data-gr="Επαναφορά">Clear</span></button>
               </div>
               <div class="field-note" id="appointments-save-note" style="margin-top:10px"></div>
             </div>
@@ -1589,9 +1589,6 @@ table th,
         <button class="btn primary" onclick="startStripeCheckout('price_1ToMPVDwBpsAKvLemjXMV2Rg')" id="account-monthly-trial-btn"><span class="i18n" data-en="Start monthly trial" data-gr="Έναρξη μηνιαίας δοκιμής">Start monthly trial</span></button>
         <button class="btn primary" onclick="startStripeCheckout('price_1ToMPWDwBpsAKvLe4Ial8JRS')" id="account-yearly-trial-btn"><span class="i18n" data-en="Start yearly trial" data-gr="Έναρξη ετήσιας δοκιμής">Start yearly trial</span></button>
         <button class="btn" onclick="openBillingPortal()" id="account-manage-billing-btn" style="display:none"><span class="i18n" data-en="Manage billing" data-gr="Διαχείριση χρέωσης">Manage billing</span></button>
-        <div style="margin-top:14px">
-          <button class="btn" onclick="handleSignOut()"><i class="ti ti-logout" aria-hidden="true"></i> <span class="i18n" data-en="Log out" data-gr="Αποσύνδεση">Log out</span></button>
-        </div>
       </div>
     </div>
   </div>
@@ -2328,10 +2325,11 @@ function updateAccountPage(){
     subscriptionState
   });
   const emailValue=currentUser?currentUser.email:'';
-  const statusValue = subscriptionState.ownerBypass ? 'Owner admin access'
-    : subscriptionState.trialActive ? `Trial (${subscriptionState.trialDaysRemaining} days remaining)`
-    : subscriptionState.active ? 'Active'
-    : (subscriptionState.status||'No active subscription');
+  const isGrAcct = window.appLang==='gr';
+  const statusValue = subscriptionState.ownerBypass ? (isGrAcct?'Πρόσβαση διαχειριστή':'Owner admin access')
+    : subscriptionState.trialActive ? (isGrAcct?`Δοκιμή (${subscriptionState.trialDaysRemaining} ημέρες απομένουν)`:`Trial (${subscriptionState.trialDaysRemaining} days remaining)`)
+    : subscriptionState.active ? (isGrAcct?'Ενεργή':'Active')
+    : (subscriptionState.status||(isGrAcct?'Καμία ενεργή συνδρομή':'No active subscription'));
   const emailEl=document.getElementById('acct-email');
   if(emailEl){
     emailEl.value=emailValue;
@@ -2346,16 +2344,16 @@ function updateAccountPage(){
   }
   const detail=document.getElementById('account-subscription-detail');
   if(detail){
-    const until=subscriptionState.currentPeriodEnd ? ` Current period ends ${new Date(subscriptionState.currentPeriodEnd).toLocaleDateString('el-GR')}.` : '';
+    const until=subscriptionState.currentPeriodEnd ? (isGrAcct?` Η τρέχουσα περίοδος λήγει ${new Date(subscriptionState.currentPeriodEnd).toLocaleDateString('el-GR')}.`:` Current period ends ${new Date(subscriptionState.currentPeriodEnd).toLocaleDateString('el-GR')}.`) : '';
     detail.innerHTML = subscriptionState.ownerBypass
-      ? '<strong>Owner admin access.</strong> Subscription and trial checks are bypassed for this account.'
+      ? (isGrAcct?'<strong>Πρόσβαση διαχειριστή.</strong> Οι έλεγχοι συνδρομής και δοκιμαστικής περιόδου παρακάμπτονται για αυτόν τον λογαριασμό.':'<strong>Owner admin access.</strong> Subscription and trial checks are bypassed for this account.')
       : subscriptionState.trialActive
-        ? `<strong>Free trial active.</strong> ${subscriptionState.trialDaysRemaining} day${subscriptionState.trialDaysRemaining===1?'':'s'} remaining.`
+        ? (isGrAcct?`<strong>Ενεργή δωρεάν δοκιμή.</strong> Απομένουν ${subscriptionState.trialDaysRemaining} ημέρ${subscriptionState.trialDaysRemaining===1?'α':'ες'}.`:`<strong>Free trial active.</strong> ${subscriptionState.trialDaysRemaining} day${subscriptionState.trialDaysRemaining===1?'':'s'} remaining.`)
         : subscriptionState.active
-          ? `<strong>Active subscription.</strong>${until}`
+          ? (isGrAcct?`<strong>Ενεργή συνδρομή.</strong>${until}`:`<strong>Active subscription.</strong>${until}`)
           : subscriptionState.trialExpired
-            ? '<strong>Your free trial has ended.</strong> Use Checkout to activate this account.'
-            : '<strong>No active subscription.</strong> Use Checkout to activate this account.';
+            ? (isGrAcct?'<strong>Η δωρεάν δοκιμή σας έληξε.</strong> Χρησιμοποιήστε το Checkout για ενεργοποίηση.':'<strong>Your free trial has ended.</strong> Use Checkout to activate this account.')
+            : (isGrAcct?'<strong>Καμία ενεργή συνδρομή.</strong> Χρησιμοποιήστε το Checkout για ενεργοποίηση.':'<strong>No active subscription.</strong> Use Checkout to activate this account.');
   }
   const hasActiveAccess=!!(subscriptionState.active || subscriptionState.ownerBypass);
   const monthlyBtn=document.getElementById('account-monthly-trial-btn');
@@ -3424,7 +3422,7 @@ function onDietTypeChange(){
 
 // ── EQUIVALENTS / FOOD EXCHANGE LIST (bilingual, printable for clients) ──
 const EQUIVALENTS_DATA = [
-  { key:'fruit', icon:'🍎', gr:'Φρούτα (1 μερίδα)', en:'Fruit (1 exchange)',
+  { key:'fruit', icon:'🍎', gr:'Φρούτα', en:'Fruit',
     items:[
       {gr:'1 μικρό μήλο, αχλάδι ή πορτοκάλι', en:'1 small apple, pear or orange'},
       {gr:'1 μικρή μπανάνα (½ μεγάλη)', en:'1 small banana (½ large)'},
@@ -3439,7 +3437,7 @@ const EQUIVALENTS_DATA = [
       {gr:'2 κ.σ. σταφίδες ή 3 αποξηραμένα βερίκοκα', en:'2 tbsp raisins or 3 dried apricots'},
       {gr:'3 δαμάσκηνα φρέσκα', en:'3 fresh plums'},
     ]},
-  { key:'veg', icon:'🥗', gr:'Λαχανικά (1 μερίδα)', en:'Vegetables (1 exchange)',
+  { key:'veg', icon:'🥗', gr:'Λαχανικά', en:'Vegetables',
     items:[
       {gr:'1 φλ. ωμά λαχανικά (μαρούλι, αγγούρι, ντομάτα, πιπεριά)', en:'1 cup raw vegetables (lettuce, cucumber, tomato, pepper)'},
       {gr:'½ φλ. βρασμένα/ψητά λαχανικά (μπρόκολο, κουνουπίδι, καρότο, κολοκύθι)', en:'½ cup cooked vegetables (broccoli, cauliflower, carrot, zucchini)'},
@@ -3450,7 +3448,7 @@ const EQUIVALENTS_DATA = [
       {gr:'½ φλ. μπιζέλια ή καλαμπόκι (μικρή ποσότητα — μετράει και ως άμυλο σε μεγαλύτερη)', en:'½ cup peas or corn (small amount — counts as starch if larger)'},
       {gr:'1 φλ. ωμά μανιτάρια ή κολοκυθάκια', en:'1 cup raw mushrooms or zucchini'},
     ]},
-  { key:'dairy', icon:'🥛', gr:'Γαλακτοκομικά (1 μερίδα)', en:'Dairy (1 exchange)',
+  { key:'dairy', icon:'🥛', gr:'Γαλακτοκομικά', en:'Dairy',
     items:[
       {gr:'1 φλ. (240ml) γάλα 1,5%', en:'1 cup (240ml) 1.5% milk'},
       {gr:'1 γιαούρτι 2% (170g)', en:'1 yogurt 2% fat (170g/6oz)'},
@@ -3460,7 +3458,7 @@ const EQUIVALENTS_DATA = [
       {gr:'1 φλ. κεφίρ', en:'1 cup kefir'},
       {gr:'1 φλ. γάλα σόγιας ανεπεξέργαστο (χαμηλό CHO)', en:'1 cup plain soy milk (lower carb)'},
     ]},
-  { key:'starch', icon:'🌾', gr:'Άμυλο / Δημητριακά (1 μερίδα)', en:'Starch / Grains (1 exchange)',
+  { key:'starch', icon:'🌾', gr:'Άμυλο / Δημητριακά', en:'Starch / Grains',
     items:[
       {gr:'1 φέτα ψωμί ολικής άλεσης', en:'1 slice whole-grain bread'},
       {gr:'⅓ φλ. ρύζι ή ζυμαρικά μαγειρεμένα', en:'⅓ cup cooked rice or pasta'},
@@ -3475,7 +3473,7 @@ const EQUIVALENTS_DATA = [
       {gr:'3 κ.σ. κουσκούς μαγειρεμένο', en:'3 tbsp cooked couscous'},
       {gr:'½ μπαγκέτα μικρή ή 1 μικρό ψωμάκι', en:'½ small baguette or 1 small bread roll'},
     ]},
-  { key:'protein', icon:'🥩', gr:'Πρωτεΐνη (1 μερίδα ≈ 30g μαγειρεμένο)', en:'Protein (1 exchange ≈ 30g cooked)',
+  { key:'protein', icon:'🥩', gr:'Πρωτεΐνη (≈ 30g μαγειρεμένο)', en:'Protein (≈ 30g cooked)',
     items:[
       {gr:'30g κοτόπουλο ή γαλοπούλα (χωρίς πέτσα)', en:'30g chicken or turkey (skinless)'},
       {gr:'30g ψάρι (φρέσκο ή κονσέρβα σε νερό)', en:'30g fish (fresh or canned in water)'},
@@ -3488,7 +3486,7 @@ const EQUIVALENTS_DATA = [
       {gr:'2 ασπράδια αυγού', en:'2 egg whites'},
       {gr:'30g γαρίδες/χταπόδι/καλαμάρι', en:'30g shrimp/octopus/squid'},
     ]},
-  { key:'fat', icon:'🫒', gr:'Λίπος (1 μερίδα)', en:'Fat (1 exchange)',
+  { key:'fat', icon:'🫒', gr:'Λίπος', en:'Fat',
     items:[
       {gr:'1 κ.γ. ελαιόλαδο', en:'1 tsp olive oil'},
       {gr:'8 ελιές', en:'8 olives'},
@@ -4986,17 +4984,23 @@ function calcAll() {
   S.ibw=ibw;
   setEl('r-ibw', ibw?ibw.toFixed(1)+' kg':'—');
   const ibwSubEl=document.getElementById('r-ibw-sub');
-  if(ibwSubEl) ibwSubEl.textContent = (w && ibw) ? `Devine · current ${(w-ibw>=0?'+':'')}${(w-ibw).toFixed(1)}kg vs IBW` : 'Devine formula';
+  if(ibwSubEl){
+    const isGrIbw = window.appLang==='gr';
+    ibwSubEl.textContent = (w && ibw)
+      ? (isGrIbw ? `Devine · τρέχον ${(w-ibw>=0?'+':'')}${(w-ibw).toFixed(1)}κιλά σε σχέση με ΙΣΒ` : `Devine · current ${(w-ibw>=0?'+':'')}${(w-ibw).toFixed(1)}kg vs IBW`)
+      : (isGrIbw ? 'Τύπος Devine' : 'Devine formula');
+  }
 
   let bmi=null,bmr=null,tdee=null,goalKcal=null,bmiCat='';
   if(h&&w) bmi=w/((h/100)**2);
   S.bmi=bmi;
+  const isGrBmi = window.appLang==='gr';
   if(bmi!==null){
-    if(bmi<18.5) bmiCat='Underweight';
-    else if(bmi<25) bmiCat='Normal weight';
-    else if(bmi<30) bmiCat='Overweight';
-    else if(bmi<40) bmiCat='Obesity Class I–II';
-    else bmiCat='Class III / Severe Obesity';
+    if(bmi<18.5) bmiCat=isGrBmi?'Λιποβαρής':'Underweight';
+    else if(bmi<25) bmiCat=isGrBmi?'Φυσιολογικό βάρος':'Normal weight';
+    else if(bmi<30) bmiCat=isGrBmi?'Υπέρβαρος':'Overweight';
+    else if(bmi<40) bmiCat=isGrBmi?'Παχυσαρκία Τάξη I–II':'Obesity Class I–II';
+    else bmiCat=isGrBmi?'Τάξη III / Σοβαρή Παχυσαρκία':'Class III / Severe Obesity';
     S.bmiCat=bmiCat;
   }
   if(age&&h&&w){
@@ -5317,34 +5321,36 @@ function renderExchangeChecks(){
     if(!ok){
       if(i===0){ // Calories
         if(diff<0) fix=gapData.starchCapped||gapData.proteinCapped||gapData.fatCapped
-          ? `Plan is capped at condition limits — add ${Math.round(Math.abs(diff)/81)} starch ex or ${Math.round(Math.abs(diff)/45)} fat ex to close gap`
-          : `Add ${Math.round(Math.abs(diff)/81)} starch ex or increase fat ex`;
-        else fix='Consider reducing starch or fat by 1–2 exchanges, or accept the small difference if meals are balanced';
+          ? (isGrChk?`Το πλάνο έχει όριο λόγω πάθησης — προσθέστε ${Math.round(Math.abs(diff)/81)} μερίδες αμύλου ή ${Math.round(Math.abs(diff)/45)} μερίδες λίπους για κάλυψη`:`Plan is capped at condition limits — add ${Math.round(Math.abs(diff)/81)} starch ex or ${Math.round(Math.abs(diff)/45)} fat ex to close gap`)
+          : (isGrChk?`Προσθέστε ${Math.round(Math.abs(diff)/81)} μερίδες αμύλου ή αυξήστε το λίπος`:`Add ${Math.round(Math.abs(diff)/81)} starch ex or increase fat ex`);
+        else fix=isGrChk?'Σκεφτείτε μείωση αμύλου ή λίπους κατά 1–2 μερίδες, ή αποδεχτείτε τη μικρή διαφορά αν τα γεύματα είναι ισορροπημένα':'Consider reducing starch or fat by 1–2 exchanges, or accept the small difference if meals are balanced';
       }
       if(i===1){ // Carbs
         if(diff<0) fix=gapData.starchCapped
-          ? `Starch capped at ${caps.starchDailyMax} ex/day (condition limit) — need ${Math.round(Math.abs(diff)/15)} more starch ex to cover carb target`
-          : `Add ${Math.round(Math.abs(diff)/15)} starch exchange(s)`;
-        else fix=`Consider reducing starch by ${Math.round(Math.abs(diff)/15)} exchange(s), or accept +${Math.abs(diff)}g if meal distribution is clinically balanced`;
+          ? (isGrChk?`Το άμυλο έχει όριο ${caps.starchDailyMax} μερίδες/ημέρα (λόγω πάθησης) — χρειάζονται ${Math.round(Math.abs(diff)/15)} επιπλέον μερίδες αμύλου για κάλυψη υδατανθράκων`:`Starch capped at ${caps.starchDailyMax} ex/day (condition limit) — need ${Math.round(Math.abs(diff)/15)} more starch ex to cover carb target`)
+          : (isGrChk?`Προσθέστε ${Math.round(Math.abs(diff)/15)} μερίδα(-ες) αμύλου`:`Add ${Math.round(Math.abs(diff)/15)} starch exchange(s)`);
+        else fix=isGrChk?`Σκεφτείτε μείωση αμύλου κατά ${Math.round(Math.abs(diff)/15)} μερίδα(-ες), ή αποδεχτείτε +${Math.abs(diff)}g αν η κατανομή γευμάτων είναι κλινικά ισορροπημένη`:`Consider reducing starch by ${Math.round(Math.abs(diff)/15)} exchange(s), or accept +${Math.abs(diff)}g if meal distribution is clinically balanced`;
       }
       if(i===2){ // Protein
         if(diff<0) fix=gapData.proteinCapped
-          ? `Protein capped at ${caps.proteinDailyMax} ex/day (condition limit) — need ${Math.round(Math.abs(diff)/7)} more protein ex`
-          : `Add ${Math.round(Math.abs(diff)/7)} protein exchange(s) (~${Math.round(Math.abs(diff)/7)*30}g more meat/fish)`;
-        else fix=`Consider reducing protein by ${Math.round(Math.abs(diff)/7)} exchange(s), or accept +${Math.abs(diff)}g if portions remain realistic`;
+          ? (isGrChk?`Η πρωτεΐνη έχει όριο ${caps.proteinDailyMax} μερίδες/ημέρα (λόγω πάθησης) — χρειάζονται ${Math.round(Math.abs(diff)/7)} επιπλέον μερίδες πρωτεΐνης`:`Protein capped at ${caps.proteinDailyMax} ex/day (condition limit) — need ${Math.round(Math.abs(diff)/7)} more protein ex`)
+          : (isGrChk?`Προσθέστε ${Math.round(Math.abs(diff)/7)} μερίδα(-ες) πρωτεΐνης (~${Math.round(Math.abs(diff)/7)*30}g επιπλέον κρέας/ψάρι)`:`Add ${Math.round(Math.abs(diff)/7)} protein exchange(s) (~${Math.round(Math.abs(diff)/7)*30}g more meat/fish)`);
+        else fix=isGrChk?`Σκεφτείτε μείωση πρωτεΐνης κατά ${Math.round(Math.abs(diff)/7)} μερίδα(-ες), ή αποδεχτείτε +${Math.abs(diff)}g αν οι μερίδες παραμένουν ρεαλιστικές`:`Consider reducing protein by ${Math.round(Math.abs(diff)/7)} exchange(s), or accept +${Math.abs(diff)}g if portions remain realistic`;
       }
       if(i===3){ // Fat
         if(diff<0) fix=gapData.fatCapped
-          ? (caps.fatDailyMax>=90 ? `Fat target exceeds the non-restrictive safety ceiling — review calories/macros rather than forcing extra oil` : `Fat capped at ${caps.fatDailyMax} tsp/day (condition limit) — need ${Math.round(Math.abs(diff)/5)} more fat ex`)
-          : `Add ${Math.round(Math.abs(diff)/5)} fat exchange(s) (${Math.round(Math.abs(diff)/5)} tsp olive oil)`;
-        else fix=`Consider reducing fat by ${Math.round(Math.abs(diff)/5)} exchange(s), or accept +${Math.abs(diff)}g if fat quality is appropriate`;
+          ? (caps.fatDailyMax>=90 ? (isGrChk?`Ο στόχος λίπους υπερβαίνει το μη περιοριστικό όριο ασφαλείας — επανεξετάστε θερμίδες/μακροθρεπτικά αντί να προσθέσετε επιπλέον λάδι`:`Fat target exceeds the non-restrictive safety ceiling — review calories/macros rather than forcing extra oil`) : (isGrChk?`Το λίπος έχει όριο ${caps.fatDailyMax} κ.γ./ημέρα (λόγω πάθησης) — χρειάζονται ${Math.round(Math.abs(diff)/5)} επιπλέον μερίδες λίπους`:`Fat capped at ${caps.fatDailyMax} tsp/day (condition limit) — need ${Math.round(Math.abs(diff)/5)} more fat ex`))
+          : (isGrChk?`Προσθέστε ${Math.round(Math.abs(diff)/5)} μερίδα(-ες) λίπους (${Math.round(Math.abs(diff)/5)} κ.γ. ελαιόλαδο)`:`Add ${Math.round(Math.abs(diff)/5)} fat exchange(s) (${Math.round(Math.abs(diff)/5)} tsp olive oil)`);
+        else fix=isGrChk?`Σκεφτείτε μείωση λίπους κατά ${Math.round(Math.abs(diff)/5)} μερίδα(-ες), ή αποδεχτείτε +${Math.abs(diff)}g αν η ποιότητα λίπους είναι κατάλληλη`:`Consider reducing fat by ${Math.round(Math.abs(diff)/5)} exchange(s), or accept +${Math.abs(diff)}g if fat quality is appropriate`;
       }
     }
     chk+=`<tr><td>${label}</td><td>${Math.round(tgt)}</td><td>${Math.round(plan)}</td><td style="color:${ok?'inherit':diff<0?'var(--warn)':'var(--err)'}">${diff>0?'+':''}${diff}</td><td><span class="badge ${ok?'ok':'warn'}">${ok?(isGrChk?'OK':'OK'):(isGrChk?'Προσαρμογή':'Adjust')}</span></td><td style="font-size:12px;color:var(--text-muted)">${fix}</td></tr>`;
   });
     if((S.conditions||[]).includes('Dyslipidemia')){
     const fatCapKcal=(caps.fatDailyMax||0)*(m.fat?.kcal||45);
-    chk+=`<tr><td colspan="6"><div class="alert info" style="margin:6px 0 0">High Cholesterol note: olive-oil fat quality matters. Current fat cap allows up to <strong>${caps.fatDailyMax} tsp</strong> (~${Math.round(fatCapKcal)} kcal from fat exchanges). If calories are still low, consider increasing starch or lean-protein servings rather than forcing extra fat.</div></td></tr>`;
+    chk+=isGrChk
+      ? `<tr><td colspan="6"><div class="alert info" style="margin:6px 0 0">Σημείωση Υψηλής Χοληστερόλης: η ποιότητα του ελαιολάδου έχει σημασία. Το τρέχον όριο λίπους επιτρέπει έως <strong>${caps.fatDailyMax} κ.γ.</strong> (~${Math.round(fatCapKcal)} kcal από μερίδες λίπους). Αν οι θερμίδες παραμένουν χαμηλές, σκεφτείτε αύξηση μερίδων αμύλου ή άπαχης πρωτεΐνης αντί να προσθέσετε επιπλέον λίπος.</div></td></tr>`
+      : `<tr><td colspan="6"><div class="alert info" style="margin:6px 0 0">High Cholesterol note: olive-oil fat quality matters. Current fat cap allows up to <strong>${caps.fatDailyMax} tsp</strong> (~${Math.round(fatCapKcal)} kcal from fat exchanges). If calories are still low, consider increasing starch or lean-protein servings rather than forcing extra fat.</div></td></tr>`;
   }
   setEl('exchange-check',chk+'</tbody></table>');
 
@@ -5370,13 +5376,14 @@ function calcBodyComp(){
   if(ffm!==null && ffmEl && (!S.bcManual?.ffm || !String(ffmEl.value||'').trim())) ffmEl.value=ffm.toFixed(1);
   const muscle=parseFloat(v('bc-muscle'))||null;
   S.bc={bf,water,fatmass,ffm,muscle,metage,visceral,bone};
-  if(bf!==null){const lo=isMale?10:18,hi=isMale?20:28; setEl('bc-bf-note',bf<lo?'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Low — review energy availability':bf>hi?'<i class="ti ti-alert-triangle" aria-hidden="true"></i> High — metabolic risk':'<i class="ti ti-circle-check" aria-hidden="true"></i> Within normal range');}
-  if(water!==null){const lo=isMale?50:45,hi=isMale?65:60; setEl('bc-water-note',water<lo?'<i class="ti ti-alert-triangle" aria-hidden="true"></i> May indicate dehydration':water>hi?'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Review clinically':'<i class="ti ti-circle-check" aria-hidden="true"></i> Adequate');}
+  const isGrBc = window.appLang==='gr';
+  if(bf!==null){const lo=isMale?10:18,hi=isMale?20:28; setEl('bc-bf-note',bf<lo?('<i class="ti ti-alert-triangle" aria-hidden="true"></i> '+(isGrBc?'Χαμηλό — επανεξετάστε τη διαθεσιμότητα ενέργειας':'Low — review energy availability')):bf>hi?('<i class="ti ti-alert-triangle" aria-hidden="true"></i> '+(isGrBc?'Υψηλό — μεταβολικός κίνδυνος':'High — metabolic risk')):('<i class="ti ti-circle-check" aria-hidden="true"></i> '+(isGrBc?'Εντός φυσιολογικού εύρους':'Within normal range')));}
+  if(water!==null){const lo=isMale?50:45,hi=isMale?65:60; setEl('bc-water-note',water<lo?('<i class="ti ti-alert-triangle" aria-hidden="true"></i> '+(isGrBc?'Πιθανή αφυδάτωση':'May indicate dehydration')):water>hi?('<i class="ti ti-alert-triangle" aria-hidden="true"></i> '+(isGrBc?'Χρειάζεται κλινική επανεξέταση':'Review clinically')):('<i class="ti ti-circle-check" aria-hidden="true"></i> '+(isGrBc?'Επαρκές':'Adequate')));}
   if(visceral!==null){
-    const msg=visceral<=8?'<i class="ti ti-circle-check" aria-hidden="true"></i> Healthy level':visceral<=12?'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Borderline / upper-limit — monitor cardiometabolic risk':'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Elevated — cardiometabolic risk';
+    const msg=visceral<=8?('<i class="ti ti-circle-check" aria-hidden="true"></i> '+(isGrBc?'Υγιές επίπεδο':'Healthy level')):visceral<=12?('<i class="ti ti-alert-triangle" aria-hidden="true"></i> '+(isGrBc?'Οριακό / άνω όριο — παρακολουθήστε καρδιομεταβολικό κίνδυνο':'Borderline / upper-limit — monitor cardiometabolic risk')):('<i class="ti ti-alert-triangle" aria-hidden="true"></i> '+(isGrBc?'Αυξημένο — καρδιομεταβολικός κίνδυνος':'Elevated — cardiometabolic risk'));
     setEl('bc-visceral-note',msg);
   }
-  if(metage!==null&&S.age) setEl('bc-metage-note',metage<=S.age?'<i class="ti ti-circle-check" aria-hidden="true"></i> Favorable':'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Metabolic age above chronological');
+  if(metage!==null&&S.age) setEl('bc-metage-note',metage<=S.age?('<i class="ti ti-circle-check" aria-hidden="true"></i> '+(isGrBc?'Ευνοϊκό':'Favorable')):('<i class="ti ti-alert-triangle" aria-hidden="true"></i> '+(isGrBc?'Μεταβολική ηλικία υψηλότερη της χρονολογικής':'Metabolic age above chronological')));
 
   const rangeBarHtml=(value,min,max,b1,b2,colors,labels)=>{
     const n=Number(value);
@@ -6827,7 +6834,7 @@ function renderReportLogoControls(message=''){
     preview.style.display = S.reportLogo ? 'block' : 'none';
     preview.innerHTML = S.reportLogo ? `<img src="${S.reportLogo}" alt="Dietitian logo preview" style="max-height:48px;max-width:180px;object-fit:contain;border:1px solid var(--border);border-radius:6px;background:#fff;padding:4px">` : '';
   }
-  if(status) status.textContent = message || (S.reportLogo ? 'Custom logo ready for reports.' : 'Default Nutrese branding will be used.');
+  if(status) status.textContent = message || (S.reportLogo ? (window.appLang==='gr'?'Το προσαρμοσμένο λογότυπο είναι έτοιμο για αναφορές.':'Custom logo ready for reports.') : (window.appLang==='gr'?'Θα χρησιμοποιηθεί η προεπιλεγμένη επωνυμία Nutrese.':'Default Nutrese branding will be used.'));
 }
 function reportLogoHeaderHtml(){
   if(S.reportLogo && validReportLogoDataUrl(S.reportLogo)){
@@ -7930,8 +7937,9 @@ function quickFoodSearch(term){
 }
 async function searchFoodDatabase(){
   const query=(v('food-search')||'').trim();
-  if(!query){ setEl('fooddb-status','Enter a food name to search.'); return; }
-  setEl('fooddb-status','Searching USDA FoodData Central...');
+  const isGrFd = window.appLang==='gr';
+  if(!query){ setEl('fooddb-status', isGrFd?'Εισάγετε όνομα τροφίμου για αναζήτηση.':'Enter a food name to search.'); return; }
+  setEl('fooddb-status', isGrFd?'Αναζήτηση στο USDA FoodData Central...':'Searching USDA FoodData Central...');
   setEl('fooddb-results','');
   await loadRecipes({render:false, mergeLocal:true});
   const recipeResults=recipeFoodResultsForQuery(query);
@@ -7940,20 +7948,24 @@ async function searchFoodDatabase(){
     S.foodResults=[...recipeResults, ...products];
     renderFoodResults(S.foodResults);
     const total=S.foodResults.length;
-    setEl('fooddb-status', total ? `${total} foods found (${recipeResults.length} saved recipe${recipeResults.length===1?'':'s'}). Nutrition shown per 100g.` : `No USDA foods found for "${query}". Try a more specific ingredient term.`);
+    setEl('fooddb-status', total
+      ? (isGrFd ? `Βρέθηκαν ${total} τρόφιμα (${recipeResults.length} αποθηκευμένη${recipeResults.length===1?'':'ες'} συνταγή${recipeResults.length===1?'':'ές'}). Η διατροφική αξία ανά 100g.` : `${total} foods found (${recipeResults.length} saved recipe${recipeResults.length===1?'':'s'}). Nutrition shown per 100g.`)
+      : (isGrFd ? `Δεν βρέθηκαν τρόφιμα USDA για "${query}". Δοκιμάστε πιο συγκεκριμένο όρο.` : `No USDA foods found for "${query}". Try a more specific ingredient term.`));
   }catch(err){
     S.foodResults=recipeResults;
     renderFoodResults(S.foodResults);
     setEl('fooddb-status', recipeResults.length
-      ? `${recipeResults.length} saved recipe${recipeResults.length===1?'':'s'} shown. USDA search could not be reached. Details: ${err.message}`
-      : `Food search failed because USDA FoodData Central could not be reached or returned an error. Details: ${err.message}`);
+      ? (isGrFd ? `Εμφανίζονται ${recipeResults.length} αποθηκευμένη${recipeResults.length===1?'':'ες'} συνταγή${recipeResults.length===1?'':'ές'}. Η αναζήτηση USDA απέτυχε. Λεπτομέρειες: ${err.message}` : `${recipeResults.length} saved recipe${recipeResults.length===1?'':'s'} shown. USDA search could not be reached. Details: ${err.message}`)
+      : (isGrFd ? `Η αναζήτηση τροφίμων απέτυχε επειδή το USDA FoodData Central δεν ήταν προσβάσιμο. Λεπτομέρειες: ${err.message}` : `Food search failed because USDA FoodData Central could not be reached or returned an error. Details: ${err.message}`));
   }
 }function renderFoodResults(products){
   const el=document.getElementById('fooddb-results'); if(!el) return;
   if(!products || !products.length){ el.innerHTML=''; return; }
-  el.innerHTML=`<table><thead><tr><th>Food</th><th>Serving</th><th>kcal/100g</th><th>Carb</th><th>Protein</th><th>Fat</th><th>Actions</th></tr></thead><tbody>${products.map((p,i)=>`
+  const isGrFr = window.appLang==='gr';
+  const th = isGrFr ? ['Τρόφιμο','Μερίδα','kcal/100g','Υδατ.','Πρωτ.','Λίπος','Ενέργειες'] : ['Food','Serving','kcal/100g','Carb','Protein','Fat','Actions'];
+  el.innerHTML=`<table><thead><tr><th>${th[0]}</th><th>${th[1]}</th><th>${th[2]}</th><th>${th[3]}</th><th>${th[4]}</th><th>${th[5]}</th><th>${th[6]}</th></tr></thead><tbody>${products.map((p,i)=>`
     <tr>
-      <td><strong>${safeHtml(p.name)}</strong> ${p.source==='recipe'?'<span class="badge ok" style="margin-left:6px">My Recipe</span>':''}<div style="font-size:11px;color:var(--text-muted)">${safeHtml(p.brand||'USDA FoodData Central')}</div></td>
+      <td><strong>${safeHtml(p.name)}</strong> ${p.source==='recipe'?`<span class="badge ok" style="margin-left:6px">${isGrFr?'Η Συνταγή μου':'My Recipe'}</span>`:''}<div style="font-size:11px;color:var(--text-muted)">${safeHtml(p.brand||'USDA FoodData Central')}</div></td>
       <td>${safeHtml(p.serving||'—')}</td>
       <td>${formatFoodNumber(p.kcal100,'')}</td>
       <td>${formatFoodNumber(p.carbs100,'g')}</td>
@@ -7961,15 +7973,15 @@ async function searchFoodDatabase(){
       <td>${formatFoodNumber(p.fat100,'g')}</td>
       <td>
         <div style="display:flex;gap:5px;flex-wrap:wrap">
-          <button class="btn" style="padding:4px 8px;font-size:11px" onclick="addFoodResultToRecipe(${i})">+ Recipe</button>
-          <button class="btn primary" style="padding:4px 8px;font-size:11px" onclick="toggleFoodAddPanel(${i})">+ Meal plan</button>
+          <button class="btn" style="padding:4px 8px;font-size:11px" onclick="addFoodResultToRecipe(${i})">+ ${isGrFr?'Συνταγή':'Recipe'}</button>
+          <button class="btn primary" style="padding:4px 8px;font-size:11px" onclick="toggleFoodAddPanel(${i})">+ ${isGrFr?'Πλάνο γευμάτων':'Meal plan'}</button>
         </div>
         <div class="food-add-panel" id="food-add-panel-${i}">
           <select id="food-add-day-${i}" onchange="toggleFoodSpecificDays(${i})">${extraFoodDayOptionsHtml()}</select>
           <select id="food-add-slot-${i}">${extraFoodSlotOptionsHtml()}</select>
           <input id="food-add-grams-${i}" type="number" min="1" step="1" value="${Math.round(p.defaultGrams||100)}" placeholder="grams">
           <div id="food-add-specific-days-${i}" style="display:none;gap:8px;flex-wrap:wrap;width:100%;padding:4px 0">${extraFoodSpecificDaysHtml(i)}</div>
-          <button class="btn primary" style="padding:5px 8px;font-size:11px" onclick="addFoodResultToMealPlan(${i})">Add food</button>
+          <button class="btn primary" style="padding:5px 8px;font-size:11px" onclick="addFoodResultToMealPlan(${i})">${isGrFr?'Προσθήκη τροφίμου':'Add food'}</button>
         </div>
       </td>
     </tr>`).join('')}</tbody></table>`;
@@ -8136,7 +8148,8 @@ function removeRecipeIngredient(index){
 }
 function updateRecipeSaveButton(){
   const btn=document.getElementById('save-recipe-btn');
-  if(btn) btn.innerHTML = S.editingRecipeId ? '<i class="ti ti-device-floppy" aria-hidden="true"></i> Save updated recipe' : '<i class="ti ti-device-floppy" aria-hidden="true"></i> Save recipe';
+  const isGr = window.appLang==='gr';
+  if(btn) btn.innerHTML = S.editingRecipeId ? `<i class="ti ti-device-floppy" aria-hidden="true"></i> ${isGr?'Αποθήκευση ενημερωμένης συνταγής':'Save updated recipe'}` : `<i class="ti ti-device-floppy" aria-hidden="true"></i> ${isGr?'Αποθήκευση συνταγής':'Save recipe'}`;
 }
 function clearRecipeDraft(){
   S.recipeDraft=[];
@@ -8156,28 +8169,33 @@ function clearRecipeDraft(){
 function renderRecipeDraft(){
   const el=document.getElementById('recipe-draft'); if(!el) return;
   if(!Array.isArray(S.recipeDraft)) S.recipeDraft=[];
+  const isGr = window.appLang==='gr';
   const servings=Math.max(1, parseInt(v('recipe-servings')||'1',10)||1);
   const total=recipeTotals(S.recipeDraft);
   const per={kcal:total.kcal/servings, carbs:total.carbs/servings, protein:total.protein/servings, fat:total.fat/servings};
   const rows=(S.recipeDraft||[]).map((ing,i)=>{
     const t=ingredientTotals(ing);
     return `<tr>
-      <td><strong>${safeHtml(ing.name||'Ingredient')}</strong></td>
+      <td><strong>${safeHtml(ing.name||(isGr?'Συστατικό':'Ingredient'))}</strong></td>
       <td><input type="number" value="${ing.grams||0}" min="0" step="1" oninput="updateRecipeIngredient(${i},'grams',this.value)" style="width:88px;padding:5px;text-align:right;border:1px solid var(--border-strong);border-radius:5px;background:var(--bg-input);color:var(--text-primary)"> g</td>
       <td>${formatFoodNumber(t.kcal,'')}</td>
       <td>${formatFoodNumber(t.carbs,'g')}</td>
       <td>${formatFoodNumber(t.protein,'g')}</td>
       <td>${formatFoodNumber(t.fat,'g')}</td>
-      <td><button class="btn" style="padding:4px 8px;font-size:11px" onclick="removeRecipeIngredient(${i})">Remove</button></td>
+      <td><button class="btn" style="padding:4px 8px;font-size:11px" onclick="removeRecipeIngredient(${i})">${isGr?'Αφαίρεση':'Remove'}</button></td>
     </tr>`;
   }).join('');
-  el.innerHTML=`<table><thead><tr><th>Ingredient</th><th>g used</th><th>kcal</th><th>Carb</th><th>Protein</th><th>Fat</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:16px">No ingredients yet.</td></tr>'}</tbody></table>
+  const th = isGr
+    ? ['Συστατικό','g χρήσης','kcal','Υδατ.','Πρωτ.','Λίπος']
+    : ['Ingredient','g used','kcal','Carb','Protein','Fat'];
+  const noIngredients = isGr ? 'Δεν υπάρχουν συστατικά ακόμη.' : 'No ingredients yet.';
+  el.innerHTML=`<table><thead><tr><th>${th[0]}</th><th>${th[1]}</th><th>${th[2]}</th><th>${th[3]}</th><th>${th[4]}</th><th>${th[5]}</th><th></th></tr></thead><tbody>${rows||`<tr><td colspan="7" style="color:var(--text-muted);text-align:center;padding:16px">${noIngredients}</td></tr>`}</tbody></table>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:12px">
-      <div class="metric"><span class="metric-label">Total kcal:</span> <span class="metric-value">${Math.round(total.kcal)}</span></div>
-      <div class="metric"><span class="metric-label">Per serving kcal:</span> <span class="metric-value">${Math.round(per.kcal)}</span></div>
-      <div class="metric"><span class="metric-label">Per serving carbs:</span> <span class="metric-value">${formatFoodNumber(per.carbs,'g')}</span></div>
-      <div class="metric"><span class="metric-label">Per serving protein:</span> <span class="metric-value">${formatFoodNumber(per.protein,'g')}</span></div>
-      <div class="metric"><span class="metric-label">Per serving fat:</span> <span class="metric-value">${formatFoodNumber(per.fat,'g')}</span></div>
+      <div class="metric"><span class="metric-label">${isGr?'Σύνολο kcal:':'Total kcal:'}</span> <span class="metric-value">${Math.round(total.kcal)}</span></div>
+      <div class="metric"><span class="metric-label">${isGr?'kcal ανά μερίδα:':'Per serving kcal:'}</span> <span class="metric-value">${Math.round(per.kcal)}</span></div>
+      <div class="metric"><span class="metric-label">${isGr?'Υδατ. ανά μερίδα:':'Per serving carbs:'}</span> <span class="metric-value">${formatFoodNumber(per.carbs,'g')}</span></div>
+      <div class="metric"><span class="metric-label">${isGr?'Πρωτ. ανά μερίδα:':'Per serving protein:'}</span> <span class="metric-value">${formatFoodNumber(per.protein,'g')}</span></div>
+      <div class="metric"><span class="metric-label">${isGr?'Λίπος ανά μερίδα:':'Per serving fat:'}</span> <span class="metric-value">${formatFoodNumber(per.fat,'g')}</span></div>
     </div>`;
   updateRecipeSaveButton();
 }
@@ -8287,23 +8305,26 @@ function loadRecipeIntoDraft(id){
 }
 function renderRecipesList(){
   const el=document.getElementById('recipes-list'); if(!el) return;
-  if(!S.recipes || !S.recipes.length){ el.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:18px">No saved recipes yet.</div>'; return; }
+  const isGr = window.appLang==='gr';
+  if(!S.recipes || !S.recipes.length){ el.innerHTML=`<div style="color:var(--text-muted);text-align:center;padding:18px">${isGr?'Δεν υπάρχουν αποθηκευμένες συνταγές ακόμη.':'No saved recipes yet.'}</div>`; return; }
   el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">${S.recipes.map(r=>{
     const total=r.nutrition||recipeTotals(r.ingredients||[]);
     const servings=Math.max(1,r.servings||1);
     const photoHtml = r.photo
       ? `<div style="width:100%;height:110px;border-radius:10px 10px 0 0;overflow:hidden"><img src="${r.photo}" style="width:100%;height:100%;object-fit:cover"></div>`
       : `<div style="width:100%;height:110px;border-radius:10px 10px 0 0;background:var(--bg-page);display:flex;align-items:center;justify-content:center"><i class="ti ti-tools-kitchen-2" aria-hidden="true" style="font-size:28px;color:var(--text-muted)"></i></div>`;
+    const ingredientsLabel = isGr ? 'συστατικά' : `ingredient${(r.ingredients||[]).length===1?'':'s'}`;
+    const servingsLabel = isGr ? 'μερίδα'+(servings===1?'':'ες') : `serving${servings===1?'':'s'}`;
     return `<div style="border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg-surface)">
       ${photoHtml}
       <div style="padding:12px">
-        <div style="font-weight:700;font-size:14px;margin-bottom:2px">${safeHtml(r.name||'Recipe')}</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">${(r.ingredients||[]).length} ingredients · ${servings} serving${servings===1?'':'s'}</div>
-        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">${Math.round(total.kcal/servings)} kcal · ${formatFoodNumber(total.carbs/servings,'g')} C · ${formatFoodNumber(total.protein/servings,'g')} P · ${formatFoodNumber(total.fat/servings,'g')} F</div>
+        <div style="font-weight:700;font-size:14px;margin-bottom:2px">${safeHtml(r.name||(isGr?'Συνταγή':'Recipe'))}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">${(r.ingredients||[]).length} ${ingredientsLabel} · ${servings} ${servingsLabel}</div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">${Math.round(total.kcal/servings)} kcal · ${formatFoodNumber(total.carbs/servings,'g')} ${isGr?'Υ':'C'} · ${formatFoodNumber(total.protein/servings,'g')} ${isGr?'Π':'P'} · ${formatFoodNumber(total.fat/servings,'g')} ${isGr?'Λ':'F'}</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn" style="padding:5px 9px;font-size:11px" onclick="loadRecipeIntoDraft('${r.id}')"><i class="ti ti-pencil" aria-hidden="true"></i> Edit</button>
-          <button class="btn" style="padding:5px 9px;font-size:11px" onclick="printRecipe('${r.id}')"><i class="ti ti-printer" aria-hidden="true"></i> Print</button>
-          <button class="btn" style="padding:5px 9px;font-size:11px" onclick="deleteRecipe('${r.id}')"><i class="ti ti-trash" aria-hidden="true"></i> Delete</button>
+          <button class="btn" style="padding:5px 9px;font-size:11px" onclick="loadRecipeIntoDraft('${r.id}')"><i class="ti ti-pencil" aria-hidden="true"></i> ${isGr?'Επεξεργασία':'Edit'}</button>
+          <button class="btn" style="padding:5px 9px;font-size:11px" onclick="printRecipe('${r.id}')"><i class="ti ti-printer" aria-hidden="true"></i> ${isGr?'Εκτύπωση':'Print'}</button>
+          <button class="btn" style="padding:5px 9px;font-size:11px" onclick="deleteRecipe('${r.id}')"><i class="ti ti-trash" aria-hidden="true"></i> ${isGr?'Διαγραφή':'Delete'}</button>
         </div>
       </div>
     </div>`;
@@ -9639,6 +9660,10 @@ function applyLanguage(lang){
   if(document.getElementById('page-macros')?.classList.contains('active')) calcMacros();
   if(document.getElementById('page-exchanges')?.classList.contains('active')) renderExchanges();
   if(document.getElementById('page-tracking')?.classList.contains('active')) renderTracking();
+  if(document.getElementById('page-account')?.classList.contains('active')) updateAccountPage();
+  if(document.getElementById('page-profile')?.classList.contains('active')) calcAll();
+  if(document.getElementById('page-recipes')?.classList.contains('active')){ renderRecipeDraft(); renderRecipesList(); }
+  if(document.getElementById('page-fooddb')?.classList.contains('active') && S.foodResults) renderFoodResults(S.foodResults);
   if(document.getElementById('page-appointments')?.classList.contains('active')){
     renderAppointments();
     const formTitle=document.getElementById('appointment-form-title');
