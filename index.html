@@ -878,6 +878,18 @@ table th,
       <div class="metric" style="cursor:pointer" onclick="nav('clients')"><div class="m-label">Clients</div><div class="m-value" id="d-total-clients">—</div><div class="m-sub">Total in your practice</div></div>
       <div class="metric" style="cursor:pointer" onclick="nav('appointments')"><div class="m-label">Today</div><div class="m-value" id="d-today-appts">—</div><div class="m-sub" id="d-today-appts-sub">Appointments today</div></div>
     </div>
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-header"><span class="card-title">📅 Today's appointments</span><span class="card-action" onclick="nav('appointments')">Calendar →</span></div>
+      <div class="card-body" id="dash-appointments"><div style="color:var(--text-muted);font-size:13px">No appointments today.</div></div>
+    </div>
+    <div id="dash-no-client-prompt" class="card" style="display:none">
+      <div class="card-body" style="text-align:center;padding:40px 20px">
+        <div style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:8px">👤 No client loaded</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Load an existing client or create a new one to see their clinical dashboard here.</div>
+        <button class="btn primary" onclick="nav('clients')">Go to My Clients</button>
+      </div>
+    </div>
+    <div id="dash-client-section">
     <div class="metrics-grid">
       <div class="metric"><div class="m-label">Goal kcal/day</div><div class="m-value" id="d-kcal">—</div><div class="m-sub" id="d-kcal-sub">Enter client profile</div></div>
       <div class="metric"><div class="m-label">BMI</div><div class="m-value" id="d-bmi">—</div><div class="m-sub" id="d-bmi-cat">—</div></div>
@@ -893,14 +905,11 @@ table th,
         <div class="card-header"><span class="card-title">🎯 Macro distribution</span><span class="card-action" onclick="nav('macros')">Edit →</span></div>
         <div class="card-body" id="dash-macros"></div>
       </div>
-      <div class="card">
-        <div class="card-header"><span class="card-title">📅 Today's appointments</span><span class="card-action" onclick="nav('appointments')">Calendar →</span></div>
-        <div class="card-body" id="dash-appointments"><div style="color:var(--text-muted);font-size:13px">No appointments today.</div></div>
-      </div>
     </div>
       <div class="card">
         <div class="card-header"><span class="card-title">☀️ Today's meal plan — <span id="dash-day">Monday</span></span><span class="card-action" onclick="nav('sevenday')">Weekly plan →</span></div>
       <div class="card-body" id="dash-meals"><div style="color:var(--gray-400);font-size:13px">Fill Client Profile and Exchange System to generate plan</div></div>
+    </div>
     </div>
   </div>
 
@@ -7141,6 +7150,11 @@ if (anyCapped) {
 }
 
 function updateDashMetrics(){
+  const clientSection=document.getElementById('dash-client-section');
+  const noClientPrompt=document.getElementById('dash-no-client-prompt');
+  const hasClient=!!(S.activeClientId || (v('p-name')||'').trim());
+  if(clientSection) clientSection.style.display = hasClient ? '' : 'none';
+  if(noClientPrompt) noClientPrompt.style.display = hasClient ? 'none' : 'block';
   const kcal=S.goalKcal;
   setEl('d-kcal',kcal?Math.round(kcal).toLocaleString():'—');
   const kcalEl=document.getElementById('d-kcal');
