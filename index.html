@@ -104,6 +104,12 @@ select option { background-color: var(--bg-surface); color: var(--text-primary);
 .client-tab.active { color: var(--text-active); border-bottom-color: var(--text-active); font-weight: 700; }
 
 .btn i.ti, .nav-item i.ti, .client-tab i.ti, .card-title i.ti, .bnav-item i.ti { vertical-align: -2px; }
+i.ti-alert-triangle { color: var(--amber-text); }
+i.ti-circle-check { color: var(--green-text); }
+i.ti-circle-x { color: var(--red-text); }
+.btn i.ti-alert-triangle, .nav-item i.ti-alert-triangle, .client-tab i.ti-alert-triangle, .card-title i.ti-alert-triangle, .bnav-item i.ti-alert-triangle,
+.btn i.ti-circle-check, .nav-item i.ti-circle-check, .client-tab i.ti-circle-check, .card-title i.ti-circle-check, .bnav-item i.ti-circle-check,
+.btn i.ti-circle-x, .nav-item i.ti-circle-x, .client-tab i.ti-circle-x, .card-title i.ti-circle-x, .bnav-item i.ti-circle-x { color: inherit; }
 /* ─── TOPBAR ─── */
 .hamburger { display: none; background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-primary); padding: 4px; flex-shrink: 0; }
 .topbar-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
@@ -833,7 +839,7 @@ table th,
 <nav class="sidebar">
   <div class="logo-area">
     <div class="logo-icon"><img src="data:image/png;base64,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" alt="Nutrese" style="width:28px;height:auto;display:block"></div>
-    <div class="logo-text">Nutrese <span><span class="i18n" data-en="Professional Nutrition Platform" data-gr="Επαγγελματική Πλατφόρμα Διατροφής">Professional Nutrition Platform</span></span></div>
+    <div class="logo-text">Nutrese <span>Professional Nutrition Platform</span></div>
   </div>
   <div class="client-chip" style="display:flex;align-items:center;gap:10px">
     <div id="sidebar-client-avatar" style="flex-shrink:0"></div>
@@ -846,6 +852,7 @@ table th,
   <div class="nav-group-card">
     <div class="nav-group-label"><span class="i18n" data-en="Clients" data-gr="Πελάτες">Clients</span></div>
     <button class="nav-item" onclick="nav('clients')"><i class="ti ti-users" aria-hidden="true"></i> <span class="i18n" data-en="My Clients" data-gr="Οι Πελάτες μου">My Clients</span></button>
+    <button class="nav-item" onclick="nav('appointments')"><i class="ti ti-calendar-event" aria-hidden="true"></i> <span class="i18n" data-en="Calendar" data-gr="Ημερολόγιο">Calendar</span></button>
   </div>
   <div class="nav-group-card">
     <div class="nav-group-label"><span class="i18n" data-en="Workflow" data-gr="Ροή Εργασίας">Workflow</span></div>
@@ -853,7 +860,6 @@ table th,
     <button class="nav-item" onclick="nav('profile')"><i class="ti ti-user" aria-hidden="true"></i> <span class="i18n" data-en="Client Profile" data-gr="Προφίλ Πελάτη">Client Profile</span></button>
     <button class="nav-item" onclick="nav('fooddb')"><i class="ti ti-search" aria-hidden="true"></i> <span class="i18n" data-en="Food Database" data-gr="Αναζήτηση Τροφίμων">Food Database</span></button>
     <button class="nav-item" onclick="nav('recipes')"><i class="ti ti-chef-hat" aria-hidden="true"></i> <span class="i18n" data-en="Recipes" data-gr="Συνταγές">Recipes</span></button>
-    <button class="nav-item" onclick="nav('appointments')"><i class="ti ti-calendar-event" aria-hidden="true"></i> <span class="i18n" data-en="Calendar" data-gr="Ημερολόγιο">Calendar</span></button>
     <button class="nav-item" onclick="nav('equivalents')"><i class="ti ti-clipboard-list" aria-hidden="true"></i> <span class="i18n" data-en="Equivalents Guide" data-gr="Οδηγός Ισοδυνάμων">Equivalents Guide</span></button>
   </div>
   <div class="nav-group-card">
@@ -887,9 +893,9 @@ table th,
   </div>
 
   <div class="client-tabbar no-print" id="client-tabbar">
+    <button class="client-tab" data-tab-for="intake" onclick="nav('intake')"><i class="ti ti-notes" aria-hidden="true"></i> <span class="i18n" data-en="Notes" data-gr="Σημειώσεις">Notes</span></button>
     <button class="client-tab" data-tab-for="profile" onclick="nav('profile')"><i class="ti ti-user" aria-hidden="true"></i> <span class="i18n" data-en="Profile" data-gr="Προφίλ">Profile</span></button>
     <button class="client-tab" data-tab-for="bodycomp" onclick="nav('bodycomp')"><i class="ti ti-scale" aria-hidden="true"></i> <span class="i18n" data-en="Body Comp" data-gr="Σύσταση Σώματος">Body Comp</span></button>
-    <button class="client-tab" data-tab-for="intake" onclick="nav('intake')"><i class="ti ti-notes" aria-hidden="true"></i> <span class="i18n" data-en="Notes" data-gr="Σημειώσεις">Notes</span></button>
     <button class="client-tab" data-tab-for="labs" onclick="nav('labs')"><i class="ti ti-droplet" aria-hidden="true"></i> <span class="i18n" data-en="Labs" data-gr="Εξετάσεις">Labs</span></button>
     <button class="client-tab" data-tab-for="macros" onclick="nav('macros')"><i class="ti ti-target" aria-hidden="true"></i> <span class="i18n" data-en="Targets" data-gr="Στόχοι">Targets</span></button>
     <button class="client-tab" data-tab-for="exchanges" onclick="nav('exchanges')"><i class="ti ti-refresh" aria-hidden="true"></i> <span class="i18n" data-en="Exchanges" data-gr="Ισοδύναμα">Exchanges</span></button>
@@ -914,7 +920,7 @@ table th,
       </div>
       <div class="bento-tile bento-row-2">
         <div class="bento-tile-head"><i class="ti ti-calendar" aria-hidden="true"></i> <span class="i18n" data-en="Today's appointments" data-gr="Σημερινά ραντεβού">Today's appointments</span> <span class="card-action" onclick="nav('appointments')"><span class="i18n" data-en="Calendar →" data-gr="Ημερολόγιο →">Calendar →</span></span></div>
-        <div id="dash-appointments"><div style="color:var(--text-muted);font-size:13px">No appointments today.</div></div>
+        <div id="dash-appointments"><div style="color:var(--text-muted);font-size:13px"><span class="i18n" data-en="No appointments today." data-gr="Κανένα ραντεβού σήμερα.">No appointments today.</span></div></div>
       </div>
       <div id="dash-no-client-prompt" class="bento-tile bento-accent" style="display:none">
         <div style="text-align:center;padding:20px 10px">
@@ -976,14 +982,14 @@ table th,
         <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Fill in during first consultation. Notes appear in Client Report." data-gr="Συμπληρώστε κατά την πρώτη συνεδρία. Οι σημειώσεις εμφανίζονται στην Αναφορά Πελάτη.">Fill in during first consultation. Notes appear in Client Report.</span></div>
         <div class="section-label"><span class="i18n" data-en="Goal" data-gr="Στόχος">Goal</span></div>
         <div class="form-grid">
-          <div class="form-field full"><label><span class="i18n" data-en="Main goal" data-gr="Βασικός στόχος">Main goal</span></label><input type="text" id="i-goal" placeholder="e.g. Weight loss, maintenance, muscle gain…" oninput="saveIntake()"></div>
-          <div class="form-field full"><label><span class="i18n" data-en="Why important?" data-gr="Γιατί;">Why important?</span></label><input type="text" id="i-goal-why" placeholder="Motivation / personal context" oninput="saveIntake()"></div>
-          <div class="form-field full"><label><span class="i18n" data-en="Have you tried anything before?" data-gr="Προηγούμενες προσπάθειες">Have you tried anything before?</span></label><input type="text" id="i-goal-tried" placeholder="Previous attempts…" oninput="saveIntake()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Main goal" data-gr="Βασικός στόχος">Main goal</span></label><input type="text" id="i-goal" class="i18n-ph" data-en-ph="e.g. Weight loss, maintenance, muscle gain…" data-gr-ph="π.χ. Απώλεια βάρους, συντήρηση, αύξηση μυϊκής μάζας…" placeholder="e.g. Weight loss, maintenance, muscle gain…" oninput="saveIntake()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Why important?" data-gr="Γιατί;">Why important?</span></label><input type="text" id="i-goal-why" class="i18n-ph" data-en-ph="Motivation / personal context" data-gr-ph="Κίνητρο / προσωπικό πλαίσιο" placeholder="Motivation / personal context" oninput="saveIntake()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Have you tried anything before?" data-gr="Προηγούμενες προσπάθειες">Have you tried anything before?</span></label><input type="text" id="i-goal-tried" class="i18n-ph" data-en-ph="Previous attempts…" data-gr-ph="Προηγούμενες προσπάθειες…" placeholder="Previous attempts…" oninput="saveIntake()"></div>
         </div>
         <div class="section-label"><span class="i18n" data-en="Lifestyle" data-gr="Τρόπος Ζωής">Lifestyle</span></div>
         <div class="form-grid">
-          <div class="form-field full"><label><span class="i18n" data-en="Typical day" data-gr="Τυπική ημέρα">Typical day</span></label><input type="text" id="i-lifestyle" placeholder="Describe a typical day…" oninput="saveIntake()"></div>
-          <div class="form-field"><label><span class="i18n" data-en="Exercise type & frequency" data-gr="Άσκηση">Exercise type & frequency</span></label><input type="text" id="i-exercise" placeholder="e.g. Walking 3×/week" oninput="saveIntake()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Typical day" data-gr="Τυπική ημέρα">Typical day</span></label><input type="text" id="i-lifestyle" class="i18n-ph" data-en-ph="Describe a typical day…" data-gr-ph="Περιγράψτε μια τυπική ημέρα…" placeholder="Describe a typical day…" oninput="saveIntake()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Exercise type & frequency" data-gr="Άσκηση">Exercise type & frequency</span></label><input type="text" id="i-exercise" class="i18n-ph" data-en-ph="e.g. Walking 3×/week" data-gr-ph="π.χ. Περπάτημα 3 φορές/εβδομάδα" placeholder="e.g. Walking 3×/week" oninput="saveIntake()"></div>
           <div class="form-field"><label><span class="i18n" data-en="Daily steps" data-gr="Βήματα">Daily steps</span></label><input type="text" id="i-steps" placeholder="~8000" oninput="saveIntake()"></div>
         </div>
         <div class="section-label"><span class="i18n" data-en="Sleep & Stress" data-gr="Ύπνος & Άγχος">Sleep & Stress</span></div>
@@ -993,22 +999,21 @@ table th,
         </div>
         <div class="section-label"><span class="i18n" data-en="Nutrition Habits" data-gr="Διατροφικές Συνήθειες">Nutrition Habits</span></div>
         <div class="form-grid">
-          <div class="form-field full"><label><span class="i18n" data-en="Typical eating day" data-gr="Τυπική ημέρα διατροφής">Typical eating day</span></label><textarea id="i-typical-diet" rows="3" placeholder="Breakfast, lunch, dinner, snacks…" oninput="saveIntake()" style="resize:vertical"></textarea></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Typical eating day" data-gr="Τυπική ημέρα διατροφής">Typical eating day</span></label><textarea id="i-typical-diet" rows="3" class="i18n-ph" data-en-ph="Breakfast, lunch, dinner, snacks…" data-gr-ph="Πρωινό, μεσημεριανό, βραδινό, σνακ…" placeholder="Breakfast, lunch, dinner, snacks…" oninput="saveIntake()" style="resize:vertical"></textarea></div>
           <div class="form-field"><label><span class="i18n" data-en="Skip meals?" data-gr="Παραλείπεις γεύματα;">Skip meals?</span></label>
             <select id="i-skip-meals" onchange="saveIntake()"><option value="">—</option><option>No, eat regularly</option><option>Sometimes skip breakfast</option><option>Often skip meals</option></select>
           </div>
-          <div class="form-field"><label><span class="i18n" data-en="Cravings" data-gr="Λιγούρες">Cravings</span></label><input type="text" id="i-cravings" placeholder="Sweet, salty, chocolate…" oninput="saveIntake()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Cravings" data-gr="Λιγούρες">Cravings</span></label><input type="text" id="i-cravings" class="i18n-ph" data-en-ph="Sweet, salty, chocolate…" data-gr-ph="Γλυκό, αλμυρό, σοκολάτα…" placeholder="Sweet, salty, chocolate…" oninput="saveIntake()"></div>
         </div>
         <div class="section-label"><span class="i18n" data-en="Intolerances" data-gr="Δυσανεξίες">Intolerances</span></div>
         <div class="form-grid">
-          <div class="form-field full"><label><span class="i18n" data-en="Foods causing discomfort" data-gr="Τρόφιμα που προκαλούν ενόχληση">Foods causing discomfort</span></label><input type="text" id="i-intolerances" placeholder="Lactose, gluten, legumes…" oninput="saveIntake()"></div>
-          <div class="form-field full"><label><span class="i18n" data-en="Digestion issues" data-gr="Δυσπεψία">Digestion issues</span></label><input type="text" id="i-digestion" placeholder="Bloating, constipation, reflux…" oninput="saveIntake()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Foods causing discomfort" data-gr="Τρόφιμα που προκαλούν ενόχληση">Foods causing discomfort</span></label><input type="text" id="i-intolerances" class="i18n-ph" data-en-ph="Lactose, gluten, legumes…" data-gr-ph="Λακτόζη, γλουτένη, όσπρια…" placeholder="Lactose, gluten, legumes…" oninput="saveIntake()"></div>
+          <div class="form-field full"><label><span class="i18n" data-en="Digestion issues" data-gr="Δυσπεψία">Digestion issues</span></label><input type="text" id="i-digestion" class="i18n-ph" data-en-ph="Bloating, constipation, reflux…" data-gr-ph="Φούσκωμα, δυσκοιλιότητα, παλινδρόμηση…" placeholder="Bloating, constipation, reflux…" oninput="saveIntake()"></div>
         </div>
         <div class="section-label"><span class="i18n" data-en="Clinician Notes" data-gr="Σημειώσεις Διαιτολόγου">Clinician Notes</span></div>
-        <div class="form-field"><label><span class="i18n" data-en="Free notes" data-gr="Ελεύθερες σημειώσεις">Free notes</span></label><textarea id="i-coach-notes" rows="4" placeholder="Internal notes, priorities, follow-up…" oninput="saveIntake()" style="resize:vertical;width:100%"></textarea></div>
+        <div class="form-field"><label><span class="i18n" data-en="Free notes" data-gr="Ελεύθερες σημειώσεις">Free notes</span></label><textarea id="i-coach-notes" rows="4" class="i18n-ph" data-en-ph="Internal notes, priorities, follow-up…" data-gr-ph="Εσωτερικές σημειώσεις, προτεραιότητες, παρακολούθηση…" placeholder="Internal notes, priorities, follow-up…" oninput="saveIntake()" style="resize:vertical;width:100%"></textarea></div>
         <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <button class="btn primary" onclick="saveClientIntake()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Save Intake" data-gr="Αποθήκευση Ιστορικού">Save Intake</span></button>
-          <button class="btn" onclick="nav('macros')"><span class="i18n" data-en="Continue to Macro Targets →" data-gr="Συνέχεια στους Στόχους →">Continue to Macro Targets →</span></button>
           <span id="intake-save-note" style="font-size:12px;color:var(--text-muted)"></span>
         </div>
       </div>
@@ -1031,7 +1036,6 @@ table th,
         <div class="alert info" style="margin-top:14px"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Blood test results have their own page —" data-gr="Τα αποτελέσματα εξετάσεων έχουν τη δική τους σελίδα —">Blood test results have their own page —</span> <a onclick="nav('labs')" style="color:inherit;text-decoration:underline;cursor:pointer"><span class="i18n" data-en="Blood Analysis →" data-gr="Αιματολογικός Έλεγχος →">Blood Analysis →</span></a></div>
         <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <button class="btn primary" onclick="saveClientIntake()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Save Intake & Clinical Notes" data-gr="Αποθήκευση Ιστορικού & Κλινικών Σημειώσεων">Save Intake & Clinical Notes</span></button>
-          <button class="btn" onclick="nav('macros')"><span class="i18n" data-en="Continue to Macro Targets →" data-gr="Συνέχεια στους Στόχους →">Continue to Macro Targets →</span></button>
         </div>
       </div>
     </div>
@@ -1054,16 +1058,16 @@ table th,
             <div id="client-photo-status" style="font-size:11px;color:var(--text-muted);margin-top:6px">No photo yet — showing initials.</div>
           </div>
         </div>
-        <div class="section-label">DEMOGRAPHICS</div>
+        <div class="section-label"><span class="i18n" data-en="Demographics" data-gr="Δημογραφικά">Demographics</span></div>
         <div class="form-grid three">
-          <div class="form-field"><label>Client Reference</label><div id="p-id-display" style="min-height:38px;display:flex;align-items:center;padding:8px 10px;border:1px solid var(--border-strong);border-radius:6px;background:var(--bg-muted);font-weight:700;color:var(--text)">New client</div><input type="hidden" id="p-id" value=""></div>
-          <div class="form-field"><label>Full Name</label><input type="text" id="p-name" placeholder="—" oninput="calcAll()"></div>
-          <div class="form-field"><label>Date</label><input type="date" id="p-date" oninput="calcAll()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Client Reference" data-gr="Κωδικός Πελάτη">Client Reference</span></label><div id="p-id-display" style="min-height:38px;display:flex;align-items:center;padding:8px 10px;border:1px solid var(--border-strong);border-radius:6px;background:var(--bg-muted);font-weight:700;color:var(--text)">New client</div><input type="hidden" id="p-id" value=""></div>
+          <div class="form-field"><label><span class="i18n" data-en="Full Name" data-gr="Ονοματεπώνυμο">Full Name</span></label><input type="text" id="p-name" placeholder="—" oninput="calcAll()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Date" data-gr="Ημερομηνία">Date</span></label><input type="date" id="p-date" oninput="calcAll()"></div>
         </div>
         <div class="form-grid three">
-          <div class="form-field"><label>Age (years)</label><input type="number" id="p-age" placeholder="—" oninput="calcAll()"></div>
-          <div class="form-field"><label>Sex</label><select id="p-sex" onchange="calcAll()"><option value="M">Male / Άρρεν</option><option value="F">Female / Θήλυ</option></select></div>
-          <div class="form-field"><label>Activity Level</label>
+          <div class="form-field"><label><span class="i18n" data-en="Age (years)" data-gr="Ηλικία (έτη)">Age (years)</span></label><input type="number" id="p-age" placeholder="—" oninput="calcAll()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Sex" data-gr="Φύλο">Sex</span></label><select id="p-sex" onchange="calcAll()"><option value="M">Male / Άρρεν</option><option value="F">Female / Θήλυ</option></select></div>
+          <div class="form-field"><label><span class="i18n" data-en="Activity Level" data-gr="Επίπεδο Δραστηριότητας">Activity Level</span></label>
             <select id="p-activity" onchange="calcAll()">
               <option value="1.2">Sedentary (1.2)</option>
               <option value="1.375">Light (1.375)</option>
@@ -1075,13 +1079,13 @@ table th,
         </div>
         <div class="section-label">ANTHROPOMETRICS</div>
         <div class="form-grid three">
-          <div class="form-field"><label>Height (cm)</label><input type="number" id="p-height" placeholder="170" oninput="calcAll()"></div>
-          <div class="form-field"><label>Weight (kg)</label><input type="number" id="p-weight" placeholder="70" step="0.1" oninput="onWeightInput()"><div class="field-note suggested" id="weight-suggestion-note"></div></div>
-          <div class="form-field"><label>Calorie Adjustment (kcal)</label><input type="number" id="p-cal-adj" placeholder="Auto (0)" step="50" inputmode="decimal" oninput="calcAll()" onblur="calcAll()">
+          <div class="form-field"><label><span class="i18n" data-en="Height (cm)" data-gr="Ύψος (εκ)">Height (cm)</span></label><input type="number" id="p-height" placeholder="170" oninput="calcAll()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Weight (kg)" data-gr="Βάρος (κιλά)">Weight (kg)</span></label><input type="number" id="p-weight" placeholder="70" step="0.1" oninput="onWeightInput()"><div class="field-note suggested" id="weight-suggestion-note"></div></div>
+          <div class="form-field"><label><span class="i18n" data-en="Calorie Adjustment (kcal)" data-gr="Προσαρμογή Θερμίδων (kcal)">Calorie Adjustment (kcal)</span></label><input type="number" id="p-cal-adj" placeholder="Auto (0)" step="50" inputmode="decimal" oninput="calcAll()" onblur="calcAll()">
             <div class="field-note" id="cal-adj-note" style="margin-top:4px"></div>
           </div>
         </div>
-        <div class="section-label">CLINICAL SETTINGS</div>
+        <div class="section-label"><span class="i18n" data-en="Clinical Settings" data-gr="Κλινικές Ρυθμίσεις">Clinical Settings</span></div>
         <div class="form-grid">
           <div class="form-field full">
             <label>Primary condition (select one)</label>
@@ -1114,7 +1118,7 @@ table th,
             </div>
             <div class="field-note">Leave unselected for a general/healthy population plan. Nutrese supports one primary condition at a time for clearer clinical logic.</div>
           </div>
-          <div class="form-field"><label>Goal</label>
+          <div class="form-field"><label><span class="i18n" data-en="Goal" data-gr="Στόχος">Goal</span></label>
             <select id="p-goal" onchange="calcAll()">
               <option value="Maintenance">Maintenance / Συντήρηση</option>
               <option value="Weight Loss">Weight Loss / Απώλεια βάρους</option>
@@ -1122,21 +1126,21 @@ table th,
               <option value="Muscle Gain">Muscle Gain / Αύξηση μυϊκής μάζας</option>
             </select>
           </div>
-          <div class="form-field"><label>Meat Type</label>
+          <div class="form-field"><label><span class="i18n" data-en="Meat Type" data-gr="Τύπος Κρέατος">Meat Type</span></label>
             <select id="p-meat" onchange="calcAll()">
               <option value="Lean">Lean / Άπαχο</option>
               <option value="Medium-fat">Medium-fat / Μέτριο</option>
               <option value="High-fat">High-fat / Λιπαρό</option>
             </select>
           </div>
-          <div class="form-field"><label>Dairy Type</label>
+          <div class="form-field"><label><span class="i18n" data-en="Dairy Type" data-gr="Τύπος Γαλακτοκομικών">Dairy Type</span></label>
             <select id="p-dairy" onchange="calcAll()">
               <option value="Low-fat">Low-fat / Χαμηλό λίπος</option>
               <option value="Moderate-fat" selected>Moderate-fat / Μέτριο</option>
               <option value="Full-fat">Full-fat / Πλήρες</option>
             </select>
           </div>
-          <div class="form-field"><label>Diet Type / Τύπος Διατροφής</label>
+          <div class="form-field"><label><span class="i18n" data-en="Diet Type" data-gr="Τύπος Διατροφής">Diet Type</span></label>
             <select id="p-diet" onchange="onDietTypeChange()">
               <option value="Omnivore">Omnivore / Παμφάγος</option>
               <option value="Pescatarian">Pescatarian / Ψαροφάγος</option>
@@ -1155,11 +1159,7 @@ table th,
           <div class="metric"><div class="m-label">Goal Calories</div><div class="m-value" id="r-goal-kcal">—</div><div class="m-sub" id="r-goal-sub">kcal/day</div></div>
         </div>
         <div id="expected-progress-box" class="alert info" style="display:none;margin-top:-4px;margin-bottom:12px"></div>
-        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px"><button class="btn" id="meal-lang-gr-profile" onclick="setClinicalLanguage('GR')">GR</button><button class="btn" id="meal-lang-en-profile" onclick="setClinicalLanguage('EN')">EN</button></div>
-        <div id="condition-guidance" style="padding:12px;background:var(--teal-50);border:1px solid var(--teal-100);border-radius:var(--radius);font-size:13px;color:var(--teal-800);margin-top:8px"></div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <button class="btn primary" onclick="nav('bodycomp')">Continue to Body Composition →</button>
-        </div>
+                <div id="condition-guidance" style="padding:12px;background:var(--teal-50);border:1px solid var(--teal-100);border-radius:var(--radius);font-size:13px;color:var(--teal-800);margin-top:8px"></div>
       </div>
     </div>
   </div>
@@ -1167,28 +1167,27 @@ table th,
   <!-- BODY COMP -->
   <div class="page" id="page-bodycomp">
     <div class="card">
-      <div class="card-header"><span class="card-title"><i class="ti ti-scale" aria-hidden="true"></i> INPUT — Body Composition</span></div>
+      <div class="card-header"><span class="card-title"><i class="ti ti-scale" aria-hidden="true"></i> <span class="i18n" data-en="Body Composition" data-gr="Σύσταση Σώματος">Body Composition</span></span></div>
       <div class="card-body">
         <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> Enter Tanita or other device values. Fat mass auto-calculates from Weight × Body Fat % if left blank.</div>
         <div class="form-grid three">
-          <div class="form-field"><label><i class="ti ti-scale" aria-hidden="true"></i> Body Fat %</label><input type="number" id="bc-bf" placeholder="Men: 10–20%, Women: 18–28%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-bf-note"></div></div>
-          <div class="form-field"><label><i class="ti ti-droplet" aria-hidden="true"></i> Body Water %</label><input type="number" id="bc-water" placeholder="Men: 50–65%, Women: 45–60%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-water-note"></div></div>
-          <div class="form-field"><label><i class="ti ti-scale" aria-hidden="true"></i> Fat Mass kg (auto)</label><input type="number" id="bc-fatmass" placeholder="Auto = Weight × BF%" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('fatmass')"></div>
-          <div class="form-field"><label><i class="ti ti-activity" aria-hidden="true"></i> Fat-Free Mass kg (auto)</label><input type="number" id="bc-ffm" placeholder="Auto = Weight − Fat mass" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('ffm')"></div>
-          <div class="form-field"><label><i class="ti ti-barbell" aria-hidden="true"></i> Muscle Mass (kg)</label><input type="number" id="bc-muscle" placeholder="Manual Tanita/device value" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('muscle')"></div>
-          <div class="form-field"><label><i class="ti ti-clock" aria-hidden="true"></i> Metabolic Age</label><input type="number" id="bc-metage" placeholder="—" oninput="calcBodyComp()"><div class="field-note" id="bc-metage-note"></div></div>
-          <div class="form-field"><label><i class="ti ti-flame" aria-hidden="true"></i> Visceral Fat Score</label><input type="number" id="bc-visceral" placeholder="1–12 healthy, 13+ excess" oninput="calcBodyComp()"><div class="field-note" id="bc-visceral-note"></div></div>
-          <div class="form-field"><label><i class="ti ti-run" aria-hidden="true"></i> Physique Rating (1–9)</label><input type="number" id="bc-physique" placeholder="Tanita 1–9" min="1" max="9"></div>
-          <div class="form-field"><label><i class="ti ti-bone" aria-hidden="true"></i> Οστική Μάζα / Bone Mass (kg)</label><input type="number" id="bc-bone" placeholder="Tanita/device value" step="0.1" oninput="calcBodyComp()"></div>
+          <div class="form-field"><label><i class="ti ti-scale" aria-hidden="true"></i> <span class="i18n" data-en="Body Fat %" data-gr="Ποσοστό Λίπους %">Body Fat %</span></label><input type="number" id="bc-bf" placeholder="Men: 10–20%, Women: 18–28%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-bf-note"></div></div>
+          <div class="form-field"><label><i class="ti ti-droplet" aria-hidden="true"></i> <span class="i18n" data-en="Body Water %" data-gr="Ποσοστό Νερού %">Body Water %</span></label><input type="number" id="bc-water" placeholder="Men: 50–65%, Women: 45–60%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-water-note"></div></div>
+          <div class="form-field"><label><i class="ti ti-scale" aria-hidden="true"></i> <span class="i18n" data-en="Fat Mass kg (auto)" data-gr="Μάζα Λίπους κιλά (αυτόματο)">Fat Mass kg (auto)</span></label><input type="number" id="bc-fatmass" placeholder="Auto = Weight × BF%" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('fatmass')"></div>
+          <div class="form-field"><label><i class="ti ti-activity" aria-hidden="true"></i> <span class="i18n" data-en="Fat-Free Mass kg (auto)" data-gr="Άλιπη Μάζα κιλά (αυτόματο)">Fat-Free Mass kg (auto)</span></label><input type="number" id="bc-ffm" placeholder="Auto = Weight − Fat mass" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('ffm')"></div>
+          <div class="form-field"><label><i class="ti ti-barbell" aria-hidden="true"></i> <span class="i18n" data-en="Muscle Mass (kg)" data-gr="Μυϊκή Μάζα (κιλά)">Muscle Mass (kg)</span></label><input type="number" id="bc-muscle" placeholder="Manual Tanita/device value" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('muscle')"></div>
+          <div class="form-field"><label><i class="ti ti-clock" aria-hidden="true"></i> <span class="i18n" data-en="Metabolic Age" data-gr="Μεταβολική Ηλικία">Metabolic Age</span></label><input type="number" id="bc-metage" placeholder="—" oninput="calcBodyComp()"><div class="field-note" id="bc-metage-note"></div></div>
+          <div class="form-field"><label><i class="ti ti-flame" aria-hidden="true"></i> <span class="i18n" data-en="Visceral Fat Score" data-gr="Δείκτης Σπλαχνικού Λίπους">Visceral Fat Score</span></label><input type="number" id="bc-visceral" placeholder="1–12 healthy, 13+ excess" oninput="calcBodyComp()"><div class="field-note" id="bc-visceral-note"></div></div>
+          <div class="form-field"><label><i class="ti ti-run" aria-hidden="true"></i> <span class="i18n" data-en="Physique Rating (1–9)" data-gr="Βαθμολογία Σωματότυπου (1–9)">Physique Rating (1–9)</span></label><input type="number" id="bc-physique" placeholder="Tanita 1–9" min="1" max="9"></div>
+          <div class="form-field"><label><i class="ti ti-bone" aria-hidden="true"></i> <span class="i18n" data-en="Bone Mass (kg)" data-gr="Οστική Μάζα (κιλά)">Bone Mass (kg)</span></label><input type="number" id="bc-bone" placeholder="Tanita/device value" step="0.1" oninput="calcBodyComp()"></div>
         </div>
-        <div class="section-label">AUTO INTERPRETATION</div>
+        <div class="section-label"><span class="i18n" data-en="Auto Interpretation" data-gr="Αυτόματη Ερμηνεία">Auto Interpretation</span></div>
         <div id="bc-interpretation"></div>
-        <div class="section-label">RECOMMENDED TARGETS</div>
+        <div class="section-label"><span class="i18n" data-en="Recommended Targets" data-gr="Προτεινόμενοι Στόχοι">Recommended Targets</span></div>
         <div id="bc-targets"></div>
         <div style="margin-top:14px;display:flex;gap:8px;">
           <button class="btn primary" onclick="saveBodyComp()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save Measurements</button>
           <button class="btn" onclick="nav('tracking')">View history →</button>
-          <button class="btn" onclick="nav('macros')">Continue to Targets →</button>
         </div>
       </div>
     </div>
@@ -1198,32 +1197,32 @@ table th,
   <div class="page" id="page-macros">
     <div class="two-col">
       <div class="card">
-        <div class="card-header"><span class="card-title"><i class="ti ti-target" aria-hidden="true"></i> SYSTEM — Macro Targets</span></div>
+        <div class="card-header"><span class="card-title"><i class="ti ti-target" aria-hidden="true"></i> <span class="i18n" data-en="Macro Targets" data-gr="Στόχοι Μακροθρεπτικών">Macro Targets</span></span></div>
         <div class="card-body">
-          <div class="alert info" style="margin-bottom:14px"><i class="ti ti-info-circle" aria-hidden="true"></i> Goal calories linked from Client Profile. Enter Carbs % and Protein % — Fat % completes automatically to 100%.</div>
+          <div class="alert info" style="margin-bottom:14px"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Goal calories linked from Client Profile. Enter Carbs % and Protein % — Fat % completes automatically to 100%." data-gr="Οι θερμίδες στόχου συνδέονται από το Προφίλ Πελάτη. Εισάγετε Υδατάνθρακες % και Πρωτεΐνη % — το Λίπος % συμπληρώνεται αυτόματα στο 100%.">Goal calories linked from Client Profile. Enter Carbs % and Protein % — Fat % completes automatically to 100%.</span></div>
           <div class="form-grid three" style="margin-bottom:16px">
-            <div class="form-field"><label>Carbs % 🌾</label><input type="number" id="m-carb" value="45" min="0" max="100" oninput="onMacroManualInput()"></div>
-            <div class="form-field"><label>Protein % 🥩</label><input type="number" id="m-protein" value="20" min="0" max="100" oninput="onMacroManualInput()"></div>
-            <div class="form-field"><label>Fat % 🫒 (auto)</label><input type="number" id="m-fat" value="35" min="0" max="100" readonly style="background:var(--bg-page);cursor:not-allowed"></div>
+            <div class="form-field"><label><span class="i18n" data-en="Carbs %" data-gr="Υδατάνθρακες %">Carbs %</span> 🌾</label><input type="number" id="m-carb" value="45" min="0" max="100" oninput="onMacroManualInput()"></div>
+            <div class="form-field"><label><span class="i18n" data-en="Protein %" data-gr="Πρωτεΐνη %">Protein %</span> 🥩</label><input type="number" id="m-protein" value="20" min="0" max="100" oninput="onMacroManualInput()"></div>
+            <div class="form-field"><label><span class="i18n" data-en="Fat % (auto)" data-gr="Λίπος % (αυτόματο)">Fat % (auto)</span> 🫒</label><input type="number" id="m-fat" value="35" min="0" max="100" readonly style="background:var(--bg-page);cursor:not-allowed"></div>
           </div>
-          <div class="field-note" style="margin:-10px 0 14px">Fat % is calculated automatically so the three always total 100%. To set a specific Fat %, adjust Carbs % and Protein % accordingly.</div>
+          <div class="field-note" style="margin:-10px 0 14px"><span class="i18n" data-en="Fat % is calculated automatically so the three always total 100%. To set a specific Fat %, adjust Carbs % and Protein % accordingly." data-gr="Το Λίπος % υπολογίζεται αυτόματα ώστε το άθροισμα να είναι πάντα 100%. Για συγκεκριμένο Λίπος %, προσαρμόστε ανάλογα τους Υδατάνθρακες % και την Πρωτεΐνη %.">Fat % is calculated automatically so the three always total 100%. To set a specific Fat %, adjust Carbs % and Protein % accordingly.</span></div>
           <div id="macro-check-row" style="margin-bottom:12px"></div>
           <div id="macro-bars"></div>
-          <div class="section-label">MACRO BREAKDOWN</div>
-          <table><thead><tr><th>Macro</th><th>%</th><th>kcal</th><th>grams</th></tr></thead><tbody id="macro-table-body"></tbody></table>
+          <div class="section-label"><span class="i18n" data-en="Macro Breakdown" data-gr="Ανάλυση Μακροθρεπτικών">Macro Breakdown</span></div>
+          <table><thead><tr><th><span class="i18n" data-en="Macro" data-gr="Μακροθρεπτικό">Macro</span></th><th>%</th><th>kcal</th><th><span class="i18n" data-en="grams" data-gr="γραμμάρια">grams</span></th></tr></thead><tbody id="macro-table-body"></tbody></table>
           <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <button class="btn" onclick="applyConditionMacros()">Apply suggested for selected condition</button>
-            <button class="btn primary" onclick="saveMacroTargets()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save Macro Targets</button>
-            <span style="font-size:12px;color:var(--text-muted)">← fills the % fields above based on selected conditions</span>
+            <button class="btn" onclick="applyConditionMacros()"><span class="i18n" data-en="Apply suggested for selected condition" data-gr="Εφαρμογή προτεινόμενων για την επιλεγμένη πάθηση">Apply suggested for selected condition</span></button>
+            <button class="btn primary" onclick="saveMacroTargets()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Save Macro Targets" data-gr="Αποθήκευση Στόχων">Save Macro Targets</span></button>
+            <span style="font-size:12px;color:var(--text-muted)">← <span class="i18n" data-en="fills the % fields above based on selected conditions" data-gr="συμπληρώνει τα % παραπάνω βάσει των επιλεγμένων παθήσεων">fills the % fields above based on selected conditions</span></span>
             <span id="macro-save-note" style="font-size:12px;color:var(--text-muted)"></span>
           </div>
           <div id="macro-explanation" style="display:none;margin-top:10px;padding:10px;background:var(--teal-50);border-radius:8px;font-size:12px;line-height:1.6"></div>
         </div>
       </div>
       <div class="card">
-        <div class="card-header"><span class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> Clinical Macro Suggestions</span></div>
+        <div class="card-header"><span class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> <span class="i18n" data-en="Clinical Macro Suggestions" data-gr="Κλινικές Προτάσεις Μακροθρεπτικών">Clinical Macro Suggestions</span></span></div>
         <div class="card-body">
-          <table><thead><tr><th>Condition</th><th>Carb</th><th>Prot</th><th>Fat</th></tr></thead><tbody id="clinical-macro-suggestions-body"></tbody></table>
+          <table><thead><tr><th><span class="i18n" data-en="Condition" data-gr="Πάθηση">Condition</span></th><th><span class="i18n" data-en="Carb" data-gr="Υδατ.">Carb</span></th><th><span class="i18n" data-en="Prot" data-gr="Πρωτ.">Prot</span></th><th><span class="i18n" data-en="Fat" data-gr="Λίπος">Fat</span></th></tr></thead><tbody id="clinical-macro-suggestions-body"></tbody></table>
         </div>
       </div>
     </div>
@@ -1232,19 +1231,19 @@ table th,
   <!-- EXCHANGES -->
   <div class="page" id="page-exchanges">
     <div class="card">
-      <div class="card-header"><span class="card-title"><i class="ti ti-refresh" aria-hidden="true"></i> SYSTEM — Exchange System (Σύστημα Ισοδυνάμων)</span></div>
+      <div class="card-header"><span class="card-title"><i class="ti ti-refresh" aria-hidden="true"></i> <span class="i18n" data-en="Exchange System" data-gr="Σύστημα Ισοδυνάμων">Exchange System</span></span></div>
       <div class="card-body">
-        <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> Enter Fruit, Vegetables, Dairy servings. Starch, Protein, Fat auto-calculate from remaining macros. Uses condition-aware clinical caps.</div>
+        <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Enter Fruit, Vegetables, Dairy servings. Starch, Protein, Fat auto-calculate from remaining macros. Uses condition-aware clinical caps." data-gr="Εισάγετε μερίδες Φρούτου, Λαχανικών, Γαλακτοκομικών. Άμυλο, Πρωτεΐνη, Λίπος υπολογίζονται αυτόματα από τα υπόλοιπα μακροθρεπτικά. Χρησιμοποιεί κλινικά όρια ανά πάθηση.">Enter Fruit, Vegetables, Dairy servings. Starch, Protein, Fat auto-calculate from remaining macros. Uses condition-aware clinical caps.</span></div>
         <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
-          <button class="btn" onclick="applySuggestedExchangeServings()">✨ Suggested servings</button>
-          <button class="btn primary" onclick="refreshExchangePlansNow()"><i class="ti ti-refresh" aria-hidden="true"></i> Apply to Meal Plans</button>
+          <button class="btn" onclick="applySuggestedExchangeServings()">✨ <span class="i18n" data-en="Suggested servings" data-gr="Προτεινόμενες μερίδες">Suggested servings</span></button>
+          <button class="btn primary" onclick="refreshExchangePlansNow()"><i class="ti ti-refresh" aria-hidden="true"></i> <span class="i18n" data-en="Apply to Meal Plans" data-gr="Εφαρμογή στα Πλάνα Γευμάτων">Apply to Meal Plans</span></button>
           <button class="btn primary" onclick="generateAiSevenDayPlan()">✨ Generate AI Plan</button>
-          <span style="font-size:12px;color:var(--text-muted)">Click after changing servings to push updates into the 7-Day plan and Report</span>
+          <span style="font-size:12px;color:var(--text-muted)"><span class="i18n" data-en="Click after changing servings to push updates into the 7-Day plan and Report" data-gr="Πατήστε μετά την αλλαγή μερίδων για ενημέρωση του Πλάνου 7 Ημερών και της Αναφοράς">Click after changing servings to push updates into the 7-Day plan and Report</span></span>
         </div>
         <div id="exchange-rows"></div>
-        <div class="section-label">MACRO MATCH CHECK</div>
+        <div class="section-label"><span class="i18n" data-en="Macro Match Check" data-gr="Έλεγχος Ταιριάσματος Μακροθρεπτικών">Macro Match Check</span></div>
         <div id="exchange-check"></div>
-        <div class="section-label">EXCHANGE PRECISION CONTROL</div>
+        <div class="section-label"><span class="i18n" data-en="Exchange Precision Control" data-gr="Έλεγχος Ακρίβειας Ισοδυνάμων">Exchange Precision Control</span></div>
         <div id="exchange-precision"></div>
         <div style="margin-top:14px;display:flex;gap:8px;">
           <button class="btn" onclick="nav('sevenday')">Build 7-Day Plan →</button>
@@ -1260,8 +1259,6 @@ table th,
       <div class="card-body">
         <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> Dropdowns change meal combinations. Exchange totals come from Exchange System. Main meals absorb starch/protein/fat. Snacks use fruit/dairy.</div>
         <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px">
-          <button class="btn primary" id="meal-lang-gr-1day" onclick="setMealLanguage('GR')">GR</button>
-          <button class="btn" id="meal-lang-en-1day" onclick="setMealLanguage('EN')">EN</button>
         </div>
         <div class="form-grid three" style="margin-bottom:16px">
           <div class="form-field"><label>Πρωινό / Breakfast</label>
@@ -1316,8 +1313,6 @@ table th,
       <div class="card-body">
         <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:center">
           <div style="display:flex;gap:8px;margin-right:auto">
-            <button class="btn primary" id="meal-lang-gr-report" onclick="setMealLanguage('GR')">GR</button>
-            <button class="btn" id="meal-lang-en-report" onclick="setMealLanguage('EN')">EN</button>
           </div>
           <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
             <span id="report-days-title" style="font-size:13px;font-weight:800;color:var(--text-secondary)">Print days from 7-day plan:</span>
@@ -1353,22 +1348,22 @@ table th,
   <!-- TRACKING -->
   <div class="page" id="page-tracking">
     <div class="card">
-      <div class="card-header"><span class="card-title"><i class="ti ti-trending-up" aria-hidden="true"></i> TRACKING — Progress / Body Composition History</span></div>
+      <div class="card-header"><span class="card-title"><i class="ti ti-trending-up" aria-hidden="true"></i> <span class="i18n" data-en="Progress / Body Composition History" data-gr="Πρόοδος / Ιστορικό Σύστασης Σώματος">Progress / Body Composition History</span></span></div>
       <div class="card-body">
-        <div class="alert info"><span><i class="ti ti-info-circle" aria-hidden="true"></i> <strong>For follow-up visits:</strong> load the client from "My Clients", come here, add a new entry below for today's visit, then go to Client Profile and click "<i class="ti ti-device-floppy" aria-hidden="true"></i> Save Client" to keep this update permanently.</span></div>
+        <div class="alert info"><span><i class="ti ti-info-circle" aria-hidden="true"></i> <strong><span class="i18n" data-en="For follow-up visits:" data-gr="Για επισκέψεις παρακολούθησης:">For follow-up visits:</span></strong> <span class="i18n" data-en="load the client from &quot;My Clients&quot;, come here, add a new entry below for today's visit, then go to Client Profile and click &quot;Save Client&quot; to keep this update permanently." data-gr="φορτώστε τον πελάτη από τους «Οι Πελάτες μου», ελάτε εδώ, προσθέστε νέα καταχώρηση παρακάτω για τη σημερινή επίσκεψη, μετά πηγαίνετε στο Προφίλ Πελάτη και πατήστε «Αποθήκευση Πελάτη» για μόνιμη διατήρηση.">load the client from "My Clients", come here, add a new entry below for today's visit, then go to Client Profile and click "Save Client" to keep this update permanently.</span></span></div>
         <div class="form-grid three" style="margin-bottom:14px">
-          <div class="form-field"><label>Visit Date</label><input type="date" id="t-date"></div>
-          <div class="form-field"><label>Weight (kg)</label><input type="number" id="t-weight" step="0.1" placeholder="—"></div>
-          <div class="form-field"><label>Body Fat %</label><input type="number" id="t-bf" step="0.1" placeholder="—"></div>
-          <div class="form-field"><label>Muscle Mass (kg)</label><input type="number" id="t-muscle" step="0.1" placeholder="—"></div>
-          <div class="form-field"><label>Visceral Fat</label><input type="number" id="t-visceral" placeholder="—"></div>
-          <div class="form-field"><label>Notes</label><input type="text" id="t-notes" placeholder="Session notes…"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Visit Date" data-gr="Ημερομηνία Επίσκεψης">Visit Date</span></label><input type="date" id="t-date"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Weight (kg)" data-gr="Βάρος (κιλά)">Weight (kg)</span></label><input type="number" id="t-weight" step="0.1" placeholder="—"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Body Fat %" data-gr="Ποσοστό Λίπους %">Body Fat %</span></label><input type="number" id="t-bf" step="0.1" placeholder="—"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Muscle Mass (kg)" data-gr="Μυϊκή Μάζα (κιλά)">Muscle Mass (kg)</span></label><input type="number" id="t-muscle" step="0.1" placeholder="—"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Visceral Fat" data-gr="Σπλαχνικό Λίπος">Visceral Fat</span></label><input type="number" id="t-visceral" placeholder="—"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Notes" data-gr="Σημειώσεις">Notes</span></label><input type="text" id="t-notes" class="i18n-ph" data-en-ph="Session notes…" data-gr-ph="Σημειώσεις συνεδρίας…" placeholder="Session notes…"></div>
         </div>
-        <button class="btn primary" onclick="addTracking()">+ Log Visit</button>
-        <span style="font-size:12px;color:var(--text-muted);margin-left:10px">↳ After logging, remember to Save Client to keep it</span>
-        <div class="section-label">PROGRESS CHARTS</div>
+        <button class="btn primary" onclick="addTracking()">+ <span class="i18n" data-en="Log Visit" data-gr="Καταγραφή Επίσκεψης">Log Visit</span></button>
+        <span style="font-size:12px;color:var(--text-muted);margin-left:10px">↳ <span class="i18n" data-en="After logging, remember to Save Client to keep it" data-gr="Μετά την καταγραφή, θυμηθείτε να πατήσετε Αποθήκευση Πελάτη">After logging, remember to Save Client to keep it</span></span>
+        <div class="section-label"><span class="i18n" data-en="Progress Charts" data-gr="Γραφήματα Προόδου">Progress Charts</span></div>
         <div id="tracking-chart"></div>
-        <div class="section-label">VISIT HISTORY</div>
+        <div class="section-label"><span class="i18n" data-en="Visit History" data-gr="Ιστορικό Επισκέψεων">Visit History</span></div>
         <div id="tracking-table"></div>
       </div>
     </div>
@@ -1449,6 +1444,15 @@ table th,
           <div class="form-field"><label>Recipe name</label><input type="text" id="recipe-name" placeholder="e.g. Chicken rice bowl" oninput="renderRecipeDraft()"></div>
           <div class="form-field"><label>Servings</label><input type="number" id="recipe-servings" min="1" step="1" value="1" oninput="renderRecipeDraft()"></div>
         </div>
+        <div class="form-field" style="margin-bottom:14px">
+          <label>Photo (optional)</label>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div id="recipe-photo-preview" style="width:64px;height:64px;border-radius:10px;overflow:hidden;background:var(--bg-page);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-photo" aria-hidden="true" style="font-size:22px;color:var(--text-muted)"></i></div>
+            <label class="btn" style="cursor:pointer;margin:0"><i class="ti ti-upload" aria-hidden="true"></i> Upload photo<input type="file" accept="image/*" onchange="handleRecipePhotoUpload(this)" style="display:none"></label>
+            <button class="btn" onclick="removeRecipePhoto()">Remove</button>
+          </div>
+        </div>
+        <div class="form-field" style="margin-bottom:14px"><label>Instructions (optional)</label><textarea id="recipe-instructions" rows="4" placeholder="Step-by-step preparation..." style="resize:vertical"></textarea></div>
         <div class="section-label">Find ingredient from USDA</div>
         <div class="form-grid two">
           <div class="form-field"><label>Ingredient search</label><input type="text" id="ing-search" placeholder="e.g. chicken breast, oats, apple" onkeydown="if(event.key==='Enter') searchIngredientFoods()"><div class="field-note">Select a result to auto-fill nutrition per 100g. Manual override remains available.</div></div>
@@ -1515,7 +1519,7 @@ table th,
     <div class="card">
       <div class="card-header"><span class="card-title"><i class="ti ti-calendar" aria-hidden="true"></i> Calendar</span>
         <button class="btn" onclick="connectGoogleCalendar()" id="account-connect-calendar-btn" style="padding:6px 10px;font-size:12px;margin-left:auto"><i class="ti ti-brand-google" aria-hidden="true"></i> <span class="i18n" data-en="Connect Google Calendar" data-gr="Σύνδεση Google Calendar">Connect Google Calendar</span></button>
-        <span class="card-action" onclick="openAppointmentForm(todayISO())">+ <span class="i18n" data-en="New appointment" data-gr="Νέο ραντεβού">New appointment</span></span></div>
+      </div>
       <div id="calendar-connect-status" style="font-size:12px;color:var(--text-muted);padding:0 16px 8px"></div>
       <div class="card-body">
         <div class="calendar-toolbar">
@@ -1572,12 +1576,14 @@ table th,
         <div class="form-grid two">
           <div class="form-field"><label><span class="i18n" data-en="Signed in as" data-gr="Συνδεδεμένος ως">Signed in as</span></label><input type="text" id="acct-email" readonly style="background:var(--bg-page);cursor:not-allowed"></div>
           <div class="form-field"><label><span class="i18n" data-en="Subscription status" data-gr="Κατάσταση Συνδρομής">Subscription status</span></label><input type="text" id="acct-subscription" readonly style="background:var(--bg-page);cursor:not-allowed"></div>
-          <div class="form-field"><label><span class="i18n" data-en="Session" data-gr="Συνεδρία">Session</span></label><button class="btn" onclick="handleSignOut()" style="width:fit-content"><i class="ti ti-logout" aria-hidden="true"></i> <span class="i18n" data-en="Log out" data-gr="Αποσύνδεση">Log out</span></button></div>
         </div>
         <div id="account-subscription-detail" class="subscription-status">Subscription status will appear here after sign in.</div>
         <button class="btn primary" onclick="startStripeCheckout('price_1ToMPVDwBpsAKvLemjXMV2Rg')" id="account-monthly-trial-btn"><span class="i18n" data-en="Start monthly trial" data-gr="Έναρξη μηνιαίας δοκιμής">Start monthly trial</span></button>
         <button class="btn primary" onclick="startStripeCheckout('price_1ToMPWDwBpsAKvLe4Ial8JRS')" id="account-yearly-trial-btn"><span class="i18n" data-en="Start yearly trial" data-gr="Έναρξη ετήσιας δοκιμής">Start yearly trial</span></button>
         <button class="btn" onclick="openBillingPortal()" id="account-manage-billing-btn" style="display:none"><span class="i18n" data-en="Manage billing" data-gr="Διαχείριση χρέωσης">Manage billing</span></button>
+        <div style="margin-top:14px">
+          <button class="btn" onclick="handleSignOut()"><i class="ti ti-logout" aria-hidden="true"></i> <span class="i18n" data-en="Log out" data-gr="Αποσύνδεση">Log out</span></button>
+        </div>
       </div>
     </div>
   </div>
@@ -2356,9 +2362,14 @@ function updateAccountPage(){
 let hadSession = false; // tracks whether a session existed before, to detect unexpected sign-outs
 let recoveringSession = false; // true if we just had an unexpected sign-out and need to restore on next sign-in
 let intentionalSignOut = false; // true only when the user deliberately clicks Sign out
+let _authReadyResolve;
+window.authReadyPromise = new Promise(resolve => { _authReadyResolve = resolve; });
+let _authReadyFired = false;
+setTimeout(()=>{ if(!_authReadyFired){ _authReadyFired = true; _authReadyResolve(); } }, 4000);
 isPasswordRecoveryFlow = isPasswordRecoveryUrl();
 supabaseClient.auth.onAuthStateChange(async (event, session)=>{
   console.log('[Nutrese auth] onAuthStateChange', {event, hasSession:!!session, email:session?.user?.email || null});
+  if(!_authReadyFired){ _authReadyFired = true; _authReadyResolve(); }
   if((event==='PASSWORD_RECOVERY' || isPasswordRecoveryFlow || isPasswordRecoveryUrl()) && session?.user){
     isPasswordRecoveryFlow = true;
     currentUser=session.user;
@@ -3545,31 +3556,32 @@ function equivalentsCompactTableHtml(lang='gr', searchQuery=''){
     .map(cat=>({...cat,items:equivalentItemsForCategory(cat).filter(item=>equivalentMatchesQuery(cat,item,q))}))
     .filter(cat=>cat.items.length || equivalentMatchesQuery(cat,null,q))
     : EQUIVALENTS_DATA;
-  const rows=categories.map(cat=>{
+  const rows=categories.map((cat,i)=>{
     const title=isEn?cat.en:cat.gr;
     const sourceItems=q ? cat.items : equivalentItemsForCategory(cat);
     const examples=sourceItems.map(it=>isEn?(it.en||it.gr):(it.gr||it.en));
     const split=Math.ceil(examples.length/2);
-    const colHtml=list=>list.map(x=>`<div style="margin-bottom:3px">• ${highlightEquivalentText(x,q)}</div>`).join('');
-    return `<tr style="break-inside:avoid;page-break-inside:avoid">
-      <td style="padding:7px 8px;border:1px solid var(--border);font-weight:800;color:var(--text-primary);vertical-align:top;width:18%">${cat.icon} ${safeHtml(title)}</td>
-      <td style="padding:7px 6px;border:1px solid var(--border);vertical-align:top;width:8%;white-space:nowrap;font-size:11px">${portionLabel}</td>
-      <td style="padding:7px 8px;border:1px solid var(--border);vertical-align:top;width:37%;line-height:1.45">${colHtml(examples.slice(0,split))}</td>
-      <td style="padding:7px 8px;border:1px solid var(--border);vertical-align:top;width:37%;line-height:1.45">${colHtml(examples.slice(split))}</td>
+    const colHtml=list=>list.map(x=>`<div style="margin-bottom:4px">• ${highlightEquivalentText(x,q)}</div>`).join('');
+    const rowBg = i%2===1 ? 'var(--bg-page)' : 'transparent';
+    return `<tr style="break-inside:avoid;page-break-inside:avoid;background:${rowBg}">
+      <td style="padding:12px 14px;border-bottom:1px solid var(--border);font-weight:800;color:var(--text-primary);vertical-align:top;width:18%">${cat.icon} ${safeHtml(title)}</td>
+      <td style="padding:12px 10px;border-bottom:1px solid var(--border);vertical-align:top;width:8%;white-space:nowrap;font-size:11px;color:var(--text-muted)">${portionLabel}</td>
+      <td style="padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:top;width:37%;line-height:1.5">${colHtml(examples.slice(0,split))}</td>
+      <td style="padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:top;width:37%;line-height:1.5">${colHtml(examples.slice(split))}</td>
     </tr>`;
   }).join('');
   if(q && !rows) return `<div class="alert warn">${isEn?'No matching foods found in the Equivalents Guide.':'Δεν βρέθηκαν τρόφιμα στον Οδηγό Ισοδυνάμων.'}</div>`;
-  return `<table class="equivalents-compact-table" style="width:100%;border-collapse:collapse;font-size:12px;background:var(--bg-surface);border:1px solid var(--border)">
+  return `<div style="border-radius:12px;overflow:hidden;border:1px solid var(--border)"><table class="equivalents-compact-table" style="width:100%;border-collapse:collapse;font-size:13px;background:var(--bg-surface)">
     <thead>
-      <tr style="background:var(--bg-muted);color:var(--text-muted);text-transform:uppercase;font-size:10px;letter-spacing:.04em">
-        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left;width:18%">${isEn?'Exchange':'Ισοδύναμο'}</th>
-        <th style="padding:7px 6px;border:1px solid var(--border);text-align:left;width:8%">${isEn?'Portion':'Μερίδα'}</th>
-        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left;width:37%">${isEn?'Examples 1':'Παραδείγματα 1'}</th>
-        <th style="padding:7px 8px;border:1px solid var(--border);text-align:left;width:37%">${isEn?'Examples 2':'Παραδείγματα 2'}</th>
+      <tr style="background:var(--bg-page);color:var(--text-muted);text-transform:uppercase;font-size:10px;letter-spacing:.05em">
+        <th style="padding:10px 14px;text-align:left;width:18%;font-weight:700">${isEn?'Exchange':'Ισοδύναμο'}</th>
+        <th style="padding:10px 10px;text-align:left;width:8%;font-weight:700">${isEn?'Portion':'Μερίδα'}</th>
+        <th style="padding:10px 14px;text-align:left;width:37%;font-weight:700">${isEn?'Examples 1':'Παραδείγματα 1'}</th>
+        <th style="padding:10px 14px;text-align:left;width:37%;font-weight:700">${isEn?'Examples 2':'Παραδείγματα 2'}</th>
       </tr>
     </thead>
     <tbody>${rows}</tbody>
-  </table>`;
+  </table></div>`;
 }
 
 function buildEquivalents(){
@@ -4031,7 +4043,7 @@ function setMealLanguage(lang){
   refreshMealDropdownLabels();
   refreshSnackExtrasLabels();
   setEl('condition-guidance', renderCombinedGuidance(S.conditions));
-  if(document.getElementById('page-blood')?.classList.contains('active')) renderVitaminSuggestions();
+  if(document.getElementById('page-labs')?.classList.contains('active')) renderVitaminSuggestions();
   if(document.getElementById('page-oneday')?.classList.contains('active')) buildOneDayPlan();
   if(document.getElementById('page-sevenday')?.classList.contains('active')) buildSevenDay();
   if(document.getElementById('page-report')?.classList.contains('active')) buildReport();
@@ -4059,12 +4071,12 @@ function updateMealLanguageButtons(){
 // Base default macro values per exchange (g CHO / g PRO / g FAT per exchange).
 // Copied into S.exMeta at startup so clinicians can edit them live.
 const EX_META = {
-  fruit:  {cho:15,pro:0, fat:0, label:'🍎 Φρούτο',         food:'1 φρούτο',                      srvEditable:true},
-  veg:    {cho:5, pro:2, fat:0, label:'🥗 Λαχανικά',       food:'1 φλ. ωμά / ½ φλ. βραστά',     srvEditable:true},
-  dairy:  {cho:12,pro:8, fat:3, label:'🥛 Γαλακτοκομικά',  food:'1 φλ. γάλα',                    srvEditable:true},
-  starch: {cho:15,pro:3, fat:1, label:'🌾 Άμυλο',          food:'1 φέτα ψωμί / ⅓ φλ. ρύζι',     srvEditable:true},
-  protein:{cho:0, pro:7, fat:2, label:'🥩 Πρωτεΐνη',       food:'~30g κρέας/ψάρι/τυρί',          srvEditable:true},
-  fat:    {cho:0, pro:0, fat:5, label:'🫒 Λίπος',          food:'1 κ.γ. ελαιόλαδο',              srvEditable:true},
+  fruit:  {cho:15,pro:0, fat:0, label:'🍎 Φρούτο',         labelEn:'🍎 Fruit',       food:'1 φρούτο',                      foodEn:'1 fruit',                       srvEditable:true},
+  veg:    {cho:5, pro:2, fat:0, label:'🥗 Λαχανικά',       labelEn:'🥗 Vegetables',  food:'1 φλ. ωμά / ½ φλ. βραστά',     foodEn:'1 cup raw / ½ cup cooked',     srvEditable:true},
+  dairy:  {cho:12,pro:8, fat:3, label:'🥛 Γαλακτοκομικά',  labelEn:'🥛 Dairy',       food:'1 φλ. γάλα',                    foodEn:'1 cup milk',                    srvEditable:true},
+  starch: {cho:15,pro:3, fat:1, label:'🌾 Άμυλο',          labelEn:'🌾 Starch',      food:'1 φέτα ψωμί / ⅓ φλ. ρύζι',     foodEn:'1 slice bread / ⅓ cup rice',   srvEditable:true},
+  protein:{cho:0, pro:7, fat:2, label:'🥩 Πρωτεΐνη',       labelEn:'🥩 Protein',     food:'~30g κρέας/ψάρι/τυρί',          foodEn:'~30g meat/fish/cheese',        srvEditable:true},
+  fat:    {cho:0, pro:0, fat:5, label:'🫒 Λίπος',          labelEn:'🫒 Fat',         food:'1 κ.γ. ελαιόλαδο',              foodEn:'1 tsp olive oil',               srvEditable:true},
 };
 
 // Dairy / meat type presets — applied to S.exMeta when the corresponding
@@ -4084,7 +4096,8 @@ const MEAT_PRESETS = {
 // Deep-clones EX_META into an editable structure with auto-derived kcal
 function makeExMeta() {
   const m = {};
-  for (const [k,v] of Object.entries(EX_META)) m[k] = {...v, kcal: v.cho*4+v.pro*4+v.fat*9};
+  const isGr = window.appLang!=='en';
+  for (const [k,v] of Object.entries(EX_META)) m[k] = {...v, label: isGr?v.label:(v.labelEn||v.label), food: isGr?v.food:(v.foodEn||v.food), kcal: v.cho*4+v.pro*4+v.fat*9};
   return m;
 }
 function exKcal(m) { return m.cho*4 + m.pro*4 + m.fat*9; }
@@ -4871,11 +4884,22 @@ function renderExpectedProgress(goal, tdee, goalKcal){
     return;
   }
   const deficit=Math.round(actualTdee-actualGoal);
+  const isGr = window.appLang==='gr';
   let note='';
-  if(deficit<300) note='<div style="margin-top:8px;color:var(--amber-text);font-weight:700"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Small deficit — weight loss will be gradual</div>';
-  else if(deficit>1000) note='<div style="margin-top:8px;color:var(--amber-text);font-weight:700"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Large deficit — consider increasing calories for sustainability</div>';
+  if(deficit<300) note=isGr?'<div style="margin-top:8px;color:var(--amber-text);font-weight:700"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Μικρό έλλειμμα — η απώλεια βάρους θα είναι σταδιακή</div>':'<div style="margin-top:8px;color:var(--amber-text);font-weight:700"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Small deficit — weight loss will be gradual</div>';
+  else if(deficit>1000) note=isGr?'<div style="margin-top:8px;color:var(--amber-text);font-weight:700"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Μεγάλο έλλειμμα — σκεφτείτε αύξηση θερμίδων για βιωσιμότητα</div>':'<div style="margin-top:8px;color:var(--amber-text);font-weight:700"><i class="ti ti-alert-triangle" aria-hidden="true"></i> Large deficit — consider increasing calories for sustainability</div>';
   box.style.display='block';
-  box.innerHTML=`
+  box.innerHTML=isGr?`
+    <div style="line-height:1.55">
+      <strong><i class="ti ti-trending-down" aria-hidden="true"></i> Αναμενόμενη απώλεια βάρους:</strong>
+      <ul style="margin:6px 0 0 18px;padding:0">
+        <li>Εβδομάδα 1: 0.5–1.5 κιλά (περιλαμβάνει νερό)</li>
+        <li>Εβδομάδες 2–4: 0.3–0.8 κιλά/εβδομάδα (απώλεια λίπους)</li>
+        <li>Μηνιαία: 1.5–3 κιλά βιώσιμος ρυθμός</li>
+      </ul>
+      <div style="margin-top:8px">Βάσει ελλείμματος <strong>${deficit}</strong> kcal/ημέρα από το TDEE σας.</div>
+      ${note}
+    </div>`:`
     <div style="line-height:1.55">
       <strong><i class="ti ti-trending-down" aria-hidden="true"></i> Expected weight loss:</strong>
       <ul style="margin:6px 0 0 18px;padding:0">
@@ -5034,18 +5058,19 @@ function calcMacros(){
   const kcal=S.goalKcal||0;
   S.carbG=kcal*(c/100)/4; S.protG=kcal*(p/100)/4; S.fatG=kcal*(f/100)/9;
   const ok=Math.abs(total-100)<=1;
+  const isGrM = window.appLang==='gr';
   const checkEl=document.getElementById('macro-check-row');
-  if(checkEl) checkEl.innerHTML=`<div class="alert ${ok?'ok':'err'}">${ok?'<i class="ti ti-circle-check" aria-hidden="true"></i>':'<i class="ti ti-circle-x" aria-hidden="true"></i>'} Total: ${total}% — ${ok?'OK: adds up to 100%':'Must equal 100%'}</div>`;
+  if(checkEl) checkEl.innerHTML=`<div class="alert ${ok?'ok':'err'}">${ok?'<i class="ti ti-circle-check" aria-hidden="true"></i>':'<i class="ti ti-circle-x" aria-hidden="true"></i>'} ${isGrM?'Σύνολο':'Total'}: ${total}% — ${ok?(isGrM?'OK: το άθροισμα είναι 100%':'OK: adds up to 100%'):(isGrM?'Πρέπει να είναι 100%':'Must equal 100%')}</div>`;
   const barsEl=document.getElementById('macro-bars');
-  if(barsEl) barsEl.innerHTML=['🌾 Carbohydrates','🥩 Protein','🫒 Fat'].map((label,i)=>{
+  if(barsEl) barsEl.innerHTML=(isGrM?['🌾 Υδατάνθρακες','🥩 Πρωτεΐνη','🫒 Λίπος']:['🌾 Carbohydrates','🥩 Protein','🫒 Fat']).map((label,i)=>{
     const pct=[c,p,f][i]; const col=['var(--teal-400)','#5DCAA5','var(--teal-100)'][i];
     const grams=Math.round([S.carbG,S.protG,S.fatG][i]);
     return `<div class="macro-bar"><div class="macro-bar-top"><span>${label}</span><strong>${pct}% · ${grams}g</strong></div><div class="macro-track"><div class="macro-fill" style="width:${Math.min(pct,100)}%;background:${col}"></div></div></div>`;
   }).join('');
   const tbody=document.getElementById('macro-table-body');
-  if(tbody) tbody.innerHTML=[['🌾 Carbs',c,S.carbG],['🥩 Protein',p,S.protG],['🫒 Fat',f,S.fatG]].map(r=>
+  if(tbody) tbody.innerHTML=(isGrM?[['🌾 Υδατάνθρακες',c,S.carbG],['🥩 Πρωτεΐνη',p,S.protG],['🫒 Λίπος',f,S.fatG]]:[['🌾 Carbs',c,S.carbG],['🥩 Protein',p,S.protG],['🫒 Fat',f,S.fatG]]).map(r=>
     `<tr><td>${r[0]}</td><td>${r[1]}%</td><td>${Math.round(kcal*r[1]/100)} kcal</td><td>${Math.round(r[2])} g</td></tr>`).join('')+
-    `<tr style="font-weight:700;background:var(--gray-50)"><td>Total</td><td>${total}%</td><td>${Math.round(kcal)} kcal</td><td>—</td></tr>`;
+    `<tr style="font-weight:700;background:var(--gray-50)"><td>${isGrM?'Σύνολο':'Total'}</td><td>${total}%</td><td>${Math.round(kcal)} kcal</td><td>—</td></tr>`;
   calcExchanges(); updateDashMetrics();
 }
 
@@ -5096,15 +5121,19 @@ const EX_ROW_GRID = 'minmax(190px,260px) 78px 64px 64px 64px 72px 80px';
 function renderExchanges(){
   calcExchanges();
   const ex=S.ex, m=S.exMeta;
+  const isGr = window.appLang!=='en';
+  const headers = isGr
+    ? ['Κατηγορία','Μερίδες','CHO/μερ (g)','PRO/μερ (g)','FAT/μερ (g)','kcal/μερ','Σύνολο kcal']
+    : ['Category','Servings','CHO/ex (g)','PRO/ex (g)','FAT/ex (g)','kcal/ex','Total kcal'];
   let html=`<div style="display:grid;grid-template-columns:${EX_ROW_GRID};gap:6px;padding:8px 0;border-bottom:2px solid var(--border-strong);font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase">
-    <span>Category</span><span>Servings</span><span>CHO/ex (g)</span><span>PRO/ex (g)</span><span>FAT/ex (g)</span><span>kcal/ex</span><span>Total kcal</span></div>`;
+    <span>${headers[0]}</span><span>${headers[1]}</span><span>${headers[2]}</span><span>${headers[3]}</span><span>${headers[4]}</span><span>${headers[5]}</span><span>${headers[6]}</span></div>`;
   for(const key of ['fruit','veg','dairy','starch','protein','fat']){
     const meta=m[key], srv=ex[key]||0;
     const typeNote=key==='dairy'?` · ${S.dairyType}`:key==='protein'?` · ${S.meatType}`:'';
     const hasAuto = ('starch,protein,fat'.includes(key));
     const isAuto = hasAuto && S.exAuto[key];
     const srvBg = isAuto ? 'var(--bg-page)' : 'var(--bg-input)';
-    const autoNote = hasAuto ? (isAuto ? ' · auto' : ' · manual') : '';
+    const autoNote = hasAuto ? (isAuto ? (isGr?' · αυτόματο':' · auto') : (isGr?' · χειροκίνητα':' · manual')) : '';
     html+=`<div style="display:grid;grid-template-columns:${EX_ROW_GRID};gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)">
       <div><div style="font-weight:600;font-size:13px">${meta.label}</div><div style="color:var(--text-muted);font-size:11px">${meta.food}${typeNote}${autoNote}</div></div>
       <div style="display:flex;align-items:center;gap:4px">
@@ -5270,8 +5299,9 @@ function renderExchangeChecks(){
   const goal=S.goalKcal||0;
   const gapData=S.exGap||{};
   const caps=S.effCaps||CAPS;
-  const rows=[['Calories (kcal)',goal,totalKcal,50],['Carbs (g)',S.carbG,totalCHO,10],['Protein (g)',S.protG,totalPRO,10],['Fat (g)',S.fatG,totalFAT,5]];
-  let chk='<table><thead><tr><th>Metric</th><th>Target</th><th>Plan</th><th>Diff</th><th>Status</th><th>Quick fix</th></tr></thead><tbody>';
+  const isGrChk = window.appLang!=='en';
+  const rows=[[isGrChk?'Θερμίδες (kcal)':'Calories (kcal)',goal,totalKcal,50],[isGrChk?'Υδατάνθρακες (g)':'Carbs (g)',S.carbG,totalCHO,10],[isGrChk?'Πρωτεΐνη (g)':'Protein (g)',S.protG,totalPRO,10],[isGrChk?'Λίπος (g)':'Fat (g)',S.fatG,totalFAT,5]];
+  let chk=isGrChk?'<table><thead><tr><th>Δείκτης</th><th>Στόχος</th><th>Πλάνο</th><th>Διαφορά</th><th>Κατάσταση</th><th>Γρήγορη διόρθωση</th></tr></thead><tbody>':'<table><thead><tr><th>Metric</th><th>Target</th><th>Plan</th><th>Diff</th><th>Status</th><th>Quick fix</th></tr></thead><tbody>';
   rows.forEach(([label,tgt,plan,tol],i)=>{
     const diff=Math.round(plan-tgt); const ok=Math.abs(diff)<=tol;
     let fix='—';
@@ -5301,7 +5331,7 @@ function renderExchangeChecks(){
         else fix=`Consider reducing fat by ${Math.round(Math.abs(diff)/5)} exchange(s), or accept +${Math.abs(diff)}g if fat quality is appropriate`;
       }
     }
-    chk+=`<tr><td>${label}</td><td>${Math.round(tgt)}</td><td>${Math.round(plan)}</td><td style="color:${ok?'inherit':diff<0?'var(--warn)':'var(--err)'}">${diff>0?'+':''}${diff}</td><td><span class="badge ${ok?'ok':'warn'}">${ok?'OK':'Adjust'}</span></td><td style="font-size:12px;color:var(--text-muted)">${fix}</td></tr>`;
+    chk+=`<tr><td>${label}</td><td>${Math.round(tgt)}</td><td>${Math.round(plan)}</td><td style="color:${ok?'inherit':diff<0?'var(--warn)':'var(--err)'}">${diff>0?'+':''}${diff}</td><td><span class="badge ${ok?'ok':'warn'}">${ok?(isGrChk?'OK':'OK'):(isGrChk?'Προσαρμογή':'Adjust')}</span></td><td style="font-size:12px;color:var(--text-muted)">${fix}</td></tr>`;
   });
     if((S.conditions||[]).includes('Dyslipidemia')){
     const fatCapKcal=(caps.fatDailyMax||0)*(m.fat?.kcal||45);
@@ -5364,11 +5394,13 @@ function calcBodyComp(){
   const bodyWaterScaleHtml=val=>isMale
     ? rangeBarHtml(val,30,80,50,65,['#facc15','#22c55e','#facc15'],['<50% Low','50–65% Healthy','65%+ High'])
     : rangeBarHtml(val,25,75,45,60,['#facc15','#22c55e','#facc15'],['<45% Low','45–60% Healthy','60%+ High']);
+  const isGr = window.appLang==='gr';
   const fields=[['Body Fat',bf,'%',isMale?'10–20%':'18–28%'],['Body Water',water,'%',isMale?'50–65%':'45–60%'],
-    ['Fat Mass',fatmass!==null?fatmass.toFixed(1):null,'kg','Auto'],['Fat-Free Mass',ffm!==null?ffm.toFixed(1):null,'kg','Weight − fat mass'],
-    ['Muscle Mass',muscle!==null?muscle.toFixed(1):null,'kg','Measured / manual'],
-    ['Bone Mass',bone!==null?bone.toFixed(1):null,'kg','Measured / Tanita'],
-    ['Visceral Fat',visceral,'score','1–8 healthy · 9–12 borderline · 13+ high'],['Metabolic Age',metage,'y','≤ chronological age']];
+    ['Fat Mass',fatmass!==null?fatmass.toFixed(1):null,'kg',isGr?'Αυτόματο':'Auto'],['Fat-Free Mass',ffm!==null?ffm.toFixed(1):null,'kg',isGr?'Βάρος − μάζα λίπους':'Weight − fat mass'],
+    ['Muscle Mass',muscle!==null?muscle.toFixed(1):null,'kg',isGr?'Μέτρηση / χειροκίνητα':'Measured / manual'],
+    ['Bone Mass',bone!==null?bone.toFixed(1):null,'kg',isGr?'Μέτρηση / Tanita':'Measured / Tanita'],
+    ['Visceral Fat',visceral,'score',isGr?'1–8 υγιές · 9–12 οριακό · 13+ υψηλό':'1–8 healthy · 9–12 borderline · 13+ high'],['Metabolic Age',metage,'y',isGr?'≤ χρονολογική ηλικία':'≤ chronological age']];
+  const fieldLabelGr={'Body Fat':'Ποσοστό Λίπους','Body Water':'Ποσοστό Νερού','Fat Mass':'Μάζα Λίπους','Fat-Free Mass':'Άλιπη Μάζα','Muscle Mass':'Μυϊκή Μάζα','Bone Mass':'Οστική Μάζα','Visceral Fat':'Σπλαχνικό Λίπος','Metabolic Age':'Μεταβολική Ηλικία'};
   const scaleHtmlFor=(label,val)=>{
     if(label==='Visceral Fat') return visceralFatScaleHtml(val);
     if(label==='Body Fat') return bodyFatScaleHtml(val);
@@ -5378,15 +5410,16 @@ function calcBodyComp(){
   setEl('bc-interpretation','<div class="metrics-grid">'+fields.map(([l,val,u,ref])=>{
     const visceralClass=l==='Visceral Fat'&&val!=null ? (val<=8?'ok':val<=12?'warn':'err') : '';
     const valueText=val!=null ? `${val}${u?' '+u:''}` : '—';
-    return `<div class="metric"><div class="m-label">${l}</div><div class="m-value ${visceralClass}" style="font-size:20px">${valueText}</div><div class="m-sub">Ref: ${ref}</div>${scaleHtmlFor(l,val)}</div>`;
+    const displayLabel=isGr?(fieldLabelGr[l]||l):l;
+    return `<div class="metric"><div class="m-label">${displayLabel}</div><div class="m-value ${visceralClass}" style="font-size:20px">${valueText}</div><div class="m-sub">${isGr?'Εύρος':'Ref'}: ${ref}</div>${scaleHtmlFor(l,val)}</div>`;
   }).join('')+'</div>');
 
   const goal=S.goal || v('p-goal') || 'Maintenance';
   const isGainGoal=goal==='Weight Gain' || goal==='Muscle Gain';
   const isLossGoal=goal==='Weight Loss';
-  const targetWt=w ? (isLossGoal ? `${(w*0.95).toFixed(1)} kg` : isGainGoal ? `${(w*1.05).toFixed(1)} kg` : 'Συντήρηση / Maintain current weight') : '—';
-  const targetLabel=isLossGoal ? 'Target weight (-5% initial)' : isGainGoal ? 'Target weight (+5% initial)' : 'Target weight';
-  setEl('bc-targets',`<div class="form-grid"><div class="metric"><div class="m-label">${targetLabel}</div><div class="m-value" style="font-size:20px">${targetWt}</div></div><div class="metric"><div class="m-label">Target BMI (long-term)</div><div class="m-value" style="font-size:20px">22–27</div><div class="m-sub">Clinical reference zone</div></div></div>`);
+  const targetWt=w ? (isLossGoal ? `${(w*0.95).toFixed(1)} kg` : isGainGoal ? `${(w*1.05).toFixed(1)} kg` : (isGr?'Συντήρηση τρέχοντος βάρους':'Maintain current weight')) : '—';
+  const targetLabel=isLossGoal ? (isGr?'Στόχος βάρους (-5% αρχικό)':'Target weight (-5% initial)') : isGainGoal ? (isGr?'Στόχος βάρους (+5% αρχικό)':'Target weight (+5% initial)') : (isGr?'Στόχος βάρους':'Target weight');
+  setEl('bc-targets',`<div class="form-grid"><div class="metric"><div class="m-label">${targetLabel}</div><div class="m-value" style="font-size:20px">${targetWt}</div></div><div class="metric"><div class="m-label">${isGr?'Στόχος ΔΜΣ (μακροπρόθεσμα)':'Target BMI (long-term)'}</div><div class="m-value" style="font-size:20px">22–27</div><div class="m-sub">${isGr?'Κλινική ζώνη αναφοράς':'Clinical reference zone'}</div></div></div>`);
   setEl('d-bf',bf?bf.toFixed(1)+'%':'—');
 }
 
@@ -6344,8 +6377,6 @@ function buildSevenDay(){
       <span id="weekly-plan-save-status" style="font-size:13px;font-weight:800;color:var(--teal-700)"></span>
     </div>
     <div style="display:flex;gap:8px">
-      <button class="btn ${lang==='EN'?'':'primary'}" id="meal-lang-gr-7day" onclick="setMealLanguage('GR')">GR</button>
-      <button class="btn ${lang==='EN'?'primary':''}" id="meal-lang-en-7day" onclick="setMealLanguage('EN')">EN</button>
       ${isWeek?`<button class="btn" title="${weekTheme==='dark'?'Switch week view to light mode':'Switch week view to dark mode'}" onclick="toggleWeekViewTheme()">${weekTheme==='dark'?'<i class="ti ti-sun" aria-hidden="true"></i>':'<i class="ti ti-moon" aria-hidden="true"></i>'}</button>`:''}
     </div>
   </div>
@@ -7269,12 +7300,13 @@ function updateDashMetrics(){
   const lowKcal=S.goalKcal&&S.goalKcal<1200;
   const gapData=S.exGap||{};
   const anyCapped=gapData.starchCapped||gapData.proteinCapped||gapData.fatCapped;
+  const isGr = window.appLang==='gr';
   const chks=[
-    {label:'Client profile completeness',ok:!incomplete,status:incomplete?'Missing inputs':'Complete'},
-    {label:'Macro split (must = 100%)',ok:macroOk,status:macroOk?'100% OK':'Not 100%'},
-    {label:'Goal calories',ok:!lowKcal&&!!S.goalKcal,status:lowKcal?'Clinical review: low':S.goalKcal?'OK':'—'},
-    {label:'Exchange kcal reconciliation',ok:true,status:'OK'},
-    {label:'Protein/fat exchange realism',ok:!anyCapped,status:anyCapped?'Adjustment needed':'OK'},
+    {label:isGr?'Πληρότητα προφίλ πελάτη':'Client profile completeness',ok:!incomplete,status:incomplete?(isGr?'Λείπουν στοιχεία':'Missing inputs'):(isGr?'Πλήρες':'Complete')},
+    {label:isGr?'Κατανομή μακροθρεπτικών (πρέπει = 100%)':'Macro split (must = 100%)',ok:macroOk,status:macroOk?(isGr?'100% OK':'100% OK'):(isGr?'Όχι 100%':'Not 100%')},
+    {label:isGr?'Στόχος θερμίδων':'Goal calories',ok:!lowKcal&&!!S.goalKcal,status:lowKcal?(isGr?'Κλινική επανεξέταση: χαμηλό':'Clinical review: low'):S.goalKcal?'OK':'—'},
+    {label:isGr?'Συμφωνία θερμίδων ισοδυνάμων':'Exchange kcal reconciliation',ok:true,status:'OK'},
+    {label:isGr?'Ρεαλισμός πρωτεΐνης/λίπους':'Protein/fat exchange realism',ok:!anyCapped,status:anyCapped?(isGr?'Χρειάζεται προσαρμογή':'Adjustment needed'):'OK'},
   ];
   const dashEng=document.getElementById('dash-engine-checks');
   if(dashEng) dashEng.innerHTML=chks.map(c=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--gray-100);font-size:12px">
@@ -7283,16 +7315,17 @@ function updateDashMetrics(){
     <span style="color:${c.ok?'var(--green-800)':'var(--red-600)'};font-size:11px;font-weight:600">${c.status}</span>
   </div>`).join('');
   const dashM=document.getElementById('dash-macros');
-  if(dashM) dashM.innerHTML=['🌾 Carbohydrates','🥩 Protein','🫒 Fat'].map((label,i)=>{
+  if(dashM) dashM.innerHTML=(isGr?['🌾 Υδατάνθρακες','🥩 Πρωτεΐνη','🫒 Λίπος']:['🌾 Carbohydrates','🥩 Protein','🫒 Fat']).map((label,i)=>{
     const pct=[S.carbPct,S.protPct,S.fatPct][i]; const col=['var(--teal-400)','#5DCAA5','var(--teal-100)'][i];
     return `<div class="macro-bar"><div class="macro-bar-top"><span>${label}</span><strong>${pct}%</strong></div><div class="macro-track"><div class="macro-fill" style="width:${Math.min(pct,100)}%;background:${col}"></div></div></div>`;
-  }).join('')+`<div style="font-size:11px;color:var(--gray-500);margin-top:8px">Goal: ${S.goalKcal?Math.round(S.goalKcal):' — '} kcal/day</div>`;
+  }).join('')+`<div style="font-size:11px;color:var(--gray-500);margin-top:8px">${isGr?'Στόχος':'Goal'}: ${S.goalKcal?Math.round(S.goalKcal):' — '} kcal/${isGr?'ημέρα':'day'}</div>`;
   const days=['Κυριακή','Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο'];
-  setEl('dash-day',days[new Date().getDay()]);
+  const daysEn=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  setEl('dash-day',(isGr?days:daysEn)[new Date().getDay()]);
   const alerts=[];
-  if(incomplete) alerts.push('Profile details to complete when available: '+missingProfile.join(', ')+'. Plans can be reviewed once key clinical inputs are ready.');
-  if(lowKcal) alerts.push('<i class="ti ti-alert-triangle" aria-hidden="true"></i> Goal calories very low ('+Math.round(S.goalKcal)+' kcal) — clinical review needed.');
-  if(anyCapped) alerts.push('Macro target exceeds realistic food portions — review Macro Targets and Exchange System for safer adjustment options.');
+  if(incomplete) alerts.push(isGr?'Στοιχεία προφίλ προς συμπλήρωση όταν είναι διαθέσιμα: '+missingProfile.join(', ')+'. Τα πλάνα μπορούν να ελεγχθούν μόλις είναι έτοιμα τα βασικά κλινικά δεδομένα.':'Profile details to complete when available: '+missingProfile.join(', ')+'. Plans can be reviewed once key clinical inputs are ready.');
+  if(lowKcal) alerts.push(isGr?'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Πολύ χαμηλός στόχος θερμίδων ('+Math.round(S.goalKcal)+' kcal) — χρειάζεται κλινική επανεξέταση.':'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Goal calories very low ('+Math.round(S.goalKcal)+' kcal) — clinical review needed.');
+  if(anyCapped) alerts.push(isGr?'Ο στόχος μακροθρεπτικών υπερβαίνει ρεαλιστικές μερίδες τροφίμων — ελέγξτε τους Στόχους και το Σύστημα Ισοδυνάμων για ασφαλέστερες προσαρμογές.':'Macro target exceeds realistic food portions — review Macro Targets and Exchange System for safer adjustment options.');
   const dashAlert=document.getElementById('dash-alert');
   if(dashAlert) dashAlert.innerHTML=alerts.map(a=>`<div class="alert warn"><i class="ti ti-alert-triangle" aria-hidden="true"></i> ${a}</div>`).join('');
 }
@@ -7306,6 +7339,7 @@ function updateTodayAppointmentCount(){
 async function updatePracticeOverview(){
   updateTodayAppointmentCount();
   try{
+    if(window.authReadyPromise) await window.authReadyPromise;
     let count;
     if(currentUser){
       count = (S.clientListCache && S.clientListCache.length) ? S.clientListCache.length : (await fetchSupabaseClients()).length;
@@ -7325,12 +7359,16 @@ function addTracking(){
 }
 function renderTracking(){
   const el=document.getElementById('tracking-table'); if(!el) return;
+  const isGr = window.appLang!=='en';
   if(!S.tracking.length){
-    el.innerHTML='<div style="color:var(--gray-400);text-align:center;padding:24px">No visits logged yet. Add a visit above.</div>';
+    el.innerHTML=`<div style="color:var(--gray-400);text-align:center;padding:24px">${isGr?'Δεν έχουν καταγραφεί επισκέψεις ακόμη. Προσθέστε επίσκεψη παραπάνω.':'No visits logged yet. Add a visit above.'}</div>`;
     renderTrackingChart(); // FIX: still show chart guidance text instead of leaving the area blank
     return;
   }
-  el.innerHTML='<table><thead><tr><th>Date</th><th>Weight (kg)</th><th>Body Fat %</th><th>Muscle (kg)</th><th>Visceral</th><th>Notes</th><th></th></tr></thead><tbody>'+
+  const th = isGr
+    ? ['Ημερομηνία','Βάρος (κιλά)','Ποσοστό Λίπους %','Μυϊκή Μάζα (κιλά)','Σπλαχνικό','Σημειώσεις','']
+    : ['Date','Weight (kg)','Body Fat %','Muscle (kg)','Visceral','Notes',''];
+  el.innerHTML=`<table><thead><tr><th>${th[0]}</th><th>${th[1]}</th><th>${th[2]}</th><th>${th[3]}</th><th>${th[4]}</th><th>${th[5]}</th><th>${th[6]}</th></tr></thead><tbody>`+
     S.tracking.map((e,i)=>`<tr><td>${e.date}</td><td>${e.weight||'—'}</td><td>${e.bf||'—'}</td><td>${e.muscle||'—'}</td><td>${e.visceral||'—'}</td><td style="font-size:12px">${e.notes||'—'}</td><td><button class="btn" style="padding:3px 8px;font-size:11px" onclick="S.tracking.splice(${i},1);renderTracking()"><i class="ti ti-x" aria-hidden="true"></i></button></td></tr>`).join('')+
     '</tbody></table>';
   renderTrackingChart();
@@ -7370,6 +7408,7 @@ function drawLineChart(data, color, unit){
 
 function renderTrackingChart(){
   const el=document.getElementById('tracking-chart'); if(!el) return;
+  const isGr = window.appLang!=='en';
   // Tracking entries are added newest-first; reverse for chronological chart order
   const chrono=S.tracking.slice().reverse();
   const weightData=chrono.map(e=>({date:e.date, value:e.weight}));
@@ -7377,12 +7416,12 @@ function renderTrackingChart(){
   const weightSvg=drawLineChart(weightData,'#0F6E56','kg');
   const bfSvg=drawLineChart(bfData,'#E67700','%');
   if(!weightSvg && !bfSvg){
-    el.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:16px;font-size:13px">Log at least 2 visits with Weight or Body Fat % to see progress charts.</div>';
+    el.innerHTML=`<div style="color:var(--text-muted);text-align:center;padding:16px;font-size:13px">${isGr?'Καταγράψτε τουλάχιστον 2 επισκέψεις με Βάρος ή Ποσοστό Λίπους % για να δείτε γραφήματα προόδου.':'Log at least 2 visits with Weight or Body Fat % to see progress charts.'}</div>`;
     return;
   }
   let html='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">';
-  if(weightSvg) html+=`<div class="card" style="margin:0"><div class="card-header"><span class="card-title" style="font-size:13px"><i class="ti ti-scale" aria-hidden="true"></i> Weight (kg)</span></div><div class="card-body">${weightSvg}</div></div>`;
-  if(bfSvg) html+=`<div class="card" style="margin:0"><div class="card-header"><span class="card-title" style="font-size:13px"><i class="ti ti-chart-bar" aria-hidden="true"></i> Body Fat %</span></div><div class="card-body">${bfSvg}</div></div>`;
+  if(weightSvg) html+=`<div class="card" style="margin:0"><div class="card-header"><span class="card-title" style="font-size:13px"><i class="ti ti-scale" aria-hidden="true"></i> ${isGr?'Βάρος (κιλά)':'Weight (kg)'}</span></div><div class="card-body">${weightSvg}</div></div>`;
+  if(bfSvg) html+=`<div class="card" style="margin:0"><div class="card-header"><span class="card-title" style="font-size:13px"><i class="ti ti-chart-bar" aria-hidden="true"></i> ${isGr?'Ποσοστό Λίπους %':'Body Fat %'}</span></div><div class="card-body">${bfSvg}</div></div>`;
   html+='</div>';
   el.innerHTML=html;
 }
@@ -8089,9 +8128,13 @@ function updateRecipeSaveButton(){
 function clearRecipeDraft(){
   S.recipeDraft=[];
   S.editingRecipeId=null;
-  const n=document.getElementById('recipe-name'), s=document.getElementById('recipe-servings');
+  S.recipeDraftPhoto=null;
+  const n=document.getElementById('recipe-name'), s=document.getElementById('recipe-servings'), ins=document.getElementById('recipe-instructions');
   if(n) n.value='';
   if(s) s.value='1';
+  if(ins) ins.value='';
+  const preview=document.getElementById('recipe-photo-preview');
+  if(preview) preview.innerHTML='<i class="ti ti-photo" aria-hidden="true" style="font-size:22px;color:var(--text-muted)"></i>';
   ['ing-name','ing-grams','ing-kcal','ing-carbs','ing-protein','ing-fat'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
   setEl('recipe-save-status','');
   updateRecipeSaveButton();
@@ -8155,18 +8198,34 @@ async function loadRecipes(options={}){
   S.recipes=localRecipes;
   if(shouldRender) renderRecipesList();
 }
+async function handleRecipePhotoUpload(input){
+  const file=input.files?.[0]; if(!file) return;
+  try{
+    const dataUrl=await compressImageToDataUrl(file, 240, 0.82);
+    S.recipeDraftPhoto=dataUrl;
+    const preview=document.getElementById('recipe-photo-preview');
+    if(preview) preview.innerHTML=`<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover">`;
+  }catch(e){ console.error('[Nutrese recipes] photo compress failed', e); }
+}
+function removeRecipePhoto(){
+  S.recipeDraftPhoto=null;
+  const preview=document.getElementById('recipe-photo-preview');
+  if(preview) preview.innerHTML='<i class="ti ti-photo" aria-hidden="true" style="font-size:22px;color:var(--text-muted)"></i>';
+}
 async function saveRecipe(){
   const name=(v('recipe-name')||'').trim();
   const servings=Math.max(1, parseInt(v('recipe-servings')||'1',10)||1);
+  const instructions=(v('recipe-instructions')||'').trim();
+  const photo=S.recipeDraftPhoto||null;
   if(!name){ alert('Enter a recipe name.'); return; }
   if(!S.recipeDraft.length){ alert('Add at least one ingredient.'); return; }
   if(S.recipeDraft.some(ing=>(foodNumber(ing.kcal100)+foodNumber(ing.carbs100)+foodNumber(ing.protein100)+foodNumber(ing.fat100))<=0)){ alert('Each ingredient needs nutrition values per 100g before saving.'); return; }
   const editingId=S.editingRecipeId;
-  const recipe={id:editingId || `recipe_${Date.now()}`,name,servings,ingredients:S.recipeDraft.map(x=>({...x})),nutrition:recipeTotals(S.recipeDraft),updated_at:new Date().toISOString()};
+  const recipe={id:editingId || `recipe_${Date.now()}`,name,servings,instructions,photo,ingredients:S.recipeDraft.map(x=>({...x})),nutrition:recipeTotals(S.recipeDraft),updated_at:new Date().toISOString()};
   let savedToCloud=false;
   if(currentUser){
     try{
-      const row={user_id:currentUser.id,name:recipe.name,servings:recipe.servings,ingredients:recipe.ingredients,nutrition:recipe.nutrition,updated_at:recipe.updated_at};
+      const row={user_id:currentUser.id,name:recipe.name,servings:recipe.servings,instructions:recipe.instructions,photo:recipe.photo,ingredients:recipe.ingredients,nutrition:recipe.nutrition,updated_at:recipe.updated_at};
       if(editingId && !String(editingId).startsWith('recipe_')){
         const {data,error}=await supabaseClient.from('recipes').update(row).eq('id',editingId).eq('user_id',currentUser.id).select().maybeSingle();
         if(error) throw error;
@@ -8202,9 +8261,13 @@ function loadRecipeIntoDraft(id){
   if(!r) return;
   nav('recipes');
   S.editingRecipeId=id;
-  const n=document.getElementById('recipe-name'), s=document.getElementById('recipe-servings');
+  const n=document.getElementById('recipe-name'), s=document.getElementById('recipe-servings'), ins=document.getElementById('recipe-instructions');
   if(n) n.value=r.name;
   if(s) s.value=r.servings||1;
+  if(ins) ins.value=r.instructions||'';
+  S.recipeDraftPhoto=r.photo||null;
+  const preview=document.getElementById('recipe-photo-preview');
+  if(preview) preview.innerHTML = r.photo ? `<img src="${r.photo}" style="width:100%;height:100%;object-fit:cover">` : '<i class="ti ti-photo" aria-hidden="true" style="font-size:22px;color:var(--text-muted)"></i>';
   S.recipeDraft=(r.ingredients||[]).map(x=>({...x}));
   renderRecipeDraft();
   setEl('recipe-save-status', `Editing ${safeHtml(r.name||'recipe')}. Add/remove ingredients, adjust grams, then save updated recipe.`);
@@ -8212,16 +8275,26 @@ function loadRecipeIntoDraft(id){
 function renderRecipesList(){
   const el=document.getElementById('recipes-list'); if(!el) return;
   if(!S.recipes || !S.recipes.length){ el.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:18px">No saved recipes yet.</div>'; return; }
-  el.innerHTML=`<table><thead><tr><th>Recipe</th><th>Servings</th><th>Per serving</th><th>Actions</th></tr></thead><tbody>${S.recipes.map(r=>{
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px">${S.recipes.map(r=>{
     const total=r.nutrition||recipeTotals(r.ingredients||[]);
     const servings=Math.max(1,r.servings||1);
-    return `<tr>
-      <td><strong>${safeHtml(r.name||'Recipe')}</strong><div style="font-size:11px;color:var(--text-muted)">${(r.ingredients||[]).length} ingredients</div></td>
-      <td>${servings}</td>
-      <td>${Math.round(total.kcal/servings)} kcal · ${formatFoodNumber(total.carbs/servings,'g')} C · ${formatFoodNumber(total.protein/servings,'g')} P · ${formatFoodNumber(total.fat/servings,'g')} F</td>
-      <td><button class="btn" style="padding:4px 8px;font-size:11px" onclick="loadRecipeIntoDraft('${r.id}')">Edit</button> <button class="btn" style="padding:4px 8px;font-size:11px" onclick="printRecipe('${r.id}')">Print Recipe</button> <button class="btn" style="padding:4px 8px;font-size:11px" onclick="deleteRecipe('${r.id}')">Delete</button></td>
-    </tr>`;
-  }).join('')}</tbody></table>`;
+    const photoHtml = r.photo
+      ? `<div style="width:100%;height:110px;border-radius:10px 10px 0 0;overflow:hidden"><img src="${r.photo}" style="width:100%;height:100%;object-fit:cover"></div>`
+      : `<div style="width:100%;height:110px;border-radius:10px 10px 0 0;background:var(--bg-page);display:flex;align-items:center;justify-content:center"><i class="ti ti-tools-kitchen-2" aria-hidden="true" style="font-size:28px;color:var(--text-muted)"></i></div>`;
+    return `<div style="border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg-surface)">
+      ${photoHtml}
+      <div style="padding:12px">
+        <div style="font-weight:700;font-size:14px;margin-bottom:2px">${safeHtml(r.name||'Recipe')}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">${(r.ingredients||[]).length} ingredients · ${servings} serving${servings===1?'':'s'}</div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">${Math.round(total.kcal/servings)} kcal · ${formatFoodNumber(total.carbs/servings,'g')} C · ${formatFoodNumber(total.protein/servings,'g')} P · ${formatFoodNumber(total.fat/servings,'g')} F</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn" style="padding:5px 9px;font-size:11px" onclick="loadRecipeIntoDraft('${r.id}')"><i class="ti ti-pencil" aria-hidden="true"></i> Edit</button>
+          <button class="btn" style="padding:5px 9px;font-size:11px" onclick="printRecipe('${r.id}')"><i class="ti ti-printer" aria-hidden="true"></i> Print</button>
+          <button class="btn" style="padding:5px 9px;font-size:11px" onclick="deleteRecipe('${r.id}')"><i class="ti ti-trash" aria-hidden="true"></i> Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
 }
 function printRecipe(id){
   const r=(S.recipes||[]).find(x=>String(x.id)===String(id));
@@ -8245,6 +8318,7 @@ function printRecipe(id){
       <thead><tr style="background:#0f6e56;color:#fff"><th style="padding:6px;text-align:left">Ingredient</th><th style="padding:6px;text-align:right">Grams</th></tr></thead>
       <tbody>${ingredients.map(ing=>`<tr style="border-bottom:1px solid #ddd"><td style="padding:6px">${safeHtml(ing.name||'Ingredient')}</td><td style="padding:6px;text-align:right">${formatFoodNumber(ing.grams,'g')}</td></tr>`).join('')}</tbody>
     </table>
+    ${r.instructions ? `<div style="font-size:15px;font-weight:700;margin:10px 0 6px">Instructions</div><div style="font-size:13px;line-height:1.6;white-space:pre-wrap;margin-bottom:14px">${safeHtml(r.instructions)}</div>` : ''}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
       <div style="border:1px solid #ddd;border-radius:6px;padding:10px">
         <div style="font-weight:800;color:#0f6e56;margin-bottom:6px">Total nutrition</div>
@@ -8726,7 +8800,7 @@ function renderDashboardAppointments(){
   const el=document.getElementById('dash-appointments'); if(!el) return;
   const today=todayISO();
   const items=appointmentsForDate(today);
-  if(!items.length){ el.innerHTML='<div style="color:var(--text-muted);font-size:13px">No appointments today.</div>'; return; }
+  if(!items.length){ el.innerHTML=`<div style="color:var(--text-muted);font-size:13px">${window.appLang==='gr'?'Κανένα ραντεβού σήμερα.':'No appointments today.'}</div>`; return; }
   el.innerHTML=items.map(a=>`<div class="appointment-list-item">
     <span class="appointment-dot ${appointmentClass(a.type)}"></span>
     <div class="appointment-time">${safeHtml(a.time)}</div>
@@ -9197,6 +9271,8 @@ async function deleteClientById(rowId){
 async function renderClientList(){
   const el=document.getElementById('clients-table');
   if(!el) return;
+  el.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:24px">Loading clients...</div>';
+  if(window.authReadyPromise) await window.authReadyPromise;
   const localClients=loadLocalClients();
   const searchEl=document.getElementById('client-search');
   if(searchEl) searchEl.value='';
@@ -9477,6 +9553,7 @@ function toggleTheme() {
 window.appLang = 'en';
 function applyLanguage(lang){
   window.appLang = lang;
+  setMealLanguage(lang==='gr'?'GR':'EN');
   document.querySelectorAll('.i18n').forEach(el=>{
     const val = lang==='gr' ? el.getAttribute('data-gr') : el.getAttribute('data-en');
     if(val!=null) el.textContent = val;
@@ -9496,6 +9573,10 @@ function applyLanguage(lang){
   }
   if(document.getElementById('page-clients')?.classList.contains('active')) renderClientList();
   if(document.getElementById('page-equivalents')?.classList.contains('active')) buildEquivalents();
+  if(document.getElementById('page-bodycomp')?.classList.contains('active')) calcBodyComp();
+  if(document.getElementById('page-macros')?.classList.contains('active')) calcMacros();
+  if(document.getElementById('page-exchanges')?.classList.contains('active')) renderExchanges();
+  if(document.getElementById('page-tracking')?.classList.contains('active')) renderTracking();
   if(document.getElementById('page-appointments')?.classList.contains('active')){
     renderAppointments();
     const formTitle=document.getElementById('appointment-form-title');
