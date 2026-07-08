@@ -4801,7 +4801,7 @@ const PAGE_INFO_GR = {
 };
 
 const CLIENT_TAB_PAGES = ['profile','bodycomp','intake','labs','macros','exchanges','sevenday','tracking','report'];
-const PRINT_PAGES = ['report','sevenday','equivalents'];
+const PRINT_PAGES = ['sevenday','equivalents'];
 
 function nav(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -6376,7 +6376,8 @@ function calcDayTotalsForPlanDisplay(dayPlan, lang='GR', dayIndex=0){
 function previewRebalanceWeek(){
   const el=document.getElementById('rebalance-preview'); if(!el) return;
   const isGr = window.appLang!=='en';
-  if(!S.weekPlans || !S.goalKcal){ el.innerHTML=`<div class="alert warn">${isGr?'Δημιουργήστε πρώτα ένα πλάνο 7 ημερών.':'Generate a 7-day plan first.'}</div>`; return; }
+  if(!S.weekPlans){ el.innerHTML=`<div class="alert warn">${isGr?'Δημιουργήστε πρώτα ένα πλάνο 7 ημερών.':'Generate a 7-day plan first.'}</div>`; return; }
+  if(!S.goalKcal){ el.innerHTML=`<div class="alert warn">${isGr?'Συμπληρώστε το Προφίλ Πελάτη για να οριστεί στόχος θερμίδων.':'Complete Client Profile to set a calorie target.'}</div>`; return; }
   const dayTotals=S.weekPlans.map((day,i)=>calcDayTotalsForPlanDisplay(day, S.mealLanguage||'GR', i).totalKcal);
   const weekAvg=Math.round(dayTotals.reduce((a,b)=>a+b,0)/dayTotals.length);
   const target=Math.round(S.goalKcal);
@@ -6437,6 +6438,10 @@ function renderPlanQualitySummary(){
   const el=document.getElementById('plan-quality-summary'); if(!el) return;
   if(!S.ex || !S.exMeta){ el.innerHTML=''; return; }
   const isGr = window.appLang!=='en';
+  if(!S.goalKcal){
+    el.innerHTML=`<div class="alert warn"><i class="ti ti-alert-triangle" aria-hidden="true"></i> ${isGr?'Συμπληρώστε το Προφίλ Πελάτη (ηλικία, ύψος, βάρος) για να δείτε την ποιότητα του πλάνου.':'Complete Client Profile (age, height, weight) to see plan quality.'}</div>`;
+    return;
+  }
   const ex=S.ex, m=S.exMeta;
   const totalKcal = ex.fruit*m.fruit.kcal + ex.veg*m.veg.kcal + ex.dairy*m.dairy.kcal + ex.starch*m.starch.kcal + ex.protein*m.protein.kcal + ex.fat*m.fat.kcal;
   const totalCHO  = ex.fruit*m.fruit.cho + ex.veg*m.veg.cho + ex.dairy*m.dairy.cho + ex.starch*m.starch.cho;
@@ -6526,7 +6531,7 @@ function buildSevenDay(){
       </div>
       <div style="text-align:right;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-page)">
         <div style="font-size:22px;font-weight:900;color:${statusColor}">${dt.totalKcal} kcal ${statusOk?'<i class="ti ti-circle-check" aria-hidden="true"></i>':'<i class="ti ti-alert-triangle" aria-hidden="true"></i>'}</div>
-        <div style="font-size:12px;color:var(--text-muted)">${lang==='EN'?'Target':'Στόχος'} ${dt.target||0} · ${dt.gap>0?'+':''}${dt.gap||0}</div>
+        <div style="font-size:12px;color:var(--text-muted)">${dt.target ? `${lang==='EN'?'Target':'Στόχος'} ${dt.target} · ${dt.gap>0?'+':''}${dt.gap||0}` : (lang==='EN'?'Complete Client Profile to set a target':'Συμπληρώστε το Προφίλ Πελάτη για στόχο')}</div>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">
@@ -6534,7 +6539,7 @@ function buildSevenDay(){
     </div>
     <div style="margin-top:14px;padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-page)">
       <div style="font-weight:900;color:${statusColor};font-size:16px">${lang==='EN'?'Daily total':'Σύνολο ημέρας'}: ${dt.totalKcal} kcal</div>
-      <div style="font-size:13px;color:var(--text-secondary);margin-top:4px">${lang==='EN'?'Target':'Στόχος'}: ${dt.target||0} kcal · ${lang==='EN'?'Difference':'Διαφορά'}: ${dt.gap>0?'+':''}${dt.gap||0} kcal</div>
+      <div style="font-size:13px;color:var(--text-secondary);margin-top:4px">${dt.target ? `${lang==='EN'?'Target':'Στόχος'}: ${dt.target} kcal · ${lang==='EN'?'Difference':'Διαφορά'}: ${dt.gap>0?'+':''}${dt.gap||0} kcal` : (lang==='EN'?'Complete Client Profile to set a target':'Συμπληρώστε το Προφίλ Πελάτη για στόχο')}</div>
     </div>`;
   }
   const sevenBody=document.getElementById('sevenday-body');
