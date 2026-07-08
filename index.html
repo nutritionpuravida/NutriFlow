@@ -182,7 +182,7 @@ i.ti-circle-x { color: var(--red-text); }
 .page.active { display: block; }
 .card { background: var(--bg-surface); border: none; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 14px; }
 [data-theme="dark"] .card { box-shadow: none; border: 1px solid var(--border); }
-.card-header { padding: 14px 16px 10px; border-bottom: none; display: flex; align-items: center; gap: 10px; background: var(--bg-surface); }
+.card-header { padding: 11px 16px 9px; border-bottom: none; display: flex; align-items: center; gap: 10px; background: var(--bg-surface); }
 .card-title { font-size: 13px; font-weight: 700; color: var(--text-primary); }
 .card-action { margin-left: auto; font-size: 12px; color: var(--text-link); cursor: pointer; font-weight: 600; white-space: nowrap; }
 .card-body { padding: 14px 16px; }
@@ -681,8 +681,9 @@ html[data-theme="dark"] .week-summary-table td:last-child {
     background-color: #F7F9F6 !important;
   }
   :root { --nav-w: 260px; }
-  .sidebar { position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); transition: transform .25s; box-shadow: 4px 0 20px rgba(0,0,0,.2); }
+  .sidebar { position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); transition: transform .25s; box-shadow: 4px 0 20px rgba(0,0,0,.2); padding-bottom: 64px; }
   .sidebar.open { transform: translateX(0); }
+  .sidebar-footer { display: none; }
   .hamburger { display: flex; }
   .topbar {
     height: auto;
@@ -1049,23 +1050,23 @@ table th,
   <!-- PROFILE -->
   <div class="page" id="page-profile">
     <div class="card">
-      <div class="card-header"><span class="card-title"><i class="ti ti-user" aria-hidden="true"></i> INPUT — Client Profile</span></div>
+      <div class="card-header"><span class="card-title"><i class="ti ti-user" aria-hidden="true"></i> <span class="i18n" data-en="Client Profile" data-gr="Προφίλ Πελάτη">Client Profile</span></span></div>
       <div class="card-body">
         <div class="section-label">PHOTO</div>
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
           <div id="client-photo-preview"></div>
           <div>
             <label class="btn" style="cursor:pointer;display:inline-block;padding:6px 12px;font-size:13px">
-              <i class="ti ti-camera" aria-hidden="true"></i> Upload photo
+              <i class="ti ti-camera" aria-hidden="true"></i> <span class="i18n" data-en="Upload photo" data-gr="Ανέβασμα φωτογραφίας">Upload photo</span>
               <input type="file" id="client-photo-input" accept="image/png,image/jpeg" style="display:none" onchange="handleClientPhotoUpload(this)">
             </label>
-            <button class="btn" style="padding:6px 12px;font-size:13px;margin-left:6px" onclick="removeClientPhoto()">Remove</button>
-            <div id="client-photo-status" style="font-size:11px;color:var(--text-muted);margin-top:6px">No photo yet — showing initials.</div>
+            <button class="btn" style="padding:6px 12px;font-size:13px;margin-left:6px" onclick="removeClientPhoto()"><span class="i18n" data-en="Remove" data-gr="Αφαίρεση">Remove</span></button>
+            <div id="client-photo-status" style="font-size:11px;color:var(--text-muted);margin-top:6px"><span class="i18n" data-en="No photo yet — showing initials." data-gr="Δεν υπάρχει φωτογραφία — εμφανίζονται τα αρχικά.">No photo yet — showing initials.</span></div>
           </div>
         </div>
         <div class="section-label"><span class="i18n" data-en="Demographics" data-gr="Δημογραφικά">Demographics</span></div>
         <div class="form-grid three">
-          <div class="form-field"><label><span class="i18n" data-en="Client Reference" data-gr="Κωδικός Πελάτη">Client Reference</span></label><div id="p-id-display" style="min-height:38px;display:flex;align-items:center;padding:8px 10px;border:1px solid var(--border-strong);border-radius:6px;background:var(--bg-muted);font-weight:700;color:var(--text)">New client</div><input type="hidden" id="p-id" value=""></div>
+          <div class="form-field"><label><span class="i18n" data-en="Client Reference" data-gr="Κωδικός Πελάτη">Client Reference</span></label><div id="p-id-display" style="min-height:38px;display:flex;align-items:center;padding:8px 10px;border:1px solid var(--border-strong);border-radius:6px;background:var(--bg-muted);font-weight:700;color:var(--text)"><span class="i18n" data-en="New client" data-gr="Νέος πελάτης">New client</span></div><input type="hidden" id="p-id" value=""></div>
           <div class="form-field"><label><span class="i18n" data-en="Full Name" data-gr="Ονοματεπώνυμο">Full Name</span></label><input type="text" id="p-name" placeholder="—" oninput="calcAll()"></div>
           <div class="form-field"><label><span class="i18n" data-en="Date" data-gr="Ημερομηνία">Date</span></label><input type="date" id="p-date" oninput="calcAll()"></div>
         </div>
@@ -1313,7 +1314,7 @@ table th,
         <span class="card-title" id="report-options-title"><i class="ti ti-settings" aria-hidden="true"></i> Report Options — Choose what to print</span>
       </div>
       <div class="card-body">
-        <div style="display:grid;grid-template-columns:1fr 190px;gap:16px;align-items:stretch">
+        <div style="display:grid;grid-template-columns:1fr 260px;gap:16px;align-items:start">
           <div style="display:flex;flex-direction:column;gap:12px">
             <div style="display:flex;flex-direction:column;gap:8px">
               <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer">
@@ -1337,12 +1338,12 @@ table th,
           </div>
           <div style="border:1px solid var(--border);border-radius:10px;padding:12px">
             <div id="report-days-title" style="font-size:12px;font-weight:800;color:var(--text-secondary);margin-bottom:8px">Print days from 7-day plan:</div>
-            <div id="report-day-selector" style="display:flex;flex-direction:column;gap:7px"></div>
+            <div id="report-day-selector" style="display:grid;grid-template-columns:1fr 1fr;gap:6px 10px"></div>
           </div>
         </div>
-        <div class="field-note" style="margin:10px 0 0" id="report-days-note">Select one or more days to print from the weekly plan. Single-day print hides the weekday name.</div>
-        <div style="margin-top:12px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px">
           <button class="btn primary" onclick="printPage()" id="report-print-btn"><i class="ti ti-printer" aria-hidden="true"></i> Print Full Report</button>
+          <div class="field-note" style="margin:0" id="report-days-note">Select one or more days to print from the weekly plan. Single-day print hides the weekday name.</div>
         </div>
         <div class="field-note" id="report-options-note" style="margin-top:8px">Check/uncheck to choose which meal plan appears in the printed report. Use Print / Save PDF and choose “Save as PDF” in the browser print dialog.</div>
       </div>
@@ -1385,7 +1386,7 @@ table th,
       <div class="card-body">
         <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Enter available lab values. Reference ranges are general adult ranges — always confirm against the lab's own reference range. Status updates live as you type." data-gr="Εισάγετε τις διαθέσιμες εργαστηριακές τιμές. Τα εύρη αναφοράς είναι γενικά για ενήλικες — πάντα επιβεβαιώνετε με το εύρος αναφοράς του εργαστηρίου. Η κατάσταση ενημερώνεται ζωντανά καθώς πληκτρολογείτε.">Enter available lab values. Reference ranges are general adult ranges — always confirm against the lab's own reference range. Status updates live as you type.</span></div>
         <div id="labs-table"></div>
-        <div class="section-label">NUTRIENTS TO CONSIDER (CLINICAL REFERENCE ONLY)</div>
+        <div class="section-label"><span class="i18n" data-en="Nutrients to Consider (Clinical Reference Only)" data-gr="Θρεπτικά Συστατικά προς Εξέταση (Μόνο Κλινική Αναφορά)">Nutrients to Consider (Clinical Reference Only)</span></div>
         <div id="vitamin-suggestions"></div>
       </div>
     </div>
@@ -1394,14 +1395,14 @@ table th,
   <!-- EQUIVALENTS GUIDE -->
   <div class="page" id="page-equivalents">
     <div class="card no-print">
-      <div class="card-header"><span class="card-title"><i class="ti ti-book-2" aria-hidden="true"></i> Equivalents Guide — Options</span></div>
+      <div class="card-header"><span class="card-title"><i class="ti ti-book-2" aria-hidden="true"></i> <span class="i18n" data-en="Equivalents Guide — Options" data-gr="Οδηγός Ισοδυνάμων — Επιλογές">Equivalents Guide — Options</span></span></div>
       <div class="card-body">
-        <div class="field-note" style="margin-bottom:8px">A printable food exchange list to give clients — shows what foods can be swapped 1-for-1 within each exchange category.</div>
+        <div class="field-note" style="margin-bottom:8px"><span class="i18n" data-en="A printable food exchange list to give clients — shows what foods can be swapped 1-for-1 within each exchange category." data-gr="Εκτυπώσιμη λίστα ισοδυνάμων τροφίμων για πελάτες — δείχνει ποια τρόφιμα μπορούν να αντικατασταθούν 1 προς 1 μέσα σε κάθε κατηγορία ισοδυνάμου.">A printable food exchange list to give clients — shows what foods can be swapped 1-for-1 within each exchange category.</span></div>
         <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
-          <button class="btn" onclick="printPage()"><i class="ti ti-printer" aria-hidden="true"></i> Print for client</button>
+          <button class="btn" onclick="printPage()"><i class="ti ti-printer" aria-hidden="true"></i> <span class="i18n" data-en="Print for client" data-gr="Εκτύπωση για πελάτη">Print for client</span></button>
         </div>
         <div class="form-field" style="margin-top:12px">
-          <label>Search food / Αναζήτηση τροφίμου</label>
+          <label><span class="i18n" data-en="Search food" data-gr="Αναζήτηση τροφίμου">Search food</span></label>
           <div style="display:flex;gap:8px;align-items:center">
             <input type="text" id="eq-search" placeholder="e.g. avocado, αβοκάντο" oninput="buildEquivalents()" style="flex:1">
             <button class="btn" type="button" onclick="clearEquivalentsSearch()" title="Clear search"><i class="ti ti-x" aria-hidden="true"></i></button>
@@ -1410,7 +1411,7 @@ table th,
       </div>
     </div>
     <div class="card">
-      <div class="card-header"><span class="card-title"><i class="ti ti-book-2" aria-hidden="true"></i> Λίστα Ισοδυνάμων Τροφίμων / Food Exchange List</span></div>
+      <div class="card-header"><span class="card-title"><i class="ti ti-book-2" aria-hidden="true"></i> <span class="i18n" data-en="Food Exchange List" data-gr="Λίστα Ισοδυνάμων Τροφίμων">Food Exchange List</span></span></div>
       <div class="card-body" id="equivalents-body"></div>
     </div>
   </div>
@@ -4106,6 +4107,16 @@ function makeExMeta() {
   for (const [k,v] of Object.entries(EX_META)) m[k] = {...v, label: isGr?v.label:(v.labelEn||v.label), food: isGr?v.food:(v.foodEn||v.food), kcal: v.cho*4+v.pro*4+v.fat*9};
   return m;
 }
+function refreshExMetaLabels(){
+  if(!S.exMeta) return;
+  const isGr = window.appLang!=='en';
+  for(const [k,v] of Object.entries(EX_META)){
+    if(S.exMeta[k]){
+      S.exMeta[k].label = isGr ? v.label : (v.labelEn||v.label);
+      S.exMeta[k].food = isGr ? v.food : (v.foodEn||v.food);
+    }
+  }
+}
 function exKcal(m) { return m.cho*4 + m.pro*4 + m.fat*9; }
 function exchangeSystemTotalKcal(ex=S.ex, m=S.exMeta||makeExMeta()){
   return Math.round(
@@ -4769,12 +4780,12 @@ const PAGE_INFO = {
   sevenday:{title:'7-Day Meal Plan',sub:'Full weekly schedule — all 7 plan variants'},
   fooddb:{title:'Food Database',sub:'USDA FoodData Central · Macros per 100g'},
   recipes:{title:'Recipes',sub:'Custom recipes · Auto-calculated nutrition'},
-  report:{title:'Client Report (Print)',sub:'PRINT — Κλινική Αναφορά Διατροφής'},
+  report:{title:'Client Report (Print)',sub:'PRINT — Clinical Nutrition Report'},
   tracking:{title:'Progress Tracking',sub:'Body composition history · Visit log'},
   appointments:{title:'Calendar',sub:'Monthly and weekly practice calendar'},
   account:{title:'Account / Subscription',sub:'Billing status · Stripe subscription'},
   labs:{title:'Blood Analysis',sub:'Lab values with reference ranges · Suggested vitamins & minerals'},
-  equivalents:{title:'Equivalents Guide',sub:'Printable food exchange list for clients — EN / GR'},
+  equivalents:{title:'Equivalents Guide',sub:'Printable food exchange list for clients'},
 };
 const PAGE_INFO_GR = {
   dashboard:{title:'Πίνακας Ελέγχου',sub:'Γρήγορη επισκόπηση · Κατάσταση · Σημερινό πλάνο'},
@@ -4793,7 +4804,7 @@ const PAGE_INFO_GR = {
   appointments:{title:'Ημερολόγιο',sub:'Μηνιαίο και εβδομαδιαίο ημερολόγιο ιατρείου'},
   account:{title:'Λογαριασμός / Συνδρομή',sub:'Κατάσταση χρέωσης · Συνδρομή Stripe'},
   labs:{title:'Αιματολογικός Έλεγχος',sub:'Εργαστηριακές τιμές με εύρη αναφοράς · Προτεινόμενες βιταμίνες & μέταλλα'},
-  equivalents:{title:'Οδηγός Ισοδυνάμων',sub:'Εκτυπώσιμη λίστα ισοδυνάμων για πελάτες — EN / GR'},
+  equivalents:{title:'Οδηγός Ισοδυνάμων',sub:'Εκτυπώσιμη λίστα ισοδυνάμων για πελάτες'},
 };
 
 const CLIENT_TAB_PAGES = ['profile','bodycomp','intake','labs','macros','exchanges','sevenday','tracking','report'];
@@ -5050,7 +5061,8 @@ function calcAll() {
   setEl('condition-guidance', renderCombinedGuidance(conditions));
 
   setEl('sidebar-name',name||'— No client loaded —');
-  setEl('sidebar-meta',age&&h&&w?`${sex==='M'?'Male':'Female'}, ${age}y · ${w}kg · ${h}cm`:'Fill Client Profile to begin');
+  const isGrSb = window.appLang==='gr';
+  setEl('sidebar-meta',age&&h&&w?`${sex==='M'?(isGrSb?'Άρρεν':'Male'):(isGrSb?'Θήλυ':'Female')}, ${age}${isGrSb?'ε':'y'} · ${w}${isGrSb?'κ':'kg'} · ${h}${isGrSb?'εκ':'cm'}`:(isGrSb?'Συμπληρώστε το Προφίλ Πελάτη για να ξεκινήσετε':'Fill Client Profile to begin'));
   const sidebarAvatarEl=document.getElementById('sidebar-client-avatar');
   if(sidebarAvatarEl) sidebarAvatarEl.innerHTML = name ? clientAvatarHtml(S.clientPhoto, name, 34) : '';
 
@@ -6410,11 +6422,11 @@ function buildSevenDay(){
     html+=`<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:12px 0">
       <div>
         <div style="font-size:22px;font-weight:900;color:var(--text-primary)">${safeHtml(dayLabel)}</div>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${dayPlan.aiMeals?'AI / manual flexible plan':'Exchange-engine fallback plan'}</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${dayPlan.aiMeals?(lang==='EN'?'AI / manual flexible plan':'Ευέλικτο πλάνο AI / χειροκίνητο'):(lang==='EN'?'Exchange-engine fallback plan':'Εναλλακτικό πλάνο βάσει ισοδυνάμων')}</div>
       </div>
       <div style="text-align:right;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-page)">
         <div style="font-size:22px;font-weight:900;color:${statusColor}">${dt.totalKcal} kcal ${statusOk?'<i class="ti ti-circle-check" aria-hidden="true"></i>':'<i class="ti ti-alert-triangle" aria-hidden="true"></i>'}</div>
-        <div style="font-size:12px;color:var(--text-muted)">Target ${dt.target||0} · ${dt.gap>0?'+':''}${dt.gap||0}</div>
+        <div style="font-size:12px;color:var(--text-muted)">${lang==='EN'?'Target':'Στόχος'} ${dt.target||0} · ${dt.gap>0?'+':''}${dt.gap||0}</div>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">
@@ -6952,7 +6964,7 @@ function renderClientPhotoControls(message=''){
   const preview=document.getElementById('client-photo-preview');
   const status=document.getElementById('client-photo-status');
   if(preview) preview.innerHTML = clientAvatarHtml(S.clientPhoto, v('p-name'), 64);
-  if(status) status.textContent = message || (S.clientPhoto ? 'Photo added.' : 'No photo yet — showing initials.');
+  if(status) status.textContent = message || (S.clientPhoto ? (window.appLang==='gr'?'Η φωτογραφία προστέθηκε.':'Photo added.') : (window.appLang==='gr'?'Δεν υπάρχει φωτογραφία — εμφανίζονται τα αρχικά.':'No photo yet — showing initials.'));
 }
 function compressImageToDataUrl(file, maxSize=240, quality=0.82){
   return new Promise((resolve, reject)=>{
@@ -7106,7 +7118,7 @@ function buildReport(){
     <!-- HEADER -->
     <div style="padding-bottom:12px;border-bottom:3px solid var(--teal-600);margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px">
-        <div style="font-size:18px;font-weight:800;color:var(--teal-800)">Κλινική Αναφορά Διατροφής / Clinical Nutrition Report</div>
+        <div style="font-size:18px;font-weight:800;color:var(--teal-800)">${isEn?'Clinical Nutrition Report':'Κλινική Αναφορά Διατροφής'}</div>
         <div style="font-size:12px;color:var(--text-muted);text-align:right"><strong>${S.name||'—'}</strong> · ${today}</div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -9636,6 +9648,7 @@ window.appLang = 'en';
 function applyLanguage(lang){
   window.appLang = lang;
   applyDropdownLanguage();
+  refreshExMetaLabels();
   setMealLanguage(lang==='gr'?'GR':'EN');
   document.querySelectorAll('.i18n').forEach(el=>{
     const val = lang==='gr' ? el.getAttribute('data-gr') : el.getAttribute('data-en');
@@ -9658,7 +9671,7 @@ function applyLanguage(lang){
   if(document.getElementById('page-equivalents')?.classList.contains('active')) buildEquivalents();
   if(document.getElementById('page-bodycomp')?.classList.contains('active')) calcBodyComp();
   if(document.getElementById('page-macros')?.classList.contains('active')) calcMacros();
-  if(document.getElementById('page-exchanges')?.classList.contains('active')) renderExchanges();
+  if(document.getElementById('page-exchanges')?.classList.contains('active')){ refreshExMetaLabels(); renderExchanges(); }
   if(document.getElementById('page-tracking')?.classList.contains('active')) renderTracking();
   if(document.getElementById('page-account')?.classList.contains('active')) updateAccountPage();
   if(document.getElementById('page-profile')?.classList.contains('active')) calcAll();
