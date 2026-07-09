@@ -208,6 +208,10 @@ i.ti-circle-x { color: var(--red-text); }
 .metric { background: var(--bg-page); border: none; border-radius: var(--radius-lg); padding: 12px 14px; }
 #page-dashboard .metrics-grid .metric { background: var(--bg-surface); border-radius: 16px; padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04); }
 #page-dashboard .metrics-grid { margin-top: 4px; }
+#page-profile .metrics-grid .metric { background: var(--bg-surface); border-radius: 16px; padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04); }
+@media (min-width: 901px) {
+  #page-profile .metrics-grid { grid-template-columns: repeat(5, 1fr); }
+}
 #page-dashboard .dash-section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin: 22px 0 10px; padding-left: 2px; }
 .metric .m-label { font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
 .metric .m-value { font-size: 24px; font-weight: 700; color: var(--text-primary); line-height: 1; }
@@ -1053,7 +1057,7 @@ table th,
     <div class="card">
       <div class="card-header"><span class="card-title"><i class="ti ti-user" aria-hidden="true"></i> <span class="i18n" data-en="Client Profile" data-gr="Προφίλ Πελάτη">Client Profile</span></span></div>
       <div class="card-body">
-        <div class="section-label">PHOTO</div>
+        <div class="section-label"><span class="i18n" data-en="Photo" data-gr="Φωτογραφία">Photo</span></div>
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
           <div id="client-photo-preview"></div>
           <div>
@@ -1084,7 +1088,7 @@ table th,
             </select>
           </div>
         </div>
-        <div class="section-label">ANTHROPOMETRICS</div>
+        <div class="section-label"><span class="i18n" data-en="Anthropometrics" data-gr="Ανθρωπομετρικά">Anthropometrics</span></div>
         <div class="form-grid three">
           <div class="form-field"><label><span class="i18n" data-en="Height (cm)" data-gr="Ύψος (εκ)">Height (cm)</span></label><input type="number" id="p-height" placeholder="170" oninput="calcAll()"></div>
           <div class="form-field"><label><span class="i18n" data-en="Weight (kg)" data-gr="Βάρος (κιλά)">Weight (kg)</span></label><input type="number" id="p-weight" placeholder="70" step="0.1" oninput="onWeightInput()"><div class="field-note suggested" id="weight-suggestion-note"></div></div>
@@ -1096,7 +1100,7 @@ table th,
         <div class="form-grid">
           <div class="form-field full">
             <label><span class="i18n" data-en="Primary condition (select one)" data-gr="Κύρια πάθηση (επιλέξτε μία)">Primary condition (select one)</span></label>
-            <div id="p-conditions" style="display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:6px;background:var(--bg-input)">
+            <div id="p-conditions" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px 18px;padding:14px 16px;border:1px solid var(--border-strong);border-radius:8px;background:var(--bg-input)">
               <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="Obesity" onclick="onConditionRadioClick(this)" style="width:auto"> Weight Management</label>
               <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="Diabetes" onclick="onConditionRadioClick(this)" style="width:auto"> Diabetes Type 2</label>
               <label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="Dyslipidemia" onclick="onConditionRadioClick(this)" style="width:auto"> High Cholesterol (Dyslipidemia)</label>
@@ -4498,7 +4502,7 @@ function renderConditionRadios(){
   if(!wrap) return;
   const selected=getSelectedPrimaryCondition() || S.condition || '';
   const lang=S.mealLanguage||'GR';
-  wrap.innerHTML = CONDITION_ORDER.map(key=>`<label style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap"><input type="radio" name="p-condition" value="${key}" onclick="onConditionRadioClick(this)" style="width:auto" ${selected===key?'checked':''}> ${safeHtml(conditionLabel(key, lang))}</label>`).join('');
+  wrap.innerHTML = CONDITION_ORDER.map(key=>`<label style="display:flex;align-items:flex-start;gap:7px;font-size:13px;font-weight:400;cursor:pointer;line-height:1.35"><input type="radio" name="p-condition" value="${key}" onclick="onConditionRadioClick(this)" style="width:auto;margin-top:2px;flex-shrink:0" ${selected===key?'checked':''}> ${safeHtml(conditionLabel(key, lang))}</label>`).join('');
   refreshConditionVisualState();
 }
 
