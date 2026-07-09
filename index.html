@@ -199,7 +199,8 @@ i.ti-circle-x { color: var(--red-text); }
 .bento-eyebrow { font-size: 13px; color: var(--text-muted); margin: 0 0 4px; }
 .bento-title { font-size: 22px; font-weight: 600; margin: 0; color: var(--text-primary); }
 .bento-stats { display: flex; gap: 24px; }
-.bento-stats > div { cursor: pointer; text-align: center; }
+.bento-stats > div { cursor: pointer; text-align: center; padding: 4px 10px; border-radius: 10px; transition: background .12s; }
+.bento-stats > div:hover { background: var(--bg-page); }
 .bento-stats .bs-value { display: block; font-size: 22px; font-weight: 600; color: var(--text-primary); line-height: 1; }
 .bento-stats .bs-label { font-size: 12px; color: var(--text-muted); }
 .bento-accent { background: var(--bg-page); border: none; }
@@ -5577,17 +5578,22 @@ function buildOneDayPlan(){
     </tbody></table>`;
   const dashMeals=document.getElementById('dash-meals');
   if(dashMeals){
-    const dashAllocation=getDayMealAllocation(S.mealSel, 'GR');
+    const dashLang = window.appLang==='gr' ? 'GR' : 'EN';
+    const dashMealsMap = dashLang==='EN' ? MEALS_EN : MEALS;
+    const dashAllocation=getDayMealAllocation(S.mealSel, dashLang);
     const dashSnack1=dashAllocation.snacks.snk1Built;
     const dashSnack2=dashAllocation.snacks.snk2Built;
     const dashSleep=dashAllocation.snacks.sleepBuilt;
+    const slotLabels = dashLang==='EN'
+      ? ['Breakfast','Snack 1','Lunch','Snack 2','Dinner','Before sleep']
+      : ['Πρωινό','Σνακ 1','Μεσημεριανό','Σνακ 2','Βραδινό','Πριν τον ύπνο'];
     const dashList=[
-      {time:'Πρωινό', text:MEALS[brk]?MEALS[brk](ex,null):'', kcal:day.brkKcal},
-      {time:'Σνακ 1', text:dashSnack1.text, kcal:day.snk1Kcal},
-      {time:'Μεσημεριανό', text:MEALS[lun]?MEALS[lun](ex,portions.lunch):'', kcal:day.lunKcal},
-      {time:'Σνακ 2', text:dashSnack2.text, kcal:day.snk2Kcal},
-      {time:'Βραδινό', text:MEALS[din]?MEALS[din](ex,portions.dinner):'', kcal:day.dinKcal},
-      {time:'Πριν τον ύπνο', text:dashSleep.text, kcal:day.slpKcal},
+      {time:slotLabels[0], text:dashMealsMap[brk]?dashMealsMap[brk](ex,null):'', kcal:day.brkKcal},
+      {time:slotLabels[1], text:dashSnack1.text, kcal:day.snk1Kcal},
+      {time:slotLabels[2], text:dashMealsMap[lun]?dashMealsMap[lun](ex,portions.lunch):'', kcal:day.lunKcal},
+      {time:slotLabels[3], text:dashSnack2.text, kcal:day.snk2Kcal},
+      {time:slotLabels[4], text:dashMealsMap[din]?dashMealsMap[din](ex,portions.dinner):'', kcal:day.dinKcal},
+      {time:slotLabels[5], text:dashSleep.text, kcal:day.slpKcal},
     ];
     dashMeals.innerHTML=dashList.filter(m=>m.text&&m.text!=='—').map(m=>`<div class="meal-row"><div class="meal-time">${m.time}<div style="font-size:10px;color:var(--text-muted)">${m.kcal} kcal</div></div><div class="meal-desc">${m.text}</div></div>`).join('');
   }
@@ -7468,10 +7474,10 @@ function updateDashMetrics(){
     {label:isGr?'Ρεαλισμός πρωτεΐνης/λίπους':'Protein/fat exchange realism',ok:!anyCapped,status:anyCapped?(isGr?'Χρειάζεται προσαρμογή':'Adjustment needed'):'OK'},
   ];
   const dashEng=document.getElementById('dash-engine-checks');
-  if(dashEng) dashEng.innerHTML=chks.map(c=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--gray-100);font-size:12px">
-    <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:${c.ok?'var(--green-600)':'var(--red-600)'}"></div>
-    <span style="flex:1">${c.label}</span>
-    <span style="color:${c.ok?'var(--green-800)':'var(--red-600)'};font-size:11px;font-weight:600">${c.status}</span>
+  if(dashEng) dashEng.innerHTML=chks.map(c=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;font-size:13px">
+    <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${c.ok?'var(--green-600)':'var(--red-600)'}"></div>
+    <span style="flex:1;color:var(--text-primary)">${c.label}</span>
+    <span style="padding:2px 9px;border-radius:999px;background:${c.ok?'var(--green-bg)':'var(--red-bg)'};color:${c.ok?'var(--green-800)':'var(--red-600)'};font-size:11px;font-weight:600">${c.status}</span>
   </div>`).join('');
   const dashM=document.getElementById('dash-macros');
   if(dashM) dashM.innerHTML=(isGr?['🌾 Υδατάνθρακες','🥩 Πρωτεΐνη','🫒 Λίπος']:['🌾 Carbohydrates','🥩 Protein','🫒 Fat']).map((label,i)=>{
