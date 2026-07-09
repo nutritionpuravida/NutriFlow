@@ -277,6 +277,7 @@ html[data-theme="dark"] #condition-guidance a {
 
 /* ─── TABLES ─── */
 .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.lab-category-row td { padding: 14px 8px 6px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--border); background: transparent; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; }
 th { text-align: left; padding: 8px 10px; background: var(--bg-page); border-bottom: 2px solid var(--border-strong); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
 td { padding: 9px 10px; border-bottom: 1px solid var(--border); color: var(--text-primary); }
@@ -7728,30 +7729,30 @@ function applyConditionMacros(){
 // ── BLOOD ANALYSIS — reference ranges (general adult ranges; always check
 // the lab's own reference range, which can vary by method/population) ──
 const LAB_TESTS = [
-  {key:'glucose',  gr:'Γλυκόζη νηστείας', en:'Fasting Glucose', unit:'mg/dL', low:70, high:100, highMsg:'Πιθανή προδιαβητική/διαβητική εικόνα — έλεγχος HbA1c'},
-  {key:'hba1c',    gr:'HbA1c', en:'HbA1c', unit:'%', low:4.0, high:5.6, highMsg:'5.7–6.4% προδιαβήτης, ≥6.5% συνάδει με διαβήτη'},
-  {key:'totalchol',gr:'Ολική Χοληστερόλη', en:'Total Cholesterol', unit:'mg/dL', low:0, high:200, highMsg:'Αυξημένος καρδιαγγειακός κίνδυνος'},
-  {key:'ldl',      gr:'LDL Χοληστερόλη', en:'LDL Cholesterol', unit:'mg/dL', low:0, high:100, highMsg:'Στόχος εξαρτάται από συνολικό καρδιαγγειακό κίνδυνο'},
-  {key:'hdl',      gr:'HDL Χοληστερόλη', en:'HDL Cholesterol', unit:'mg/dL', low:40, high:100, lowMsg:'Χαμηλό HDL — καρδιαγγειακός παράγοντας κινδύνου'},
-  {key:'trig',     gr:'Τριγλυκερίδια', en:'Triglycerides', unit:'mg/dL', low:0, high:150, highMsg:'Σχετίζεται με υδατάνθρακες/αλκοόλ/μεταβολικό σύνδρομο'},
-  {key:'egfr',     gr:'eGFR', en:'eGFR', unit:'mL/min/1.73m²', low:60, high:200, lowMsg:'Μειωμένη νεφρική λειτουργία (πιθανή CKD ≥G3)'},
-  {key:'creatinine',gr:'Κρεατινίνη', en:'Creatinine', unit:'mg/dL', low:0.6, high:1.2, highMsg:'Έλεγχος νεφρικής λειτουργίας'},
-  {key:'urea',     gr:'Ουρία', en:'Urea (BUN)', unit:'mg/dL', low:15, high:45, highMsg:'Έλεγχος νεφρικής λειτουργίας/ενυδάτωσης'},
-  {key:'sodium',   gr:'Νάτριο', en:'Sodium', unit:'mmol/L', low:135, high:145},
-  {key:'potassium',gr:'Κάλιο', en:'Potassium', unit:'mmol/L', low:3.5, high:5.0, highMsg:'Σημαντικό σε CKD/Αιμοκάθαρση — ενημέρωση ιατρού άμεσα', lowMsg:'Έλεγχος φαρμακευτικής αγωγής (διουρητικά)'},
-  {key:'hgb',      gr:'Αιμοσφαιρίνη', en:'Hemoglobin', unit:'g/dL', low:12, high:17, lowMsg:'Πιθανή αναιμία — έλεγχος σιδήρου/Β12/φολικού'},
-  {key:'ferritin', gr:'Φερριτίνη', en:'Ferritin', unit:'ng/mL', low:20, high:250, lowMsg:'Πιθανή ανεπάρκεια σιδήρου', highMsg:'Πιθανή υπερφόρτωση σιδήρου (π.χ. Μεσογ. Αναιμία με μεταγγίσεις)'},
-  {key:'iron',     gr:'Σίδηρος (ορού)', en:'Serum Iron', unit:'μg/dL', low:60, high:170, lowMsg:'Πιθανή ανεπάρκεια σιδήρου'},
-  {key:'b12',      gr:'Βιταμίνη B12', en:'Vitamin B12', unit:'pg/mL', low:200, high:900, lowMsg:'Ανεπάρκεια Β12 — συχνή με μετφορμίνη/PPI/χορτοφαγική διατροφή'},
-  {key:'folate',   gr:'Φολικό οξύ', en:'Folate', unit:'ng/mL', low:2.7, high:17, lowMsg:'Ανεπάρκεια φολικού οξέος'},
-  {key:'vitd',     gr:'Βιταμίνη D (25-OH)', en:'Vitamin D (25-OH)', unit:'ng/mL', low:30, high:100, lowMsg:'Ανεπάρκεια βιταμίνης D — πολύ συχνή'},
-  {key:'tsh',      gr:'TSH', en:'TSH', unit:'mIU/L', low:0.4, high:4.0, highMsg:'Πιθανός υποθυρεοειδισμός', lowMsg:'Πιθανός υπερθυρεοειδισμός'},
-  {key:'albumin',  gr:'Αλβουμίνη', en:'Albumin', unit:'g/L', low:35, high:50, lowMsg:'Πιθανή υποθρεψία ή φλεγμονή — η αλβουμίνη επηρεάζεται έντονα από φλεγμονή, ερμηνεύστε μαζί με CRP/κλινική εικόνα, όχι ως μεμονωμένο δείκτη θρέψης'},
-  {key:'ft4',      gr:'Ελεύθερη Τ4', en:'Free T4', unit:'ng/dL', low:0.8, high:1.8},
-  {key:'uric',     gr:'Ουρικό οξύ', en:'Uric Acid', unit:'mg/dL', low:3.5, high:7.2, highMsg:'Σχετίζεται με ουρική αρθρίτιδα — περιορισμός πουρινών'},
-  {key:'pth',      gr:'PTH', en:'Parathyroid Hormone', unit:'pg/mL', low:15, high:65, highMsg:'Συχνό σε CKD — σχετίζεται με Ca/Φώσφορο/Βιταμίνη D'},
-  {key:'calcium',  gr:'Ασβέστιο', en:'Calcium', unit:'mg/dL', low:8.5, high:10.5},
-  {key:'magnesium',gr:'Μαγνήσιο', en:'Magnesium', unit:'mg/dL', low:1.7, high:2.2, lowMsg:'Χαμηλό μαγνήσιο — συχνό με PPI/διουρητικά/διαβήτη'},
+  {key:'glucose',  gr:'Γλυκόζη νηστείας', en:'Fasting Glucose', unit:'mg/dL', low:70, high:100, highMsg:'Πιθανή προδιαβητική/διαβητική εικόνα — έλεγχος HbA1c', cat:'Μεταβολισμός & Σάκχαρο', catEn:'Metabolic & Glucose'},
+  {key:'hba1c',    gr:'HbA1c', en:'HbA1c', unit:'%', low:4.0, high:5.6, highMsg:'5.7–6.4% προδιαβήτης, ≥6.5% συνάδει με διαβήτη', cat:'Μεταβολισμός & Σάκχαρο', catEn:'Metabolic & Glucose'},
+  {key:'totalchol',gr:'Ολική Χοληστερόλη', en:'Total Cholesterol', unit:'mg/dL', low:0, high:200, highMsg:'Αυξημένος καρδιαγγειακός κίνδυνος', cat:'Λιπίδια', catEn:'Lipids'},
+  {key:'ldl',      gr:'LDL Χοληστερόλη', en:'LDL Cholesterol', unit:'mg/dL', low:0, high:100, highMsg:'Στόχος εξαρτάται από συνολικό καρδιαγγειακό κίνδυνο', cat:'Λιπίδια', catEn:'Lipids'},
+  {key:'hdl',      gr:'HDL Χοληστερόλη', en:'HDL Cholesterol', unit:'mg/dL', low:40, high:100, lowMsg:'Χαμηλό HDL — καρδιαγγειακός παράγοντας κινδύνου', cat:'Λιπίδια', catEn:'Lipids'},
+  {key:'trig',     gr:'Τριγλυκερίδια', en:'Triglycerides', unit:'mg/dL', low:0, high:150, highMsg:'Σχετίζεται με υδατάνθρακες/αλκοόλ/μεταβολικό σύνδρομο', cat:'Λιπίδια', catEn:'Lipids'},
+  {key:'egfr',     gr:'eGFR', en:'eGFR', unit:'mL/min/1.73m²', low:60, high:200, lowMsg:'Μειωμένη νεφρική λειτουργία (πιθανή CKD ≥G3)', cat:'Νεφρική Λειτουργία', catEn:'Kidney Function'},
+  {key:'creatinine',gr:'Κρεατινίνη', en:'Creatinine', unit:'mg/dL', low:0.6, high:1.2, highMsg:'Έλεγχος νεφρικής λειτουργίας', cat:'Νεφρική Λειτουργία', catEn:'Kidney Function'},
+  {key:'urea',     gr:'Ουρία', en:'Urea (BUN)', unit:'mg/dL', low:15, high:45, highMsg:'Έλεγχος νεφρικής λειτουργίας/ενυδάτωσης', cat:'Νεφρική Λειτουργία', catEn:'Kidney Function'},
+  {key:'albumin',  gr:'Αλβουμίνη', en:'Albumin', unit:'g/L', low:35, high:50, lowMsg:'Πιθανή υποθρεψία ή φλεγμονή — η αλβουμίνη επηρεάζεται έντονα από φλεγμονή, ερμηνεύστε μαζί με CRP/κλινική εικόνα, όχι ως μεμονωμένο δείκτη θρέψης', cat:'Νεφρική Λειτουργία', catEn:'Kidney Function'},
+  {key:'sodium',   gr:'Νάτριο', en:'Sodium', unit:'mmol/L', low:135, high:145, cat:'Ηλεκτρολύτες & Μέταλλα', catEn:'Electrolytes & Minerals'},
+  {key:'potassium',gr:'Κάλιο', en:'Potassium', unit:'mmol/L', low:3.5, high:5.0, highMsg:'Σημαντικό σε CKD/Αιμοκάθαρση — ενημέρωση ιατρού άμεσα', lowMsg:'Έλεγχος φαρμακευτικής αγωγής (διουρητικά)', cat:'Ηλεκτρολύτες & Μέταλλα', catEn:'Electrolytes & Minerals'},
+  {key:'uric',     gr:'Ουρικό οξύ', en:'Uric Acid', unit:'mg/dL', low:3.5, high:7.2, highMsg:'Σχετίζεται με ουρική αρθρίτιδα — περιορισμός πουρινών', cat:'Ηλεκτρολύτες & Μέταλλα', catEn:'Electrolytes & Minerals'},
+  {key:'calcium',  gr:'Ασβέστιο', en:'Calcium', unit:'mg/dL', low:8.5, high:10.5, cat:'Ηλεκτρολύτες & Μέταλλα', catEn:'Electrolytes & Minerals'},
+  {key:'magnesium',gr:'Μαγνήσιο', en:'Magnesium', unit:'mg/dL', low:1.7, high:2.2, lowMsg:'Χαμηλό μαγνήσιο — συχνό με PPI/διουρητικά/διαβήτη', cat:'Ηλεκτρολύτες & Μέταλλα', catEn:'Electrolytes & Minerals'},
+  {key:'hgb',      gr:'Αιμοσφαιρίνη', en:'Hemoglobin', unit:'g/dL', low:12, high:17, lowMsg:'Πιθανή αναιμία — έλεγχος σιδήρου/Β12/φολικού', cat:'Αίμα & Σίδηρος', catEn:'Blood & Iron'},
+  {key:'ferritin', gr:'Φερριτίνη', en:'Ferritin', unit:'ng/mL', low:20, high:250, lowMsg:'Πιθανή ανεπάρκεια σιδήρου', highMsg:'Πιθανή υπερφόρτωση σιδήρου (π.χ. Μεσογ. Αναιμία με μεταγγίσεις)', cat:'Αίμα & Σίδηρος', catEn:'Blood & Iron'},
+  {key:'iron',     gr:'Σίδηρος (ορού)', en:'Serum Iron', unit:'μg/dL', low:60, high:170, lowMsg:'Πιθανή ανεπάρκεια σιδήρου', cat:'Αίμα & Σίδηρος', catEn:'Blood & Iron'},
+  {key:'b12',      gr:'Βιταμίνη B12', en:'Vitamin B12', unit:'pg/mL', low:200, high:900, lowMsg:'Ανεπάρκεια Β12 — συχνή με μετφορμίνη/PPI/χορτοφαγική διατροφή', cat:'Βιταμίνες', catEn:'Vitamins'},
+  {key:'folate',   gr:'Φολικό οξύ', en:'Folate', unit:'ng/mL', low:2.7, high:17, lowMsg:'Ανεπάρκεια φολικού οξέος', cat:'Βιταμίνες', catEn:'Vitamins'},
+  {key:'vitd',     gr:'Βιταμίνη D (25-OH)', en:'Vitamin D (25-OH)', unit:'ng/mL', low:30, high:100, lowMsg:'Ανεπάρκεια βιταμίνης D — πολύ συχνή', cat:'Βιταμίνες', catEn:'Vitamins'},
+  {key:'tsh',      gr:'TSH', en:'TSH', unit:'mIU/L', low:0.4, high:4.0, highMsg:'Πιθανός υποθυρεοειδισμός', lowMsg:'Πιθανός υπερθυρεοειδισμός', cat:'Θυρεοειδής & Ορμόνες', catEn:'Thyroid & Hormones'},
+  {key:'ft4',      gr:'Ελεύθερη Τ4', en:'Free T4', unit:'ng/dL', low:0.8, high:1.8, cat:'Θυρεοειδής & Ορμόνες', catEn:'Thyroid & Hormones'},
+  {key:'pth',      gr:'PTH', en:'Parathyroid Hormone', unit:'pg/mL', low:15, high:65, highMsg:'Συχνό σε CKD — σχετίζεται με Ca/Φώσφορο/Βιταμίνη D', cat:'Θυρεοειδής & Ορμόνες', catEn:'Thyroid & Hormones'},
 ];
 
 // ── VITAMIN/MINERAL SUGGESTIONS BY CONDITION ──
@@ -7857,7 +7858,13 @@ function labStatus(test, val){
 function renderLabsTable(){
   const isGr = window.appLang!=='en';
   let html=`<div class="table-wrap"><table><thead><tr><th>${isGr?'Εξέταση':'Test'}</th><th>${isGr?'Τιμή':'Value'}</th><th>${isGr?'Μονάδα':'Unit'}</th><th>${isGr?'Εύρος αναφοράς':'Reference range'}</th><th>${isGr?'Κατάσταση':'Status'}</th><th>${isGr?'Σημείωση':'Note'}</th></tr></thead><tbody>`;
+  let lastCat=null;
   LAB_TESTS.forEach(t=>{
+    const cat = isGr ? t.cat : t.catEn;
+    if(cat!==lastCat){
+      html+=`<tr class="lab-category-row"><td colspan="6">${cat}</td></tr>`;
+      lastCat=cat;
+    }
     const id='lab-'+t.key;
     const val=S.labValues[t.key];
     const status=labStatus(t,val);
