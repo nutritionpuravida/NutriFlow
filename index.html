@@ -966,7 +966,7 @@ table th,
     <div class="card">
       <div class="card-header"><span class="card-title"><i class="ti ti-users" aria-hidden="true"></i> <span class="i18n" data-en="My Clients" data-gr="Οι Πελάτες μου">My Clients</span></span><span class="card-action" onclick="newClient()">+ <span class="i18n" data-en="New client" data-gr="Νέος πελάτης">New client</span></span></div>
       <div class="card-body">
-        <div class="alert info" style="font-size:12px;padding:8px 10px;margin-bottom:8px"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Clients save automatically to your account. &quot;Load&quot; restores a client's full data anytime." data-gr="Οι πελάτες αποθηκεύονται αυτόματα στον λογαριασμό σας. Το «Φόρτωση» επαναφέρει πλήρως τα δεδομένα ενός πελάτη ανά πάσα στιγμή.">Clients save automatically to your account. "Load" restores a client's full data anytime.</span></div>
+        <div class="alert info" style="font-size:12px;padding:8px 10px;margin-bottom:8px"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Clients save automatically to your account. &quot;Open&quot; restores a client's full data anytime." data-gr="Οι πελάτες αποθηκεύονται αυτόματα στον λογαριασμό σας. Το «Άνοιγμα» επαναφέρει πλήρως τα δεδομένα ενός πελάτη ανά πάσα στιγμή.">Clients save automatically to your account. "Open" restores a client's full data anytime.</span></div>
         <div class="alert warn" id="local-backup-warning" style="display:none;font-size:12px;padding:8px 10px;margin-bottom:8px"><span><i class="ti ti-alert-triangle" aria-hidden="true"></i> Some clients are only saved in this browser. <strong>Download a backup</strong> before switching devices or clearing browser data.</span></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
           <button class="btn" style="padding:6px 10px;font-size:12px" onclick="exportAllClients()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Download Backup" data-gr="Λήψη Αντιγράφου">Download Backup</span></button>
@@ -1065,7 +1065,7 @@ table th,
             <div id="client-photo-status" style="font-size:11px;color:var(--text-muted);margin-top:6px"><span class="i18n" data-en="No photo yet — showing initials." data-gr="Δεν υπάρχει φωτογραφία — εμφανίζονται τα αρχικά.">No photo yet — showing initials.</span></div>
           </div>
         </div>
-        <div class="section-label"><span class="i18n" data-en="Demographics" data-gr="Δημογραφικά">Demographics</span></div>
+        <div class="section-label"><span class="i18n" data-en="Personal Details" data-gr="Προσωπικά Στοιχεία">Personal Details</span></div>
         <div class="form-grid three">
           <div class="form-field"><label><span class="i18n" data-en="Client Reference" data-gr="Κωδικός Πελάτη">Client Reference</span></label><div id="p-id-display" style="min-height:38px;display:flex;align-items:center;padding:8px 10px;border:1px solid var(--border-strong);border-radius:6px;background:var(--bg-muted);font-weight:700;color:var(--text)"><span class="i18n" data-en="New client" data-gr="Νέος πελάτης">New client</span></div><input type="hidden" id="p-id" value=""></div>
           <div class="form-field"><label><span class="i18n" data-en="Full Name" data-gr="Ονοματεπώνυμο">Full Name</span></label><input type="text" id="p-name" placeholder="—" oninput="calcAll()"></div>
@@ -1192,9 +1192,10 @@ table th,
         <div id="bc-interpretation"></div>
         <div class="section-label"><span class="i18n" data-en="Recommended Targets" data-gr="Προτεινόμενοι Στόχοι">Recommended Targets</span></div>
         <div id="bc-targets"></div>
-        <div style="margin-top:14px;display:flex;gap:8px;">
-          <button class="btn primary" onclick="saveBodyComp()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save Measurements</button>
-          <button class="btn" onclick="nav('tracking')">View history →</button>
+        <div style="margin-top:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <button class="btn primary" onclick="saveBodyComp()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Save Measurements" data-gr="Αποθήκευση Μετρήσεων">Save Measurements</span></button>
+          <button class="btn" onclick="nav('tracking')"><span class="i18n" data-en="View history →" data-gr="Προβολή ιστορικού →">View history →</span></button>
+          <span style="font-size:11px;color:var(--text-muted)"><span class="i18n" data-en="↳ Logs this visit — click Save Client above to keep it permanently" data-gr="↳ Καταγράφει την επίσκεψη — πατήστε Αποθήκευση Πελάτη επάνω για μόνιμη αποθήκευση">↳ Logs this visit — click Save Client above to keep it permanently</span></span>
         </div>
       </div>
     </div>
@@ -1373,7 +1374,7 @@ table th,
         </div>
         <button class="btn primary" onclick="addTracking()">+ <span class="i18n" data-en="Log Visit" data-gr="Καταγραφή Επίσκεψης">Log Visit</span></button>
         <span style="font-size:12px;color:var(--text-muted);margin-left:10px">↳ <span class="i18n" data-en="After logging, remember to Save Client to keep it" data-gr="Μετά την καταγραφή, θυμηθείτε να πατήσετε Αποθήκευση Πελάτη">After logging, remember to Save Client to keep it</span></span>
-        <div class="section-label"><span class="i18n" data-en="Progress Charts" data-gr="Γραφήματα Προόδου">Progress Charts</span></div>
+        <div class="section-label"><span class="i18n" data-en="Progress Charts" data-gr="Πρόοδος">Progress Charts</span></div>
         <div id="tracking-chart"></div>
         <div class="section-label"><span class="i18n" data-en="Visit History" data-gr="Ιστορικό Επισκέψεων">Visit History</span></div>
         <div id="tracking-table"></div>
@@ -4769,7 +4770,7 @@ const PAGE_INFO = {
   dashboard:{title:'Dashboard',sub:'Quick overview · Engine status · Today\'s plan'},
   clients:{title:'My Clients',sub:'Saved clients on your account'},
   intake:{title:'Client Intake',sub:'ΠΡΩΤΗ ΑΞΙΟΛΟΓΗΣΗ — First consultation questionnaire + Clinical Notes'},
-  profile:{title:'Client Profile',sub:'Demographics · Anthropometrics · Auto BMR/TDEE/BMI/IBW'},
+  profile:{title:'Client Profile',sub:'Personal Details · Anthropometrics · Auto BMR/TDEE/BMI/IBW'},
   bodycomp:{title:'Body Composition',sub:'Body fat, water, muscle mass, visceral fat and metabolic age'},
   macros:{title:'Macro Targets',sub:'Calorie split · Carbs / Protein / Fat breakdown'},
   exchanges:{title:'Exchange System',sub:'Σύστημα Ισοδυνάμων · Auto-calculated from macro targets'},
@@ -4788,7 +4789,7 @@ const PAGE_INFO_GR = {
   dashboard:{title:'Πίνακας Ελέγχου',sub:'Γρήγορη επισκόπηση · Κατάσταση · Σημερινό πλάνο'},
   clients:{title:'Οι Πελάτες μου',sub:'Αποθηκευμένοι πελάτες στον λογαριασμό σας'},
   intake:{title:'Ιστορικό Πελάτη',sub:'ΠΡΩΤΗ ΑΞΙΟΛΟΓΗΣΗ — Ερωτηματολόγιο πρώτης συνεδρίας + Κλινικές Σημειώσεις'},
-  profile:{title:'Προφίλ Πελάτη',sub:'Δημογραφικά · Ανθρωπομετρικά · Αυτόματο BMR/TDEE/BMI/IBW'},
+  profile:{title:'Προφίλ Πελάτη',sub:'Προσωπικά Στοιχεία · Ανθρωπομετρικά · Αυτόματο BMR/TDEE/BMI/IBW'},
   bodycomp:{title:'Σύσταση Σώματος',sub:'Λίπος, νερό, μυϊκή μάζα, σπλαχνικό λίπος και μεταβολική ηλικία'},
   macros:{title:'Στόχοι Μακροθρεπτικών',sub:'Κατανομή θερμίδων · Υδατάνθρακες / Πρωτεΐνη / Λίπος'},
   exchanges:{title:'Σύστημα Ισοδυνάμων',sub:'Σύστημα Ισοδυνάμων · Αυτόματος υπολογισμός από στόχους'},
@@ -5033,20 +5034,29 @@ function calcAll() {
     S.isPregnant=isPregnant;
     S.pregnancyManualDeficit = isPregnant && calAdjIsManual && calAdj<0; // flagged in Engine Control
     const noteEl=document.getElementById('cal-adj-note');
+    const isGrCal = window.appLang==='gr';
     if(noteEl){
       if(isPregnant){
-        noteEl.textContent = calAdjIsManual
-          ? `Manual override: ${calAdj>0?'+':''}${calAdj} kcal + ${pregAdj} kcal (pregnancy trimester ${v('p-trimester')||'1'})${calAdj<0?' — <i class="ti ti-alert-triangle" aria-hidden="true"></i> this is a caloric deficit during pregnancy; ACOG/DGA guidance recommends against this unless specifically medically indicated':''}.`
-          : `Suggested (editable): +0 kcal base adjustment (ACOG/DGA: no caloric restriction or goal-driven surplus during pregnancy) + ${pregAdj} kcal (pregnancy trimester ${v('p-trimester')||'1'}). Goal "${goal}" is intentionally NOT applied as a deficit/surplus while pregnant. Edit the number above only if a deficit/surplus is specifically medically indicated.`;
+        noteEl.innerHTML = calAdjIsManual
+          ? (isGrCal
+              ? `Χειροκίνητη προσαρμογή: ${calAdj>0?'+':''}${calAdj} kcal + ${pregAdj} kcal (τρίμηνο εγκυμοσύνης ${v('p-trimester')||'1'})${calAdj<0?' — <i class="ti ti-alert-triangle" aria-hidden="true"></i> πρόκειται για θερμιδικό έλλειμμα κατά την εγκυμοσύνη· οι οδηγίες ACOG/DGA το αποθαρρύνουν εκτός αν ενδείκνυται ιατρικά':''}.`
+              : `Manual override: ${calAdj>0?'+':''}${calAdj} kcal + ${pregAdj} kcal (pregnancy trimester ${v('p-trimester')||'1'})${calAdj<0?' — <i class="ti ti-alert-triangle" aria-hidden="true"></i> this is a caloric deficit during pregnancy; ACOG/DGA guidance recommends against this unless specifically medically indicated':''}.`)
+          : (isGrCal
+              ? `Προτεινόμενο (επεξεργάσιμο): +0 kcal βασική προσαρμογή (ACOG/DGA: καμία θερμιδική περιοριστική ή στοχευμένη αύξηση κατά την εγκυμοσύνη) + ${pregAdj} kcal (τρίμηνο εγκυμοσύνης ${v('p-trimester')||'1'}). Ο στόχος «${goal}» δεν εφαρμόζεται σκόπιμα ως έλλειμμα/πλεόνασμα κατά την εγκυμοσύνη. Επεξεργαστείτε τον αριθμό παραπάνω μόνο αν ενδείκνυται ιατρικά έλλειμμα/πλεόνασμα.`
+              : `Suggested (editable): +0 kcal base adjustment (ACOG/DGA: no caloric restriction or goal-driven surplus during pregnancy) + ${pregAdj} kcal (pregnancy trimester ${v('p-trimester')||'1'}). Goal "${goal}" is intentionally NOT applied as a deficit/surplus while pregnant. Edit the number above only if a deficit/surplus is specifically medically indicated.`);
       } else {
-        noteEl.textContent = calAdjIsManual
-          ? `Manual override: ${calAdj>0?'+':''}${calAdj} kcal (suggested would be ${autoAdj>0?'+':''}${autoAdj} for "${goal}")`
-          : `Suggested (editable): ${autoAdj>0?'+':''}${autoAdj} kcal for "${goal}". Edit the number above for a different adjustment.`;
+        noteEl.innerHTML = calAdjIsManual
+          ? (isGrCal
+              ? `Χειροκίνητη προσαρμογή: ${calAdj>0?'+':''}${calAdj} kcal (προτεινόμενο θα ήταν ${autoAdj>0?'+':''}${autoAdj} για «${goal}»)`
+              : `Manual override: ${calAdj>0?'+':''}${calAdj} kcal (suggested would be ${autoAdj>0?'+':''}${autoAdj} for "${goal}")`)
+          : (isGrCal
+              ? `Προτεινόμενο (επεξεργάσιμο): ${autoAdj>0?'+':''}${autoAdj} kcal για «${goal}». Επεξεργαστείτε τον αριθμό παραπάνω για διαφορετική προσαρμογή.`
+              : `Suggested (editable): ${autoAdj>0?'+':''}${autoAdj} kcal for "${goal}". Edit the number above for a different adjustment.`);
       }
     }
   } else {
     const noteEl=document.getElementById('cal-adj-note');
-    if(noteEl) noteEl.textContent = 'Auto suggestion appears after age, height and weight are filled. Manual entries are preserved.';
+    if(noteEl) noteEl.textContent = window.appLang==='gr' ? 'Η αυτόματη πρόταση εμφανίζεται μόλις συμπληρωθούν ηλικία, ύψος και βάρος. Οι χειροκίνητες τιμές διατηρούνται.' : 'Auto suggestion appears after age, height and weight are filled. Manual entries are preserved.';
   }
   setEl('r-bmi',bmi?bmi.toFixed(1):'—'); setEl('r-bmi-cat',bmiCat||'—');
   setEl('r-bmr',bmr?Math.round(bmr):'—'); setEl('r-tdee',tdee?Math.round(tdee):'—');
@@ -5456,7 +5466,7 @@ function onBodyCompManualInput(field){
 }
 function saveBodyComp(){
   S.tracking.unshift({date:new Date().toLocaleDateString('el-GR'),weight:S.weight,bf:v('bc-bf'),muscle:v('bc-muscle'),visceral:v('bc-visceral'),notes:'Body comp entry'});
-  alert('<i class="ti ti-circle-check" aria-hidden="true"></i> Measurements saved! View in Progress Tracking.');
+  alert(window.appLang==='gr' ? 'Οι μετρήσεις αποθηκεύτηκαν! Δείτε στην Παρακολούθηση Προόδου.' : 'Measurements saved! View in Progress Tracking.');
 }
 
 function buildOneDayPlan(){
@@ -7478,7 +7488,7 @@ function renderDashboard(){ updateDashMetrics(); updatePracticeOverview(); build
 function updateTodayAppointmentCount(){
   const count=appointmentsForDate(todayISO()).length;
   setEl('d-today-appts', String(count));
-  setEl('d-today-appts-sub', count===1 ? '1 appointment today' : count+' appointments today');
+  setEl('d-today-appts-sub', window.appLang==='gr' ? (count===1?'1 ραντεβού σήμερα':count+' ραντεβού σήμερα') : (count===1?'1 appointment today':count+' appointments today'));
 }
 async function updatePracticeOverview(){
   updateTodayAppointmentCount();
@@ -7655,30 +7665,30 @@ const LAB_TESTS = [
 // especially for CKD/Hemodialysis/Thalassemia where some supplements (iron,
 // potassium, fat-soluble vitamins) can be harmful.
 const CONDITION_VITAMINS = {
-  Diabetes:    [{n:'Βιταμίνη D', why:'Συχνή ανεπάρκεια, σχετίζεται με ινσουλινοαντίσταση'},{n:'Μαγνήσιο', why:'Συχνά χαμηλό στον διαβήτη τύπου 2'},{n:'Βιταμίνη Β12', why:'Έλεγχος αν λαμβάνεται μετφορμίνη — μειώνει την απορρόφηση'}],
+  Diabetes:    [{n:'Βιταμίνη D', nEn:'Vitamin D', why:'Συχνή ανεπάρκεια, σχετίζεται με ινσουλινοαντίσταση', whyEn:'Common deficiency, associated with insulin resistance'},{n:'Μαγνήσιο', nEn:'Magnesium', why:'Συχνά χαμηλό στον διαβήτη τύπου 2', whyEn:'Often low in type 2 diabetes'},{n:'Βιταμίνη Β12', nEn:'Vitamin B12', why:'Έλεγχος αν λαμβάνεται μετφορμίνη — μειώνει την απορρόφηση', whyEn:'Check if taking metformin — reduces absorption'}],
   CKD:         [
     {n:'Βιταμίνη D', nEn:'Vitamin D', why:'Πρωτεΐνη: 0.8 g/kg σωματικού βάρους, αποφυγή υπερβολικής πρωτεΐνης. Περιορισμός φωσφόρου, νάτριο <2g/ημέρα, παρακολούθηση καλίου και περιορισμός μόνο αν τα εργαστηριακά δείχνουν αυξημένο K+.', whyEn:'Protein: 0.8 g/kg body weight, avoid excess protein. Restrict phosphorus, sodium <2g/day, monitor potassium and restrict only if labs show elevated K+.'},
     {n:'Βιταμίνη Β12', nEn:'Vitamin B12', why:'Έλεγχος επιπέδων σε ΧΝΝ στάδιο 1-2 και εξατομίκευση ανά εργαστηριακά.', whyEn:'Monitor levels in CKD stage 1-2 and individualise based on labs.'},
     {n:'Φολικό οξύ', nEn:'Folate', why:'Έλεγχος επιπέδων, ιδιαίτερα αν υπάρχουν διατροφικοί περιορισμοί ή αναιμία.', whyEn:'Monitor levels, especially with dietary restriction or anaemia.'},
     {n:'Σίδηρος', nEn:'Iron', why:'Έλεγχος φερριτίνης/σιδήρου. Αποφυγή υψηλού καλίου αν υπάρχει υπερκαλιαιμία. Περιορισμός υψηλού φωσφόρου: επεξεργασμένα τρόφιμα, αναψυκτικά τύπου cola, υπερβολικά γαλακτοκομικά. Το βράσιμο πατάτας και απόρριψη νερού μειώνει το κάλιο.', whyEn:'Check ferritin/iron. Avoid high-potassium foods if hyperkalaemia is present. Limit high-phosphorus foods: processed foods, cola drinks, excess dairy. Boiling potatoes and discarding the water lowers potassium.'}
   ],
-  Hemodialysis:[{n:'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Ενεργή Βιταμίνη D, σίδηρος/EPO', why:'Συνήθως διαχειρίζονται ιατρικά στη μονάδα αιμοκάθαρσης'},{n:'Σύμπλεγμα Β (υδατοδιαλυτές, ειδικά για αιμοκάθαρση)', why:'Απώλειες κατά τη διαδικασία αιμοκάθαρσης'}],
-  Hypertension:[{n:'Μαγνήσιο & Κάλιο από τροφή', why:'Υποστηρίζουν ρύθμιση πίεσης — ΌΧΙ συμπληρώματα καλίου αν συνυπάρχει CKD/Αιμοκάθαρση χωρίς ιατρική οδηγία'}],
-  Dyslipidemia:[{n:'Ωμέγα-3 (EPA/DHA)', why:'Μπορεί να μειώσει τα τριγλυκερίδια — συζήτηση δοσολογίας με ιατρό'}],
-  PCOS:        [{n:'Βιταμίνη D', why:'Συχνή ανεπάρκεια, σχετίζεται με ινσουλινοαντίσταση'},{n:'Myo-inositol', why:'Πιθανή βελτίωση ωορρηξίας/ινσουλινοαντίστασης — συζήτηση με ιατρό'},{n:'Ωμέγα-3', why:'Αντιφλεγμονώδης δράση'}],
+  Hemodialysis:[{n:'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Ενεργή Βιταμίνη D, σίδηρος/EPO', nEn:'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Active Vitamin D, iron/EPO', why:'Συνήθως διαχειρίζονται ιατρικά στη μονάδα αιμοκάθαρσης', whyEn:'Usually managed medically at the dialysis unit'},{n:'Σύμπλεγμα Β (υδατοδιαλυτές, ειδικά για αιμοκάθαρση)', nEn:'B-complex (water-soluble, dialysis-specific)', why:'Απώλειες κατά τη διαδικασία αιμοκάθαρσης', whyEn:'Losses occur during the dialysis process'}],
+  Hypertension:[{n:'Μαγνήσιο & Κάλιο από τροφή', nEn:'Magnesium & Potassium from food', why:'Υποστηρίζουν ρύθμιση πίεσης — ΌΧΙ συμπληρώματα καλίου αν συνυπάρχει CKD/Αιμοκάθαρση χωρίς ιατρική οδηγία', whyEn:'Support blood pressure regulation — NOT potassium supplements if CKD/Dialysis coexists without medical guidance'}],
+  Dyslipidemia:[{n:'Ωμέγα-3 (EPA/DHA)', nEn:'Omega-3 (EPA/DHA)', why:'Μπορεί να μειώσει τα τριγλυκερίδια — συζήτηση δοσολογίας με ιατρό', whyEn:'May reduce triglycerides — discuss dosage with physician'}],
+  PCOS:        [{n:'Βιταμίνη D', nEn:'Vitamin D', why:'Συχνή ανεπάρκεια, σχετίζεται με ινσουλινοαντίσταση', whyEn:'Common deficiency, associated with insulin resistance'},{n:'Myo-inositol', nEn:'Myo-inositol', why:'Πιθανή βελτίωση ωορρηξίας/ινσουλινοαντίστασης — συζήτηση με ιατρό', whyEn:'May improve ovulation/insulin resistance — discuss with physician'},{n:'Ωμέγα-3', nEn:'Omega-3', why:'Αντιφλεγμονώδης δράση', whyEn:'Anti-inflammatory effect'}],
   GERD:        [
     {n:'Βιταμίνη Β12', nEn:'Vitamin B12', why:'Έλεγχος ιδιαίτερα αν λαμβάνονται αναστολείς αντλίας πρωτονίων (PPIs). Λίπος 25–30% ενέργειας, μέτρια πρωτεΐνη ομοιόμορφα στα γεύματα, μικρά και συχνά γεύματα.', whyEn:'Monitor especially if using PPIs. Fat 25-30% of total energy, moderate protein evenly distributed across meals, use smaller frequent meals.'},
     {n:'Μαγνήσιο', nEn:'Magnesium', why:'Οι PPIs μπορεί να μειώσουν τα επίπεδα μαγνησίου. Αποφυγή καφεΐνης, αλκοόλ, σοκολάτας, πικάντικων και υψηλού λίπους γευμάτων. Τα ωμέγα-3 μπορεί να βοηθήσουν στη μείωση φλεγμονής του οισοφάγου.', whyEn:'PPIs may lower magnesium. Avoid caffeine, alcohol, chocolate, spicy foods and high-fat meals. Omega-3 fatty acids may help reduce oesophageal inflammation.'}
   ],
-  IBS:         [{n:'Προβιοτικά', why:'Επιλογή στελέχους εξατομικευμένα — μπορεί να βοηθήσουν στα συμπτώματα'},{n:'Βιταμίνη D', why:'Έλεγχος επιπέδων αν περιορίζονται γαλακτοκομικά'}],
-  Obesity:     [{n:'Βιταμίνη D', why:'Συχνή ανεπάρκεια'},{n:'Σίδηρος', why:'Η ανεπάρκεια σιδήρου είναι συχνή κατά τον θερμιδικό περιορισμό — εξέταση/παρακολούθηση επιπέδων όπου χρειάζεται'}],
-  Thyroid:     [{n:'Σελήνιο', why:'Υποστηρίζει τη μετατροπή Τ4→Τ3, ιδίως στη Hashimoto'},{n:'Ψευδάργυρος, Σίδηρος, Βιταμίνη D', why:'Συχνές ελλείψεις σε αυτοάνοση θυρεοειδίτιδα'},{n:'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Ιώδιο μόνο υπό καθοδήγηση', why:'Υπερβολικό ιώδιο μπορεί να επιδεινώσει την αυτοανοσία'}],
-  Celiac:      [{n:'Σίδηρος, Φολικό οξύ, Βιταμίνη Β12', why:'Συχνές ελλείψεις λόγω δυσαπορρόφησης πριν τη διάγνωση/σε ενεργή νόσο'},{n:'Βιταμίνη D, Ασβέστιο', why:'Υποστήριξη οστικής υγείας'}],
-  Thalassemia: [{n:'Φολικό οξύ', why:'Συχνά απαραίτητο λόγω αυξημένης ερυθροποίησης — υπό καθοδήγηση αιματολόγου'},{n:'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Αποφυγή σιδήρου & υψηλής δόσης βιτ. C', why:'Κίνδυνος επιβάρυνσης σιδήρου σε ασθενείς με τακτικές μεταγγίσεις'}],
-  FoodIntolerance:[{n:'Ασβέστιο, Βιταμίνη D', why:'Αν αποφεύγονται γαλακτοκομικά'},{n:'Σίδηρος', why:'Αν αποφεύγεται κρέας'},{n:'Βιταμίνη Β12', why:'Αν αποφεύγονται ζωικά τρόφιμα'},{n:'Ψευδάργυρος', why:'Αν αποκλείονται πολλαπλές ομάδες τροφίμων'}],
-  Pregnancy:   [{n:'Φολικό οξύ', why:'600 mcg/ημέρα — νευρικός σωλήνας (ACOG)'},{n:'Σίδηρος', why:'27 mg/ημέρα — συχνή ανεπάρκεια στην εγκυμοσύνη'},{n:'Βιταμίνη D', why:'Έλεγχος επιπέδων'},{n:'Ιώδιο', why:'220 mcg/ημέρα — ανάπτυξη θυρεοειδούς εμβρύου'},{n:'Ωμέγα-3', why:'DHA για ανάπτυξη εγκεφάλου εμβρύου'},{n:'Χολίνη', why:'Νευρική ανάπτυξη'},{n:'Ασβέστιο', why:'1000 mg/ημέρα'}],
-  Menopause:   [{n:'Ασβέστιο, Βιταμίνη D', why:'Η απώλεια οστικής μάζας επιταχύνεται μετά την εμμηνόπαυση'},{n:'Μαγνήσιο', why:'Οστική υγεία και ύπνος'},{n:'Ωμέγα-3', why:'Ο καρδιαγγειακός κίνδυνος αυξάνεται μετά την εμμηνόπαυση'},{n:'Βιταμίνη Β12', why:'Η απορρόφηση μειώνεται με την ηλικία'}],
-  Sports:      [{n:'Σίδηρος', why:'Ιδίως σε γυναίκες αθλήτριες — απώλειες μέσω ιδρώτα/έμμηνου ρύσης'},{n:'Βιταμίνη D, Ασβέστιο', why:'Κίνδυνος καταγματικής κόπωσης / οστική υγεία'},{n:'Μαγνήσιο', why:'Μυϊκή λειτουργία και αποκατάσταση'},{n:'Νάτριο, Κάλιο', why:'Ενυδάτωση και απόδοση'}],
+  IBS:         [{n:'Προβιοτικά', nEn:'Probiotics', why:'Επιλογή στελέχους εξατομικευμένα — μπορεί να βοηθήσουν στα συμπτώματα', whyEn:'Strain selection is individualised — may help symptoms'},{n:'Βιταμίνη D', nEn:'Vitamin D', why:'Έλεγχος επιπέδων αν περιορίζονται γαλακτοκομικά', whyEn:'Monitor levels if dairy is restricted'}],
+  Obesity:     [{n:'Βιταμίνη D', nEn:'Vitamin D', why:'Συχνή ανεπάρκεια', whyEn:'Common deficiency'},{n:'Σίδηρος', nEn:'Iron', why:'Η ανεπάρκεια σιδήρου είναι συχνή κατά τον θερμιδικό περιορισμό — εξέταση/παρακολούθηση επιπέδων όπου χρειάζεται', whyEn:'Iron deficiency is common during calorie restriction — test/monitor levels where needed'}],
+  Thyroid:     [{n:'Σελήνιο', nEn:'Selenium', why:'Υποστηρίζει τη μετατροπή Τ4→Τ3, ιδίως στη Hashimoto', whyEn:'Supports T4→T3 conversion, especially in Hashimoto\'s'},{n:'Ψευδάργυρος, Σίδηρος, Βιταμίνη D', nEn:'Zinc, Iron, Vitamin D', why:'Συχνές ελλείψεις σε αυτοάνοση θυρεοειδίτιδα', whyEn:'Common deficiencies in autoimmune thyroiditis'},{n:'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Ιώδιο μόνο υπό καθοδήγηση', nEn:'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Iodine only under guidance', why:'Υπερβολικό ιώδιο μπορεί να επιδεινώσει την αυτοανοσία', whyEn:'Excess iodine may worsen autoimmunity'}],
+  Celiac:      [{n:'Σίδηρος, Φολικό οξύ, Βιταμίνη Β12', nEn:'Iron, Folate, Vitamin B12', why:'Συχνές ελλείψεις λόγω δυσαπορρόφησης πριν τη διάγνωση/σε ενεργή νόσο', whyEn:'Common deficiencies due to malabsorption pre-diagnosis/in active disease'},{n:'Βιταμίνη D, Ασβέστιο', nEn:'Vitamin D, Calcium', why:'Υποστήριξη οστικής υγείας', whyEn:'Support bone health'}],
+  Thalassemia: [{n:'Φολικό οξύ', nEn:'Folate', why:'Συχνά απαραίτητο λόγω αυξημένης ερυθροποίησης — υπό καθοδήγηση αιματολόγου', whyEn:'Often needed due to increased erythropoiesis — under haematologist guidance'},{n:'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Αποφυγή σιδήρου & υψηλής δόσης βιτ. C', nEn:'<i class="ti ti-alert-triangle" aria-hidden="true"></i> Avoid iron & high-dose vitamin C', why:'Κίνδυνος επιβάρυνσης σιδήρου σε ασθενείς με τακτικές μεταγγίσεις', whyEn:'Risk of iron overload in patients with regular transfusions'}],
+  FoodIntolerance:[{n:'Ασβέστιο, Βιταμίνη D', nEn:'Calcium, Vitamin D', why:'Αν αποφεύγονται γαλακτοκομικά', whyEn:'If dairy is avoided'},{n:'Σίδηρος', nEn:'Iron', why:'Αν αποφεύγεται κρέας', whyEn:'If meat is avoided'},{n:'Βιταμίνη Β12', nEn:'Vitamin B12', why:'Αν αποφεύγονται ζωικά τρόφιμα', whyEn:'If animal foods are avoided'},{n:'Ψευδάργυρος', nEn:'Zinc', why:'Αν αποκλείονται πολλαπλές ομάδες τροφίμων', whyEn:'If multiple food groups are excluded'}],
+  Pregnancy:   [{n:'Φολικό οξύ', nEn:'Folate', why:'600 mcg/ημέρα — νευρικός σωλήνας (ACOG)', whyEn:'600 mcg/day — neural tube development (ACOG)'},{n:'Σίδηρος', nEn:'Iron', why:'27 mg/ημέρα — συχνή ανεπάρκεια στην εγκυμοσύνη', whyEn:'27 mg/day — common deficiency in pregnancy'},{n:'Βιταμίνη D', nEn:'Vitamin D', why:'Έλεγχος επιπέδων', whyEn:'Monitor levels'},{n:'Ιώδιο', nEn:'Iodine', why:'220 mcg/ημέρα — ανάπτυξη θυρεοειδούς εμβρύου', whyEn:'220 mcg/day — fetal thyroid development'},{n:'Ωμέγα-3', nEn:'Omega-3', why:'DHA για ανάπτυξη εγκεφάλου εμβρύου', whyEn:'DHA for fetal brain development'},{n:'Χολίνη', nEn:'Choline', why:'Νευρική ανάπτυξη', whyEn:'Neural development'},{n:'Ασβέστιο', nEn:'Calcium', why:'1000 mg/ημέρα', whyEn:'1000 mg/day'}],
+  Menopause:   [{n:'Ασβέστιο, Βιταμίνη D', nEn:'Calcium, Vitamin D', why:'Η απώλεια οστικής μάζας επιταχύνεται μετά την εμμηνόπαυση', whyEn:'Bone loss accelerates after menopause'},{n:'Μαγνήσιο', nEn:'Magnesium', why:'Οστική υγεία και ύπνος', whyEn:'Bone health and sleep'},{n:'Ωμέγα-3', nEn:'Omega-3', why:'Ο καρδιαγγειακός κίνδυνος αυξάνεται μετά την εμμηνόπαυση', whyEn:'Cardiovascular risk increases after menopause'},{n:'Βιταμίνη Β12', nEn:'Vitamin B12', why:'Η απορρόφηση μειώνεται με την ηλικία', whyEn:'Absorption decreases with age'}],
+  Sports:      [{n:'Σίδηρος', nEn:'Iron', why:'Ιδίως σε γυναίκες αθλήτριες — απώλειες μέσω ιδρώτα/έμμηνου ρύσης', whyEn:'Especially in female athletes — losses via sweat/menstruation'},{n:'Βιταμίνη D, Ασβέστιο', nEn:'Vitamin D, Calcium', why:'Κίνδυνος καταγματικής κόπωσης / οστική υγεία', whyEn:'Stress fracture risk / bone health'},{n:'Μαγνήσιο', nEn:'Magnesium', why:'Μυϊκή λειτουργία και αποκατάσταση', whyEn:'Muscle function and recovery'},{n:'Νάτριο, Κάλιο', nEn:'Sodium, Potassium', why:'Ενυδάτωση και απόδοση', whyEn:'Hydration and performance'}],
   Osteoporosis:[
     {n:'Ασβέστιο', nEn:'Calcium', why:'Στόχος 1000–1200 mg/ημέρα. Πρωτεΐνη 1.2–1.6 g/kg IBW για διατήρηση οστικής μήτρας. Περιορισμός νατρίου και καφεΐνης γιατί αυξάνουν την αποβολή ασβεστίου.', whyEn:'Target 1000-1200 mg/day. Protein 1.2-1.6 g/kg IBW to preserve bone matrix. Limit sodium and caffeine because they increase calcium excretion.'},
     {n:'Βιταμίνη D', nEn:'Vitamin D', why:'Στόχος 800–1000 IU/ημέρα, με έλεγχο επιπέδων. Άσκηση με βάρη/αντιστάσεις παράλληλα με τη διατροφική παρέμβαση.', whyEn:'Target 800-1000 IU/day with level monitoring. Weight-bearing exercise is recommended alongside dietary intervention.'},
@@ -7752,7 +7762,7 @@ function labStatus(test, val){
 
 function renderLabsTable(){
   const isGr = window.appLang!=='en';
-  let html='<div class="table-wrap"><table><thead><tr><th>Test</th><th>Value</th><th>Unit</th><th>Reference range</th><th>Status</th><th>Note</th></tr></thead><tbody>';
+  let html=`<div class="table-wrap"><table><thead><tr><th>${isGr?'Εξέταση':'Test'}</th><th>${isGr?'Τιμή':'Value'}</th><th>${isGr?'Μονάδα':'Unit'}</th><th>${isGr?'Εύρος αναφοράς':'Reference range'}</th><th>${isGr?'Κατάσταση':'Status'}</th><th>${isGr?'Σημείωση':'Note'}</th></tr></thead><tbody>`;
   LAB_TESTS.forEach(t=>{
     const id='lab-'+t.key;
     const val=S.labValues[t.key];
@@ -9481,7 +9491,7 @@ function renderClientListRows(clients){
     const badge=c.localOnly ? `<div style="font-size:10px;color:var(--amber-text);font-weight:700">${isGr?'Αποθηκευμένο τοπικά':'Saved locally'}</div>` : '';
     return {c,cond,savedAt,badge};
   });
-  const loadLbl=isGr?'Φόρτωση':'Load', delLbl=isGr?'Διαγραφή':'Delete', unnamedLbl=isGr?'Χωρίς όνομα':'Unnamed client', lastSavedLbl=isGr?'Τελ. αποθήκευση':'Last saved';
+  const loadLbl=isGr?'Άνοιγμα':'Open', delLbl=isGr?'Διαγραφή':'Delete', unnamedLbl=isGr?'Χωρίς όνομα':'Unnamed client', lastSavedLbl=isGr?'Τελ. αποθήκευση':'Last saved';
   const tableHtml='<table><thead><tr><th></th><th>'+(isGr?'Όνομα':'Name')+'</th><th>'+(isGr?'Αναφορά':'Reference')+'</th><th>'+lastSavedLbl+'</th><th></th></tr></thead><tbody>'+
     rows.map(({c,cond,savedAt,badge})=>`<tr><td style="width:44px">${clientAvatarHtml(c.data&&c.data.clientPhoto, c.name, 32)}</td><td><strong>${safeHtml(c.name||unnamedLbl)}</strong>${badge}<div style="font-size:11px;color:var(--text-muted)">${safeHtml(cond)}</div></td><td>${safeHtml(c.client_ref||'—')}</td><td>${safeHtml(savedAt)}</td>
         <td style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" style="padding:5px 10px;font-size:12px" onclick="loadClientById('${c.id}')"><i class="ti ti-eye" aria-hidden="true"></i> ${loadLbl}</button><button class="btn" style="padding:5px 10px;font-size:12px" onclick="deleteClientById('${c.id}')"><i class="ti ti-trash" aria-hidden="true"></i> ${delLbl}</button></td></tr>`).join('')+
@@ -9792,6 +9802,8 @@ function applyLanguage(lang){
   if(document.getElementById('page-account')?.classList.contains('active')) updateAccountPage();
   if(document.getElementById('page-profile')?.classList.contains('active')) calcAll();
   if(document.getElementById('page-recipes')?.classList.contains('active')){ renderRecipeDraft(); renderRecipesList(); }
+  const rebalEl=document.getElementById('rebalance-preview');
+  if(rebalEl && rebalEl.innerHTML){ rebalEl.innerHTML=''; S._rebalancePending=null; }
   if(document.getElementById('page-fooddb')?.classList.contains('active') && S.foodResults) renderFoodResults(S.foodResults);
   if(document.getElementById('page-appointments')?.classList.contains('active')){
     renderAppointments();
