@@ -4762,7 +4762,7 @@ function getMacroSuggestionExplanation(conditions){
     carb:  `${result.c}% — most conservative from ${conditionLabel(carbDriver.cond)} (${carbDriver.vals.c}%) to manage glycaemic load and food quality`,
     prot:  `${result.p}% — ${proteinRationaleForCondition(proDriver.cond)}`,
     fat:   `${result.f}% — remainder after carbohydrate + protein; focus on unsaturated fats and clinical tolerance`,
-    note:  list.length>1 ? `Combined from ${list.map(conditionLabel).join(', ')} — most conservative value per macro used` : ''
+    note:  list.length>1 ? `Combined from ${list.map(c=>conditionLabel(c)).join(', ')} — most conservative value per macro used` : ''
   };
 }
 
@@ -7413,7 +7413,7 @@ if (anyCapped) {
   setEl('engine-overall', overallHtml);
 
   setEl('engine-realism',`<table><thead><tr><th>Condition(s)</th><th>Protein cap/meal</th><th>Protein cap/day</th><th>Oil cap/meal</th><th>Oil cap/day</th><th>Starch cap/day</th><th>Status</th></tr></thead><tbody>
-    <tr><td>${conditions.map(conditionLabel).join(', ')} / ${S.sex==='M'?'Male':'Female'}</td><td>${caps.proteinPerMealMax} ex (${caps.proteinPerMealMax*gramsPerEx}g)</td><td>${caps.proteinDailyMax} ex (${caps.proteinDailyMax*gramsPerEx}g)</td><td>${caps.fatPerMealMax} tsp</td><td>${caps.fatDailyMax} tsp</td><td>${caps.starchDailyMax} ex</td><td><span class="badge ok">Caps enforced</span></td></tr>
+    <tr><td>${conditions.map(c=>conditionLabel(c)).join(', ')} / ${S.sex==='M'?'Male':'Female'}</td><td>${caps.proteinPerMealMax} ex (${caps.proteinPerMealMax*gramsPerEx}g)</td><td>${caps.proteinDailyMax} ex (${caps.proteinDailyMax*gramsPerEx}g)</td><td>${caps.fatPerMealMax} tsp</td><td>${caps.fatDailyMax} tsp</td><td>${caps.starchDailyMax} ex</td><td><span class="badge ok">Caps enforced</span></td></tr>
   </tbody></table>`);
 
   setEl('engine-gap',`<table><thead><tr><th>Metric</th><th>Value</th><th>Status</th><th>Clinical interpretation</th></tr></thead><tbody>
@@ -7445,7 +7445,7 @@ function updateDashMetrics(){
   const condList=(S.conditions&&S.conditions.length)?S.conditions:['General'];
   setEl('d-cond', condList.length>1 ? condList.length+(isGrDash?' παθήσεις':' conditions') : conditionLabel(condList[0]));
   const dCondEl=document.getElementById('d-cond');
-  if(dCondEl) dCondEl.title=condList.map(conditionLabel).join(', ');
+  if(dCondEl) dCondEl.title=condList.map(c=>conditionLabel(c)).join(', ');
   const goalLabelMap=(typeof DROPDOWN_TRANSLATIONS!=='undefined' && DROPDOWN_TRANSLATIONS['p-goal']) || {};
   setEl('d-goal-sub', goalLabelMap[S.goal] ? (isGrDash?goalLabelMap[S.goal].gr:goalLabelMap[S.goal].en) : (S.goal||''));
   const missingProfile=missingCriticalProfileFields();
@@ -9486,7 +9486,7 @@ function renderClientListRows(clients){
   const isGr = window.appLang === 'gr';
   const rows=clients.map(c=>{
     const data=c.data||{};
-    const cond=(data.conditions||[]).map(conditionLabel).join(', ')||(isGr?'Υγιεινή Διατροφή':'Healthy Eating');
+    const cond=(data.conditions||[]).map(c=>conditionLabel(c)).join(', ')||(isGr?'Υγιεινή Διατροφή':'Healthy Eating');
     const savedAt=c.updated_at ? new Date(c.updated_at).toLocaleString('el-GR') : '—';
     const badge=c.localOnly ? `<div style="font-size:10px;color:var(--amber-text);font-weight:700">${isGr?'Αποθηκευμένο τοπικά':'Saved locally'}</div>` : '';
     return {c,cond,savedAt,badge};
@@ -9805,6 +9805,7 @@ function applyLanguage(lang){
   const rebalEl=document.getElementById('rebalance-preview');
   if(rebalEl && rebalEl.innerHTML){ rebalEl.innerHTML=''; S._rebalancePending=null; }
   if(document.getElementById('page-fooddb')?.classList.contains('active') && S.foodResults) renderFoodResults(S.foodResults);
+  if(document.getElementById('page-dashboard')?.classList.contains('active')) renderDashboard();
   if(document.getElementById('page-appointments')?.classList.contains('active')){
     renderAppointments();
     const formTitle=document.getElementById('appointment-form-title');
