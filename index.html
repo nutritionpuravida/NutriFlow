@@ -1344,6 +1344,7 @@ table th,
       <div class="card-header"><span class="card-title"><i class="ti ti-calendar" aria-hidden="true"></i> <span class="i18n" data-en="7-Day Meal Plan" data-gr="Πλάνο Γευμάτων 7 Ημερών">7-Day Meal Plan</span></span></div>
       <div class="card-body">
         <div id="plan-quality-summary" style="margin-bottom:16px"></div>
+        <div id="micro-quality-summary" style="margin-bottom:16px"></div>
         <div id="rebalance-preview" style="margin-bottom:16px"></div>
         <div id="sevenday-body"></div>
       </div>
@@ -5937,6 +5938,22 @@ function toggleWeekPlanExtra(dayIndex, extrasKey, extraValue, checked){
   buildSevenDay();
 }
 
+// ── MICRONUTRIENT QUALITY ENGINE ──
+// Deliberately NOT a per-meal nutrient database (that would need real
+// USDA-verified data for ~90 meals, a much bigger separate research effort —
+// see NUTRESE_HANDOVER). Instead this infers likely adequacy for 9 key
+// nutrients from data the app already tracks exactly: exchange servings
+// (fruit/veg/dairy/starch/protein/fat), which specific meals were chosen,
+// diet type, and clinical conditions — combined with established food-group
+// nutrition science (e.g. "dairy is the primary calcium source"). This is a
+// clinical judgement aid, not a lab-grade nutrient total, and is labelled as
+// such in the UI.
+const FISH_MEAL_KEYS=new Set(['LUN_FISH_POTATO','LUN_SALMON_POTATO','LUN_BAKED_FISH_VEG','LUN_TUNA_POTATO','LUN_TUNA_RICE','LUN_SALMON_QUINOA','LUN_GRILLED_FISH_RICE','LUN_LOUVI_TUNA','DIN_FISH_POTATO','DIN_SALMON_POTATO','DIN_BAKED_FISH_VEG','DIN_TUNA_POTATO','DIN_TUNA_RICE','DIN_GRILLED_FISH_RICE']);
+const FATTY_FISH_MEAL_KEYS=new Set(['LUN_SALMON_POTATO','LUN_SALMON_QUINOA','DIN_SALMON_POTATO']); // richer vitamin D source than white fish
+const LEGUME_MEAL_KEYS=new Set(['LUN_LOUVI_TUNA','LUN_LENTILS_RICE','LUN_CHICKPEA_STEW','LUN_BEAN_SALAD','LUN_CHICKPEAS_SALAD','LUN_LENTIL_SOUP','LUN_FASOLAKIA_PORK','LUN_FASOLAKIA_CHICKEN','LUN_TOFU_RICE','LUN_PEAS_LADERO','DIN_LENTILS_RICE','DIN_CHICKPEA_STEW','DIN_BEAN_PASTA','DIN_TOFU_STIRFRY','DIN_FASOLAKIA_CHICKEN','DIN_CHICKPEAS_SALAD']);
+const RED_MEAT_MEAL_KEYS=new Set(['LUN_FASOLAKIA_PORK','LUN_PASTA_MINCE','LUN_BIFTEKI_BULGUR','DIN_PASTA_MINCE','DIN_BIFTEKI_BULGUR']); // pork/beef — heme iron
+const HIGH_SODIUM_MEAL_KEYS=new Set(['LUN_HALLOUMI_POTATO','LUN_HALLOUMI_PASTA','LUN_TRACHANAS_HALLOUMI','LUN_AVGOLEMONO_SOUP','LUN_TUNA_POTATO','LUN_TUNA_RICE','LUN_LOUVI_TUNA','DIN_HALLOUMI_POTATO','DIN_HALLOUMI_SALAD','DIN_TRACHANAS_HALLOUMI','DIN_AVGOLEMONO_SOUP','DIN_TUNA_POTATO','DIN_TUNA_RICE','DIN_SOUVLAKI_PITA']); // halloumi/feta/canned fish/cured — naturally higher sodium
+
 const SEVEN_DAY_SLOTS=[
   {key:'brk', ai:'breakfast', labelGR:'Πρωινό', labelEN:'Breakfast', icon:'🌅'},
   {key:'snk1', ai:'snack1', labelGR:'Σνακ 1', labelEN:'Snack 1', icon:'🍎'},
@@ -6736,6 +6753,166 @@ function togglePlanQualityDetail(headerEl){
   if(chevron) chevron.className='ti pq-chevron '+(show?'ti-chevron-up':'ti-chevron-down');
   S.planQualityUserOverride=show;
 }
+
+// Scans the week's chosen meals + snack extras once for the presence flags
+// the nutrient rules below need. Exchange SERVING TOTALS (fruit/veg/dairy
+// etc.) are the same fixed daily target used across the whole week in this
+// app, so those are read directly from S.ex rather than re-derived per day.
+function weekMicronutrientSignals(){
+  const plans=S.weekPlans||WEEK_PLANS;
+  let fishCount=0, fattyFishCount=0, legumeCount=0, redMeatCount=0, highSodiumCount=0, nutsCount=0;
+  plans.forEach(p=>{
+    [p.lun, p.din].forEach(key=>{
+      if(FISH_MEAL_KEYS.has(key)) fishCount++;
+      if(FATTY_FISH_MEAL_KEYS.has(key)) fattyFishCount++;
+      if(LEGUME_MEAL_KEYS.has(key)) legumeCount++;
+      if(RED_MEAT_MEAL_KEYS.has(key)) redMeatCount++;
+      if(HIGH_SODIUM_MEAL_KEYS.has(key)) highSodiumCount++;
+    });
+    ['snk1Extras','snk2Extras','sleepExtras'].forEach(k=>{
+      if(Array.isArray(p[k]) && p[k].includes('nuts')) nutsCount++;
+    });
+  });
+  return {fishCount, fattyFishCount, legumeCount, redMeatCount, highSodiumCount, nutsCount, days:plans.length||7};
+}
+
+function assessMicronutrientQuality(){
+  if(!S.ex) return null;
+  const ex=S.ex;
+  const sig=weekMicronutrientSignals();
+  const isVegan=S.dietType==='Vegan';
+  const isVegetarian=S.dietType==='Vegetarian';
+  const hasCKD=(S.conditions||[]).some(c=>c==='CKD'||c==='Hemodialysis');
+  const level3=(val,lo,hi)=> val>=hi?'ok':val>=lo?'warn':'err'; // higher-is-better
+  const level3Inv=(val,hi,lo)=> val<=lo?'ok':val<=hi?'warn':'err'; // lower-is-better (CKD potassium/sodium)
+
+  const rows=[];
+
+  // Fibre — vegetables, fruit, legumes
+  rows.push({key:'fibre',
+    level: level3((ex.veg>=5?2:ex.veg>=3?1:0)+(ex.fruit>=2?1:0)+(sig.legumeCount>=1?1:0), 2, 3),
+    en:'Fibre', gr:'Φυτικές Ίνες',
+    sugEn:'Add more vegetables/fruit, or a legume-based lunch or dinner this week.',
+    sugGr:'Προσθέστε περισσότερα λαχανικά/φρούτα, ή ένα γεύμα με όσπρια αυτή την εβδομάδα.'});
+
+  // Calcium — dairy exchanges
+  rows.push({key:'calcium',
+    level: ex.dairy>=2?'ok':ex.dairy>=1?'warn':'err',
+    en:'Calcium', gr:'Ασβέστιο',
+    sugEn:'Add Greek yogurt, milk, a fortified plant drink, or sardines (with bones).',
+    sugGr:'Προσθέστε ελληνικό γιαούρτι, γάλα, εμπλουτισμένο φυτικό ρόφημα, ή σαρδέλες (με κόκαλα).'});
+
+  // Iron — red meat or legumes present across the week
+  rows.push({key:'iron',
+    level: (sig.redMeatCount+sig.legumeCount)>=3?'ok':(sig.redMeatCount+sig.legumeCount)>=1?'warn':'err',
+    en:'Iron', gr:'Σίδηρος',
+    sugEn:'Include red meat, legumes, or fortified grains more often — pair with vitamin-C-rich fruit/veg to help absorption.',
+    sugGr:'Συμπεριλάβετε πιο συχνά κόκκινο κρέας, όσπρια ή εμπλουτισμένα δημητριακά — συνδυάστε με φρούτα/λαχανικά πλούσια σε βιταμίνη C.'});
+
+  // Sodium — high-sodium meal frequency (lower is better)
+  rows.push({key:'sodium',
+    level: level3Inv(sig.highSodiumCount, 3, 1),
+    en:'Sodium', gr:'Νάτριο',
+    sugEn:'Several meals this week lean on halloumi, feta, canned fish, or cured items — consider swapping one for a lower-sodium option.',
+    sugGr:'Αρκετά γεύματα αυτή την εβδομάδα βασίζονται σε χαλούμι, φέτα, κονσερβοποιημένο ψάρι ή αλλαντικά — σκεφτείτε αντικατάσταση ενός με επιλογή χαμηλότερης περιεκτικότητας σε νάτριο.'});
+
+  // Potassium — condition-aware: CKD/Hemodialysis want it controlled, not maximised
+  if(hasCKD){
+    rows.push({key:'potassium',
+      level: level3Inv(ex.fruit+ex.veg, 8, 6),
+      en:'Potassium', gr:'Κάλιο',
+      sugEn:'Fruit + vegetable exchanges are on the higher side for a renal-caution plan — review potassium-dense choices with the client.',
+      sugGr:'Οι μερίδες φρούτων + λαχανικών είναι σχετικά αυξημένες για πλάνο με νεφρική προφύλαξη — επανεξετάστε επιλογές πλούσιες σε κάλιο.'});
+  } else {
+    rows.push({key:'potassium',
+      level: level3(ex.fruit+ex.veg, 5, 7),
+      en:'Potassium', gr:'Κάλιο',
+      sugEn:'Add more fruit and vegetables — potatoes, bananas, oranges, and leafy greens are good sources.',
+      sugGr:'Προσθέστε περισσότερα φρούτα και λαχανικά — πατάτες, μπανάνες, πορτοκάλια και πράσινα φυλλώδη είναι καλές πηγές.'});
+  }
+
+  // Vitamin D — fatty fish or egg-based meals across the week (few reliable food sources)
+  rows.push({key:'vitaminD',
+    level: sig.fattyFishCount>=2?'ok':(sig.fattyFishCount>=1||sig.fishCount>=2)?'warn':'err',
+    en:'Vitamin D', gr:'Βιταμίνη D',
+    sugEn:'Very few foods provide meaningful vitamin D — salmon or egg-based meals help, but supplementation is commonly appropriate regardless of diet quality. Discuss with the client.',
+    sugGr:'Ελάχιστα τρόφιμα παρέχουν ουσιαστική βιταμίνη D — γεύματα με σολομό ή αυγό βοηθούν, αλλά η συμπλήρωση είναι συχνά κατάλληλη ανεξαρτήτως ποιότητας διατροφής. Συζητήστε με τον πελάτη.'});
+
+  // Folate — vegetables + legumes
+  rows.push({key:'folate',
+    level: (ex.veg>=4?1:0)+(sig.legumeCount>=1?1:0)+(ex.fruit>=2?1:0) >=2 ? 'ok' : (ex.veg>=2||sig.legumeCount>=1)?'warn':'err',
+    en:'Folate', gr:'Φυλλικό Οξύ',
+    sugEn:'Leafy greens, legumes, and citrus fruit are the main sources — increase vegetable variety if intake looks light.',
+    sugGr:'Πράσινα φυλλώδη, όσπρια και εσπεριδοειδή είναι οι κύριες πηγές — αυξήστε την ποικιλία λαχανικών αν η πρόσληψη φαίνεται χαμηλή.'});
+
+  // B12 — animal-product dependent; diet type is the dominant signal
+  rows.push({key:'b12',
+    level: isVegan?'err':isVegetarian?'warn':(ex.protein>=4||sig.fishCount>=2)?'ok':'warn',
+    en:'Vitamin B12', gr:'Βιταμίνη B12',
+    sugEn: isVegan
+      ? 'Vegan diets have no reliable food source of B12 — a supplement is essentially required. Discuss with the client.'
+      : 'Found only in animal products — meat, fish, dairy, and eggs. Ensure consistent intake, especially on lighter-protein days.',
+    sugGr: isVegan
+      ? 'Οι vegan δίαιτες δεν έχουν αξιόπιστη διατροφική πηγή B12 — η συμπλήρωση είναι ουσιαστικά απαραίτητη. Συζητήστε με τον πελάτη.'
+      : 'Βρίσκεται μόνο σε ζωικά προϊόντα — κρέας, ψάρι, γαλακτοκομικά και αυγά. Διασφαλίστε σταθερή πρόσληψη, ειδικά τις ημέρες με λιγότερη πρωτεΐνη.'});
+
+  // Magnesium — nuts, wholegrain/legume starch
+  rows.push({key:'magnesium',
+    level: (sig.nutsCount>=2?1:0)+(sig.legumeCount>=2?1:0)+(ex.starch>=4?1:0) >=2 ? 'ok' : (sig.nutsCount>=1||sig.legumeCount>=1)?'warn':'err',
+    en:'Magnesium', gr:'Μαγνήσιο',
+    sugEn:'Nuts, legumes, and wholegrains are the main sources — a nuts-based snack a few times a week helps.',
+    sugGr:'Ξηροί καρποί, όσπρια και ολικής άλεσης δημητριακά είναι οι κύριες πηγές — ένα σνακ με ξηρούς καρπούς λίγες φορές την εβδομάδα βοηθά.'});
+
+  return rows;
+}
+
+function renderMicronutrientSummary(){
+  const el=document.getElementById('micro-quality-summary'); if(!el) return;
+  const rows=assessMicronutrientQuality();
+  if(!rows){ el.innerHTML=''; return; }
+  const isGr = window.appLang!=='en';
+  const dotColor={ok:'#22c55e',warn:'#facc15',err:'#ef4444'};
+  const dotIcon={ok:'<i class="ti ti-circle-check" aria-hidden="true"></i>',warn:'<i class="ti ti-alert-triangle" aria-hidden="true"></i>',err:'<i class="ti ti-alert-triangle" aria-hidden="true"></i>'};
+  const flagged=rows.filter(r=>r.level!=='ok');
+  const overall = rows.some(r=>r.level==='err') ? 'err' : rows.some(r=>r.level==='warn') ? 'warn' : 'ok';
+  const overallText={
+    ok: isGr?'Καλή κάλυψη βασικών μικροθρεπτικών':'Key micronutrients look well covered',
+    warn: isGr?`${flagged.length} τομείς προς προσοχή`:`${flagged.length} area${flagged.length===1?'':'s'} worth a look`,
+    err: isGr?`${flagged.length} τομείς χρειάζονται προσοχή`:`${flagged.length} area${flagged.length===1?'':'s'} need attention`,
+  }[overall];
+  const legendRow=`<div style="display:flex;flex-wrap:wrap;gap:10px 14px;margin-top:10px">
+    ${rows.map(r=>`<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary)"><span style="width:8px;height:8px;border-radius:50%;background:${dotColor[r.level]};flex-shrink:0"></span>${isGr?r.gr:r.en}</span>`).join('')}
+  </div>`;
+  const suggestionRows = flagged.length ? `<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+    ${flagged.map(r=>`<div style="font-size:13px;line-height:1.5;padding:8px 10px;background:var(--bg-page);border-radius:6px">
+      ${dotIcon[r.level]} <strong>${isGr?r.gr:r.en}:</strong> ${r.level==='err'?(isGr?'Κάτω από τη σύσταση.':'Below recommendation.'):(isGr?'Ελαφρώς χαμηλό.':'Slightly low.')} <span style="color:var(--text-secondary)">${isGr?r.sugGr:r.sugEn}</span>
+    </div>`).join('')}
+  </div>` : `<div style="font-size:13px;color:var(--text-muted);margin-top:10px">${isGr?'Καμία σύσταση αυτή τη στιγμή.':'No suggestions right now.'}</div>`;
+  const autoDefault = overall!=='ok';
+  const expandDefault = S.microQualityUserOverride!==undefined ? S.microQualityUserOverride : autoDefault;
+  el.innerHTML=`<div class="card" style="margin:0;border:1px solid var(--border)">
+    <div class="card-body" style="padding:12px 16px;cursor:pointer" onclick="toggleMicroQualityDetail(this)">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:700;font-size:14px">
+        <span><i class="ti ti-apple" aria-hidden="true"></i> ${isGr?'Ποιότητα Μικροθρεπτικών':'Micronutrient Quality'}: ${overallText}</span>
+        <i class="ti mq-chevron ${expandDefault?'ti-chevron-up':'ti-chevron-down'}" aria-hidden="true" style="color:var(--text-muted)"></i>
+      </div>
+      ${legendRow}
+    </div>
+    <div style="display:${expandDefault?'block':'none'};padding:0 16px 14px">
+      ${suggestionRows}
+      <div style="font-size:11px;color:var(--text-muted);margin-top:10px">${isGr?'Εκτίμηση βάσει σύνθεσης ομάδων τροφίμων (όχι εργαστηριακή ανάλυση) — υποστηρίζει την κλινική σας κρίση, δεν την αντικαθιστά.':'Estimated from food-group composition (not a lab-grade analysis) — supports your clinical judgement, doesn\'t replace it.'}</div>
+    </div>
+  </div>`;
+}
+function toggleMicroQualityDetail(headerEl){
+  const detail=headerEl.nextElementSibling;
+  const chevron=headerEl.querySelector('.mq-chevron');
+  const show=detail.style.display==='none';
+  detail.style.display=show?'block':'none';
+  if(chevron) chevron.className='ti mq-chevron '+(show?'ti-chevron-up':'ti-chevron-down');
+  S.microQualityUserOverride=show;
+}
+
 function buildSevenDay(){
   updateMealLanguageButtons();
   ensureWeekPlans();
@@ -6798,6 +6975,7 @@ function buildSevenDay(){
   if(sevenBody) sevenBody.textContent='';
   setEl('sevenday-body', html);
   renderPlanQualitySummary();
+  renderMicronutrientSummary();
   updateMealLanguageButtons();
 }
 
@@ -9369,6 +9547,7 @@ function applyState(state){
   S.labValues=state.labValues||{};
   resetMacroExplanation();
   S.planQualityUserOverride=undefined;
+  S.microQualityUserOverride=undefined;
   if(document.getElementById('page-labs')?.classList.contains('active')) renderLabsTable();
   calcAll(); calcBodyComp(); calcMacros();
 }
@@ -9382,6 +9561,7 @@ function resetForm(){
   S.bcManual = {fatmass:false,ffm:false,muscle:false};
   resetMacroExplanation();
   S.planQualityUserOverride=undefined;
+  S.microQualityUserOverride=undefined;
   SAVE_FIELD_IDS.forEach(id=>{
     const el=document.getElementById(id);
     if(!el) return;
