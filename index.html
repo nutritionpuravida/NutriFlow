@@ -997,8 +997,8 @@ table th,
         <div class="alert info" style="font-size:12px;padding:8px 10px;margin-bottom:8px"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Clients save automatically to your account. &quot;Open&quot; restores a client's full data anytime." data-gr="Οι πελάτες αποθηκεύονται αυτόματα στον λογαριασμό σας. Το «Άνοιγμα» επαναφέρει πλήρως τα δεδομένα ενός πελάτη ανά πάσα στιγμή.">Clients save automatically to your account. "Open" restores a client's full data anytime.</span></div>
         <div class="alert warn" id="local-backup-warning" style="display:none;font-size:12px;padding:8px 10px;margin-bottom:8px"><span><i class="ti ti-alert-triangle" aria-hidden="true"></i> <span class="i18n" data-en="Some clients are only saved in this browser." data-gr="Ορισμένοι πελάτες είναι αποθηκευμένοι μόνο σε αυτόν τον browser."><strong>Some clients are only saved in this browser.</strong></span> <span class="i18n" data-en="Download a backup before switching devices or clearing browser data." data-gr="Κατεβάστε αντίγραφο ασφαλείας πριν αλλάξετε συσκευή ή διαγράψετε δεδομένα browser.">Download a backup before switching devices or clearing browser data.</span></span></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-          <button class="btn" style="padding:6px 10px;font-size:12px" onclick="exportAllClients()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Download Backup" data-gr="Λήψη Αντιγράφου">Download Backup</span></button>
-          <label class="btn" style="cursor:pointer;margin:0;padding:6px 10px;font-size:12px"><i class="ti ti-file-import" aria-hidden="true"></i> <span class="i18n" data-en="Restore from Backup" data-gr="Επαναφορά από Αντίγραφο">Restore from Backup</span><input type="file" accept=".json" onchange="importClientsFile(this)" style="display:none"></label>
+          <button class="btn" style="padding:6px 10px;font-size:12px" onclick="exportAllClients()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Download Backup" data-gr="Λήψη Αντιγράφου Ασφαλείας">Download Backup</span></button>
+          <label class="btn" style="cursor:pointer;margin:0;padding:6px 10px;font-size:12px"><i class="ti ti-file-import" aria-hidden="true"></i> <span class="i18n" data-en="Restore from Backup" data-gr="Επαναφορά από Αντίγραφο Ασφαλείας">Restore from Backup</span><input type="file" accept=".json" onchange="importClientsFile(this)" style="display:none"></label>
         </div>
         <div class="form-field" style="max-width:340px;margin-bottom:14px">
           <label><i class="ti ti-search" aria-hidden="true"></i> <span class="i18n" data-en="Search clients by name" data-gr="Αναζήτηση πελατών με όνομα">Search clients by name</span></label>
@@ -6461,6 +6461,154 @@ function calcDayTotalsForPlanDisplay(dayPlan, lang='GR', dayIndex=0){
   return calcDayTotalsForPlan(dayPlan, lang, dayIndex);
 }
 
+// ── FIXED MEAL-PLAN TEMPLATES ──
+// Each template bundles a macro split, an optional forced diet type, a small
+// pool of meals per slot (drawn only from existing BREAKFAST/LUNCH/DINNER_OPTIONS
+// — no new meal content), and default snack extras. Applying a template fills
+// all 7 days by cycling through its meal pool for variety, then re-suggests
+// exchange servings against the new macro target. This is fully deterministic
+// (no external API), unlike Generate AI Plan.
+const MEAL_PLAN_TEMPLATES = {
+  MediterraneanWeightLoss: {
+    nameEn:'Mediterranean Weight Loss', nameGr:'Μεσογειακή Απώλεια Βάρους',
+    descEn:'Moderate carb reduction, higher protein for satiety. Fish and vegetable-forward, Mediterranean staples.',
+    descGr:'Μέτρια μείωση υδατανθράκων, αυξημένη πρωτεΐνη για κορεσμό. Έμφαση σε ψάρι και λαχανικά, μεσογειακή διατροφή.',
+    macros:{c:40,p:25,f:35}, dietType:null,
+    meals:{brk:['BRK_YOGURT_HONEY_WALNUTS','BRK_BOILED_EGGS_2','BRK_RUSKS_ANTHOTYRO'],
+      lun:['LUN_BAKED_FISH_VEG','LUN_GRILLED_FISH_RICE','LUN_CHICKEN_QUINOA','LUN_LENTIL_SOUP'],
+      din:['DIN_BAKED_FISH_VEG','DIN_GRILLED_FISH_RICE','DIN_CHICKEN_QUINOA','DIN_VEG_SOUP_CHICKEN']},
+    snacks:{snk1:['fruit'], snk2:['fruit','nuts'], sleep:['yogurt']}
+  },
+  PCOSBalanced: {
+    nameEn:'PCOS Balanced', nameGr:'Ισορροπημένο για PCOS',
+    descEn:'Moderate carb, protein-forward, lower-glycaemic-load meals to help with insulin sensitivity.',
+    descGr:'Μέτριοι υδατάνθρακες, αυξημένη πρωτεΐνη, γεύματα χαμηλού γλυκαιμικού φορτίου για ινσουλινοευαισθησία.',
+    macros:{c:40,p:25,f:35}, dietType:null,
+    meals:{brk:['BRK_EGGS_TOAST','BRK_BOILED_EGGS_2','BRK_YOGURT_HONEY_WALNUTS'],
+      lun:['LUN_CHICKEN_QUINOA','LUN_SALMON_QUINOA','LUN_CHICKPEAS_SALAD'],
+      din:['DIN_CHICKEN_QUINOA','DIN_BAKED_FISH_VEG','DIN_CHICKPEA_STEW']},
+    snacks:{snk1:['fruit'], snk2:['nuts','yogurt'], sleep:['yogurt']}
+  },
+  DiabetesFriendly: {
+    nameEn:'Diabetes Friendly', nameGr:'Φιλικό για Διαβήτη',
+    descEn:'High-fibre carbohydrates, consistent meal structure. Avoids concentrated-sugar snacks like dried fruit.',
+    descGr:'Υδατάνθρακες υψηλής περιεκτικότητας σε φυτικές ίνες, σταθερή δομή γευμάτων. Αποφεύγει σνακ με συμπυκνωμένη ζάχαρη όπως αποξηραμένα φρούτα.',
+    macros:{c:40,p:25,f:35}, dietType:null,
+    meals:{brk:['BRK_CEREAL','BRK_RUSKS_ANTHOTYRO','BRK_EGGS_TOAST'],
+      lun:['LUN_LENTILS_RICE','LUN_LENTIL_SOUP','LUN_CHICKEN_QUINOA'],
+      din:['DIN_LENTILS_RICE','DIN_CHICKEN_QUINOA','DIN_VEG_SOUP_CHICKEN']},
+    snacks:{snk1:['fruit'], snk2:['fruit','nuts'], sleep:['milk']}
+  },
+  HighProtein: {
+    nameEn:'High Protein', nameGr:'Υψηλή Πρωτεΐνη',
+    descEn:'Higher protein share (35%) for muscle maintenance/gain goals. Protein-forward at every meal and snack.',
+    descGr:'Αυξημένο ποσοστό πρωτεΐνης (35%) για διατήρηση/αύξηση μυϊκής μάζας. Πρωτεΐνη σε κάθε γεύμα και σνακ.',
+    macros:{c:35,p:35,f:30}, dietType:null,
+    meals:{brk:['BRK_EGGS_TOAST','BRK_BOILED_EGGS_2','BRK_YOGURT_HONEY_WALNUTS'],
+      lun:['LUN_CHICKEN_RICE','LUN_CHICKEN_QUINOA','LUN_SALMON_QUINOA'],
+      din:['DIN_CHICKEN_MEATBALLS_RICE','DIN_CHICKEN_RICE','DIN_CHICKEN_QUINOA']},
+    snacks:{snk1:['yogurt'], snk2:['yogurt','nuts'], sleep:['yogurt']}
+  },
+  Vegetarian: {
+    nameEn:'Vegetarian', nameGr:'Χορτοφαγική',
+    descEn:'No meat or fish. Eggs and dairy remain. Sets Diet Type to Vegetarian and filters meal dropdowns accordingly.',
+    descGr:'Χωρίς κρέας ή ψάρι. Αυγά και γαλακτοκομικά παραμένουν. Ορίζει Τύπο Διατροφής σε Χορτοφαγική και φιλτράρει τα γεύματα ανάλογα.',
+    macros:{c:45,p:20,f:35}, dietType:'Vegetarian',
+    meals:{brk:['BRK_OATS_VEGAN','BRK_CEREAL','BRK_RUSKS_ANTHOTYRO'],
+      lun:['LUN_LENTILS_RICE','LUN_CHICKPEA_STEW','LUN_HALLOUMI_PASTA','LUN_BEAN_SALAD'],
+      din:['DIN_CHICKPEA_STEW','DIN_HALLOUMI_SALAD','DIN_BEAN_PASTA']},
+    snacks:{snk1:['fruit'], snk2:['fruit','nuts'], sleep:['yogurt']}
+  },
+  BudgetFriendly: {
+    nameEn:'Budget Friendly', nameGr:'Οικονομική',
+    descEn:'Built around inexpensive staples — legumes, eggs, pasta, seasonal produce. Skips pricier items like nuts.',
+    descGr:'Βασισμένη σε οικονομικά βασικά είδη — όσπρια, αυγά, ζυμαρικά, εποχιακά προϊόντα. Χωρίς ακριβότερα είδη όπως ξηροί καρποί.',
+    macros:{c:45,p:20,f:35}, dietType:null,
+    meals:{brk:['BRK_CEREAL','BRK_BOILED_EGGS_2','BRK_RUSKS_ANTHOTYRO'],
+      lun:['LUN_LENTILS_RICE','LUN_CHICKPEA_STEW','LUN_BEAN_SALAD','LUN_PASTA_MINCE'],
+      din:['DIN_LENTILS_RICE','DIN_CHICKPEA_STEW','DIN_PASTA_MINCE']},
+    snacks:{snk1:['fruit'], snk2:['fruit'], sleep:['milk']}
+  },
+  GeneralHealthyEating: {
+    nameEn:'General Healthy Eating', nameGr:'Γενική Υγιεινή Διατροφή',
+    descEn:'Balanced, varied plan with no specific clinical restriction — a sensible default for a healthy population.',
+    descGr:'Ισορροπημένο, ποικίλο πλάνο χωρίς συγκεκριμένο κλινικό περιορισμό — λογική επιλογή για υγιή πληθυσμό.',
+    macros:{c:45,p:20,f:35}, dietType:null,
+    meals:{brk:['BRK_TOAST','BRK_CEREAL','BRK_YOGURT_HONEY_WALNUTS'],
+      lun:['LUN_CHICKEN_RICE','LUN_FISH_POTATO','LUN_CHICKEN_QUINOA','LUN_GRILLED_FISH_RICE'],
+      din:['DIN_FISH_POTATO','DIN_CHICKEN_RICE','DIN_GRILLED_FISH_RICE','DIN_VEG_SOUP_CHICKEN']},
+    snacks:{snk1:['fruit'], snk2:['fruit','nuts'], sleep:['fruit']}
+  },
+};
+const MEAL_PLAN_TEMPLATE_ORDER=['MediterraneanWeightLoss','PCOSBalanced','DiabetesFriendly','HighProtein','Vegetarian','BudgetFriendly','GeneralHealthyEating'];
+
+function openTemplatePicker(){
+  closeTemplatePicker();
+  const isGr = window.appLang==='gr';
+  const overlay=document.createElement('div');
+  overlay.id='template-picker-modal';
+  overlay.className='no-print';
+  overlay.style.cssText='position:fixed;inset:0;z-index:1250;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:18px';
+  overlay.onclick=e=>{ if(e.target===overlay) closeTemplatePicker(); };
+  const cards=MEAL_PLAN_TEMPLATE_ORDER.map(key=>{
+    const t=MEAL_PLAN_TEMPLATES[key];
+    return `<div style="border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-weight:800;font-size:14px;color:var(--text-primary)">${isGr?t.nameGr:t.nameEn}</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.5">${isGr?t.descGr:t.descEn}</div>
+      <div style="font-size:11px;color:var(--text-muted)">${isGr?'Υδατάνθρακες':'Carbs'} ${t.macros.c}% · ${isGr?'Πρωτεΐνη':'Protein'} ${t.macros.p}% · ${isGr?'Λίπος':'Fat'} ${t.macros.f}%${t.dietType?` · ${isGr?'Τύπος':'Diet'}: ${t.dietType}`:''}</div>
+      <button class="btn primary" style="align-self:flex-start" onclick="applyMealPlanTemplate('${key}')">${isGr?'Χρήση προτύπου':'Use this template'}</button>
+    </div>`;
+  }).join('');
+  overlay.innerHTML=`<div style="width:min(760px,96vw);max-height:90vh;overflow:auto;background:var(--bg-surface);color:var(--text-primary);border:1px solid var(--border);border-radius:10px;box-shadow:0 18px 70px rgba(0,0,0,.35)">
+    <div style="position:sticky;top:0;background:var(--teal-600);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:1">
+      <div><div style="font-size:18px;font-weight:900">${isGr?'Πρότυπα Πλάνων Γευμάτων':'Meal Plan Templates'}</div><div style="font-size:12px;opacity:.9">${isGr?'Ορίζει μακροθρεπτικά, μερίδες ισοδυνάμων και μια ποικίλη εβδομάδα γευμάτων. Ελέγξτε κλινικά πριν την κοινοποίηση.':'Sets macros, exchange servings, and a varied week of meals. Review clinically before sharing.'}</div></div>
+      <button class="btn" style="background:#fff!important;color:#0F6E56!important" onclick="closeTemplatePicker()"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div style="padding:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">${cards}</div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+window.openTemplatePicker=openTemplatePicker;
+function closeTemplatePicker(){ document.getElementById('template-picker-modal')?.remove(); }
+window.closeTemplatePicker=closeTemplatePicker;
+
+function applyMealPlanTemplate(templateKey){
+  const tpl=MEAL_PLAN_TEMPLATES[templateKey];
+  if(!tpl) return;
+  const isGr = window.appLang==='gr';
+  // 1. Macro split
+  const carbEl=document.getElementById('m-carb'), protEl=document.getElementById('m-protein');
+  if(carbEl) carbEl.value=tpl.macros.c;
+  if(protEl) protEl.value=tpl.macros.p;
+  calcMacros();
+  // 2. Diet type, if the template forces one
+  if(tpl.dietType){
+    const dietEl=document.getElementById('p-diet');
+    if(dietEl){ dietEl.value=tpl.dietType; onDietTypeChange(); }
+  }
+  // 3. Re-suggest exchange servings against the new macro target
+  applySuggestedExchangeServings();
+  // 4. Fill all 7 days from the template's meal pool (cycled for variety) + default snacks
+  ensureWeekPlans();
+  S.weekPlans.forEach((day,i)=>{
+    day.brk=tpl.meals.brk[i % tpl.meals.brk.length];
+    day.lun=tpl.meals.lun[i % tpl.meals.lun.length];
+    day.din=tpl.meals.din[i % tpl.meals.din.length];
+    day.manualMeals={brk:true, lun:true, din:true};
+    delete day.aiMeals;
+    day.source='template';
+    day.snk1Extras=[...tpl.snacks.snk1]; day.snack1Extras=day.snk1Extras;
+    day.snk2Extras=[...tpl.snacks.snk2]; day.snack2Extras=day.snk2Extras;
+    day.sleepExtras=[...tpl.snacks.sleep];
+  });
+  S.aiPlanStatus='';
+  S_isDirty=true;
+  closeTemplatePicker();
+  buildSevenDay();
+  setWeeklyPlanSaveStatus(isGr?`✓ Πρότυπο εφαρμόστηκε: ${tpl.nameGr} — ελέγξτε κάθε ημέρα πριν την κοινοποίηση.`:`✓ Template applied: ${tpl.nameEn} — please review each day before sharing.`, true);
+}
+window.applyMealPlanTemplate=applyMealPlanTemplate;
+
 function previewRebalanceWeek(){
   const el=document.getElementById('rebalance-preview'); if(!el) return;
   const isGr = window.appLang!=='en';
@@ -6608,6 +6756,7 @@ function buildSevenDay(){
   let html=`<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px">
     <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
       <button class="btn primary" onclick="saveWeeklyPlan()"><i class="ti ti-device-floppy" aria-hidden="true"></i> ${lang==='EN'?'Save Plan':'Αποθήκευση Πλάνου'}</button>
+      <button class="btn" onclick="openTemplatePicker()"><i class="ti ti-clipboard-list" aria-hidden="true"></i> ${lang==='EN'?'Use Template':'Χρήση Προτύπου'}</button>
       <button class="btn" onclick="generateAiSevenDayPlan()">✨ ${lang==='EN'?'Generate AI Plan':'Δημιουργία Πλάνου με AI'}</button>
       <button class="btn" onclick="previewRebalanceWeek()">✨ ${lang==='EN'?'Rebalance Week':'Επαναϊσορρόπηση Εβδομάδας'}</button>
       <span id="weekly-plan-save-status" style="font-size:13px;font-weight:800;color:var(--teal-700)"></span>
