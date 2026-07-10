@@ -6846,6 +6846,32 @@ function weekMicronutrientSignals(){
   return {fishCount, fattyFishCount, legumeCount, redMeatCount, highSodiumCount, nutsCount, days:plans.length||7};
 }
 
+// Same category sets as weekMicronutrientSignals, scoped to a single day —
+// powers the day-by-day breakdown. Only meal-choice-driven signals (iron
+// source, vitamin D source, sodium risk, magnesium source) vary day to day
+// in this data model; fibre/calcium/potassium/folate are driven by the
+// shared daily exchange target (fruit/veg/dairy/starch servings), which is
+// the same number every day, so a per-day view of those would be fake
+// precision, not real information — deliberately not shown per-day.
+function dayMicronutrientSignals(dayPlan){
+  if(!dayPlan) return null;
+  const mealKeys=[dayPlan.lun, dayPlan.din];
+  const hasFish=mealKeys.some(k=>FISH_MEAL_KEYS.has(k));
+  const hasFattyFish=mealKeys.some(k=>FATTY_FISH_MEAL_KEYS.has(k));
+  const hasLegume=mealKeys.some(k=>LEGUME_MEAL_KEYS.has(k));
+  const hasRedMeat=mealKeys.some(k=>RED_MEAT_MEAL_KEYS.has(k));
+  const hasHighSodium=mealKeys.some(k=>HIGH_SODIUM_MEAL_KEYS.has(k));
+  const snk1=dayPlan.snk1Extras||dayPlan.snack1Extras||[], snk2=dayPlan.snk2Extras||dayPlan.snack2Extras||[], sleep=dayPlan.sleepExtras||[];
+  const hasNuts=[snk1,snk2,sleep].some(arr=>Array.isArray(arr)&&arr.includes('nuts'));
+  return {
+    ironSource: hasFish||hasLegume||hasRedMeat,
+    vitaminDSource: hasFattyFish,
+    sodiumRisk: hasHighSodium,
+    magnesiumSource: hasNuts||hasLegume,
+  };
+}
+
+
 function assessMicronutrientQuality(){
   if(!S.ex) return null;
   const ex=S.ex;
@@ -6966,12 +6992,46 @@ function renderMicronutrientCoverage(){
       ${dotIcon[r.level]} <strong>${isGr?r.gr:r.en}:</strong> ${r.level==='err'?(isGr?'Κάτω από τη σύσταση.':'Below recommendation.'):(isGr?'Ελαφρώς χαμηλό.':'Slightly low.')} <span style="color:var(--text-secondary)">${isGr?r.sugGr:r.sugEn}</span>
     </div>`).join('')}
   </div>` : '';
+  const plans=S.weekPlans||WEEK_PLANS;
+  const dayNamesEn=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const dayNamesGr=['Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο','Κυριακή'];
+  const dayCol=(ok)=>ok?'<i class="ti ti-circle-check" aria-hidden="true" style="color:#22c55e"></i>':'<span style="color:var(--text-muted)">—</span>';
+  const dayRows=plans.map((p,i)=>{
+    const sig=dayMicronutrientSignals(p);
+    if(!sig) return '';
+    return `<tr>
+      <td style="padding:6px 8px;font-weight:600">${isGr?dayNamesGr[i]:dayNamesEn[i]}</td>
+      <td style="padding:6px 8px;text-align:center">${dayCol(sig.ironSource)}</td>
+      <td style="padding:6px 8px;text-align:center">${dayCol(sig.vitaminDSource)}</td>
+      <td style="padding:6px 8px;text-align:center">${sig.sodiumRisk?'<i class="ti ti-alert-triangle" aria-hidden="true" style="color:#facc15"></i>':dayCol(true)}</td>
+      <td style="padding:6px 8px;text-align:center">${dayCol(sig.magnesiumSource)}</td>
+    </tr>`;
+  }).join('');
+  const dayByDayTable=`<div style="margin-top:14px">
+    <div style="cursor:pointer;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--teal-600)" onclick="const d=this.nextElementSibling;const c=this.querySelector('.mdb-chevron');const show=d.style.display==='none';d.style.display=show?'block':'none';if(c)c.className='ti mdb-chevron '+(show?'ti-chevron-up':'ti-chevron-down');">
+      <i class="ti mdb-chevron ti-chevron-down" aria-hidden="true"></i> ${isGr?'Ανάλυση ανά ημέρα':'Day-by-day breakdown'}
+    </div>
+    <div style="display:none;margin-top:8px">
+      <div class="field-note" style="margin-bottom:8px">${isGr?'Μόνο οι τομείς που εξαρτώνται από τη συγκεκριμένη επιλογή γευμάτων διαφέρουν ανά ημέρα (οι υπόλοιποι βασίζονται στον κοινό ημερήσιο στόχο ισοδυνάμων και είναι ίδιοι κάθε ημέρα).':'Only the areas that depend on specific meal choices vary day to day (the rest are driven by the shared daily exchange target and are identical every day).'}</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="border-bottom:1px solid var(--border);color:var(--text-muted);text-transform:uppercase;font-size:10px">
+          <th style="padding:6px 8px;text-align:left">${isGr?'Ημέρα':'Day'}</th>
+          <th style="padding:6px 8px">${isGr?'Πηγή Σιδήρου':'Iron source'}</th>
+          <th style="padding:6px 8px">${isGr?'Πηγή Βιτ. D':'Vit. D source'}</th>
+          <th style="padding:6px 8px">${isGr?'Νάτριο':'Sodium'}</th>
+          <th style="padding:6px 8px">${isGr?'Πηγή Μαγνησίου':'Magnesium source'}</th>
+        </tr></thead>
+        <tbody>${dayRows}</tbody>
+      </table>
+    </div>
+  </div>`;
   el.innerHTML=`<div class="card no-print" style="margin:0">
     <div class="card-header"><span class="card-title"><i class="ti ti-apple" aria-hidden="true"></i> ${isGr?'Κάλυψη Μικροθρεπτικών (Αυτή η Εβδομάδα)':'Micronutrient Coverage (This Week)'}</span></div>
     <div class="card-body">
       <div class="field-note" style="margin-bottom:2px">${isGr?'Πληροφοριακή επισκόπηση για εσάς — δεν εμφανίζεται στην τυπωμένη αναφορά πελάτη.':'Informational overview for your reference — not included in the printed client report.'}</div>
       <div style="font-size:14px;color:var(--text-primary);margin-top:8px;line-height:1.5">${summaryLine}</div>
       ${suggestionRows}
+      ${dayByDayTable}
       <div style="font-size:11px;color:var(--text-muted);margin-top:10px">${isGr?'Εκτίμηση βάσει σύνθεσης ομάδων τροφίμων (όχι εργαστηριακή ανάλυση) — υποστηρίζει την κλινική σας κρίση, δεν την αντικαθιστά.':'Estimated from food-group composition (not a lab-grade analysis) — supports your clinical judgement, doesn\'t replace it.'}</div>
     </div>
   </div>`;
