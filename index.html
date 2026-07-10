@@ -6604,6 +6604,44 @@ window.openTemplatePicker=openTemplatePicker;
 function closeTemplatePicker(){ document.getElementById('template-picker-modal')?.remove(); }
 window.closeTemplatePicker=closeTemplatePicker;
 
+// Strips the meal-slot prefix so two keys can be compared as "the same dish"
+// regardless of which slot they're assigned to (e.g. LUN_BAKED_FISH_VEG and
+// DIN_BAKED_FISH_VEG both reduce to BAKED_FISH_VEG).
+function templateMealBaseName(key){
+  return String(key||'').replace(/^(BRK_|LUN_|DIN_)/,'');
+}
+
+// Picks a day's brk/lun/din from a template's pools, actively avoiding two
+// kinds of repetition: (1) the same dish appearing as both lunch and dinner
+// on the same day, and (2) the same exact meal repeating on two consecutive
+// days. Small pools (3-4 items over 7 days) can't avoid all repetition, but
+// both of these are avoidable and were previously happening by accident.
+function pickTemplateDayMeals(tpl, dayIndex, prevDay){
+  const brkPool=tpl.meals.brk, lunPool=tpl.meals.lun, dinPool=tpl.meals.din;
+  let brk=brkPool[dayIndex % brkPool.length];
+  let lun=lunPool[dayIndex % lunPool.length];
+  let din=dinPool[dayIndex % dinPool.length];
+
+  // Avoid repeating yesterday's exact meal in the same slot, when the pool
+  // offers an alternative.
+  if(prevDay){
+    if(brkPool.length>1 && brk===prevDay.brk) brk=brkPool[(dayIndex+1) % brkPool.length];
+    if(lunPool.length>1 && lun===prevDay.lun) lun=lunPool[(dayIndex+1) % lunPool.length];
+    if(dinPool.length>1 && din===prevDay.din) din=dinPool[(dayIndex+1) % dinPool.length];
+  }
+
+  // Avoid the same dish appearing as both lunch and dinner on the same day —
+  // shift dinner forward through its own pool until it differs, or until
+  // every option has been tried (guards tiny pools from an infinite loop).
+  let attempts=0;
+  while(dinPool.length>1 && templateMealBaseName(lun)===templateMealBaseName(din) && attempts<dinPool.length){
+    attempts++;
+    din=dinPool[(dayIndex+attempts) % dinPool.length];
+  }
+
+  return {brk, lun, din};
+}
+
 function applyMealPlanTemplate(templateKey){
   const tpl=MEAL_PLAN_TEMPLATES[templateKey];
   if(!tpl) return;
@@ -6634,18 +6672,22 @@ function applyMealPlanTemplate(templateKey){
   }
   // 3. Re-suggest exchange servings against the new macro target
   applySuggestedExchangeServings();
-  // 4. Fill all 7 days from the template's meal pool (cycled for variety) + default snacks
+  // 4. Fill all 7 days from the template's meal pool (varied, avoiding same-day
+  //    and consecutive-day repeats) + default snacks
   ensureWeekPlans();
+  let prevDay=null;
   S.weekPlans.forEach((day,i)=>{
-    day.brk=tpl.meals.brk[i % tpl.meals.brk.length];
-    day.lun=tpl.meals.lun[i % tpl.meals.lun.length];
-    day.din=tpl.meals.din[i % tpl.meals.din.length];
+    const picked=pickTemplateDayMeals(tpl, i, prevDay);
+    day.brk=picked.brk;
+    day.lun=picked.lun;
+    day.din=picked.din;
     day.manualMeals={brk:true, lun:true, din:true};
     delete day.aiMeals;
     day.source='template';
     day.snk1Extras=[...tpl.snacks.snk1]; day.snack1Extras=day.snk1Extras;
     day.snk2Extras=[...tpl.snacks.snk2]; day.snack2Extras=day.snk2Extras;
     day.sleepExtras=[...tpl.snacks.sleep];
+    prevDay=picked;
   });
   S.aiPlanStatus='';
   S_isDirty=true;
