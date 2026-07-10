@@ -6941,22 +6941,36 @@ function renderMicronutrientCoverage(){
   const rows=assessMicronutrientQuality();
   if(!rows){ el.innerHTML=''; return; }
   const isGr = window.appLang!=='en';
-  const dotColor={ok:'#22c55e',warn:'#facc15',err:'#ef4444'};
   const dotIcon={ok:'<i class="ti ti-circle-check" aria-hidden="true"></i>',warn:'<i class="ti ti-alert-triangle" aria-hidden="true"></i>',err:'<i class="ti ti-alert-triangle" aria-hidden="true"></i>'};
+  const ok=rows.filter(r=>r.level==='ok');
   const flagged=rows.filter(r=>r.level!=='ok');
-  const legendRow=`<div style="display:flex;flex-wrap:wrap;gap:10px 14px;margin-top:6px">
-    ${rows.map(r=>`<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary)"><span style="width:8px;height:8px;border-radius:50%;background:${dotColor[r.level]};flex-shrink:0"></span>${isGr?r.gr:r.en}</span>`).join('')}
-  </div>`;
+  const listJoin=(names)=>{
+    if(names.length<=1) return names.join('');
+    if(names.length===2) return names.join(isGr?' και ':' and ');
+    return names.slice(0,-1).join(', ')+(isGr?' και ':' and ')+names[names.length-1];
+  };
+  let summaryLine;
+  if(!flagged.length){
+    summaryLine = isGr?'Καλή κάλυψη σε όλους τους βασικούς τομείς αυτή την εβδομάδα.':'Good coverage across all tracked areas this week.';
+  } else if(!ok.length){
+    summaryLine = isGr?'Κανένας τομέας δεν έχει επαρκή κάλυψη αυτή τη στιγμή — δείτε παρακάτω.':'No area currently has adequate coverage — see below.';
+  } else {
+    const okNames=listJoin(ok.map(r=>isGr?r.gr:r.en));
+    const flaggedNames=listJoin(flagged.map(r=>isGr?r.gr:r.en));
+    summaryLine = isGr
+      ? `Καλή κάλυψη: ${okNames}. ${flaggedNames} ${flagged.length===1?'χρειάζεται':'χρειάζονται'} προσοχή — δείτε παρακάτω.`
+      : `Good coverage: ${okNames}. ${flaggedNames} ${flagged.length===1?'needs':'need'} attention — see below.`;
+  }
   const suggestionRows = flagged.length ? `<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
     ${flagged.map(r=>`<div style="font-size:13px;line-height:1.5;padding:8px 10px;background:var(--bg-page);border-radius:6px">
       ${dotIcon[r.level]} <strong>${isGr?r.gr:r.en}:</strong> ${r.level==='err'?(isGr?'Κάτω από τη σύσταση.':'Below recommendation.'):(isGr?'Ελαφρώς χαμηλό.':'Slightly low.')} <span style="color:var(--text-secondary)">${isGr?r.sugGr:r.sugEn}</span>
     </div>`).join('')}
-  </div>` : `<div style="font-size:13px;color:var(--text-muted);margin-top:12px">${isGr?'Καλή κάλυψη σε όλους τους βασικούς τομείς αυτή την εβδομάδα.':'Good coverage across all tracked areas this week.'}</div>`;
+  </div>` : '';
   el.innerHTML=`<div class="card no-print" style="margin:0">
     <div class="card-header"><span class="card-title"><i class="ti ti-apple" aria-hidden="true"></i> ${isGr?'Κάλυψη Μικροθρεπτικών (Αυτή η Εβδομάδα)':'Micronutrient Coverage (This Week)'}</span></div>
     <div class="card-body">
       <div class="field-note" style="margin-bottom:2px">${isGr?'Πληροφοριακή επισκόπηση για εσάς — δεν εμφανίζεται στην τυπωμένη αναφορά πελάτη.':'Informational overview for your reference — not included in the printed client report.'}</div>
-      ${legendRow}
+      <div style="font-size:14px;color:var(--text-primary);margin-top:8px;line-height:1.5">${summaryLine}</div>
       ${suggestionRows}
       <div style="font-size:11px;color:var(--text-muted);margin-top:10px">${isGr?'Εκτίμηση βάσει σύνθεσης ομάδων τροφίμων (όχι εργαστηριακή ανάλυση) — υποστηρίζει την κλινική σας κρίση, δεν την αντικαθιστά.':'Estimated from food-group composition (not a lab-grade analysis) — supports your clinical judgement, doesn\'t replace it.'}</div>
     </div>
