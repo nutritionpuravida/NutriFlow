@@ -1,0 +1,84 @@
+{
+  "aiPlanStatus": "",
+  "app_fingerprint": "B4C80AEA",
+  "changedWeekPlans": true,
+  "contract_id": "ai_valid_plan",
+  "description": "Mocked valid AI-shaped plan object. This is not an Edge Function or LLM integration test.",
+  "error": null,
+  "mockedOnly": true,
+  "note": "Application-side AI-shaped output contract fixture; not an LLM or Edge Function integration test.",
+  "weekPlansSample": [
+    {
+      "aiMeals": {
+        "breakfast": {
+          "description_en": "2 slices wholegrain bread + light cheese",
+          "description_gr": "2 slices wholegrain bread + light cheese",
+          "kcal": 236,
+          "name": "Toast"
+        },
+        "dinner": {
+          "description_en": "Fish, potato, olive oil, salad",
+          "description_gr": "Fish, potato, olive oil, salad",
+          "kcal": 501,
+          "name": "Fish + potato"
+        },
+        "lunch": {
+          "description_en": "Chicken, rice, olive oil, salad",
+          "description_gr": "Chicken, rice, olive oil, salad",
+          "kcal": 564,
+          "name": "Chicken + rice"
+        }
+      },
+      "brk": "BRK_TOAST",
+      "day": "Δευτέρα",
+      "din": "DIN_FISH_POTATO",
+      "lun": "LUN_CHICKEN_RICE",
+      "manualMeals": {},
+      "sleepExtras": [
+        "fruit",
+        "milk"
+      ],
+      "snack1Extras": [
+        "fruit",
+        "milk"
+      ],
+      "snack2Extras": [
+        "fruit"
+      ],
+      "snk1Extras": [
+        "fruit",
+        "milk"
+      ],
+      "snk2Extras": [
+        "fruit"
+      ],
+      "source": "ai"
+    },
+    {
+      "brk": "BRK_CEREAL",
+      "day": "Τρίτη",
+      "din": "DIN_CHICKEN_RICE",
+      "lun": "LUN_FISH_POTATO",
+      "manualMeals": {},
+      "sleepExtras": [
+        "fruit"
+      ],
+      "snack1Extras": [
+        "fruit",
+        "yogurt"
+      ],
+      "snack2Extras": [
+        "fruit",
+        "nuts"
+      ],
+      "snk1Extras": [
+        "fruit",
+        "yogurt"
+      ],
+      "snk2Extras": [
+        "fruit",
+        "nuts"
+      ]
+    }
+  ]
+}

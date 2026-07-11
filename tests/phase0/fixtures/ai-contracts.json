@@ -1,0 +1,51 @@
+[
+  {
+    "id": "ai_valid_plan",
+    "description": "Mocked valid AI-shaped plan object. This is not an Edge Function or LLM integration test.",
+    "plan": {
+      "monday": {
+        "breakfast": { "name": "Toast", "description": "2 slices wholegrain bread + light cheese", "kcal": 236 },
+        "lunch": { "name": "Chicken + rice", "description": "Chicken, rice, olive oil, salad", "kcal": 564 },
+        "dinner": { "name": "Fish + potato", "description": "Fish, potato, olive oil, salad", "kcal": 501 }
+      }
+    }
+  },
+  {
+    "id": "ai_excessive_oil",
+    "description": "Mocked AI-shaped output with excessive oil quantity.",
+    "plan": {
+      "monday": {
+        "lunch": { "name": "Chicken + rice", "description": "Chicken + rice + 12 tsp olive oil", "kcal": 924 }
+      }
+    }
+  },
+  {
+    "id": "ai_missing_quantities",
+    "description": "Mocked AI-shaped output with missing quantities.",
+    "plan": {
+      "monday": {
+        "lunch": { "name": "Chicken + rice", "description": "Chicken with rice and salad" }
+      }
+    }
+  },
+  {
+    "id": "ai_malformed_structure",
+    "description": "Mocked malformed AI-like output.",
+    "plan": ["not", "a", "day", "object"]
+  },
+  {
+    "id": "ai_unsupported_food",
+    "description": "Mocked AI-shaped output with unsupported food.",
+    "plan": {
+      "monday": {
+        "dinner": { "name": "Unsupported specialty meal", "description": "Undefined supplement powder bowl", "kcal": 500 }
+      }
+    }
+  },
+  {
+    "id": "ai_free_text_only",
+    "description": "Mocked free-text-only AI output.",
+    "plan": "Monday: eat healthy balanced meals with vegetables."
+  }
+]
+

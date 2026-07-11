@@ -1,0 +1,222 @@
+{
+  "aiContracts": [
+    {
+      "baseline": "ai-contracts/ai_valid_plan.json",
+      "id": "ai_valid_plan",
+      "mockedOnly": true
+    },
+    {
+      "baseline": "ai-contracts/ai_excessive_oil.json",
+      "id": "ai_excessive_oil",
+      "mockedOnly": true
+    },
+    {
+      "baseline": "ai-contracts/ai_missing_quantities.json",
+      "id": "ai_missing_quantities",
+      "mockedOnly": true
+    },
+    {
+      "baseline": "ai-contracts/ai_malformed_structure.json",
+      "id": "ai_malformed_structure",
+      "mockedOnly": true
+    },
+    {
+      "baseline": "ai-contracts/ai_unsupported_food.json",
+      "id": "ai_unsupported_food",
+      "mockedOnly": true
+    },
+    {
+      "baseline": "ai-contracts/ai_free_text_only.json",
+      "id": "ai_free_text_only",
+      "mockedOnly": true
+    }
+  ],
+  "app_fingerprint": "B4C80AEA",
+  "browserAuthority": true,
+  "duplicateBuildSevenDay": {
+    "definitions": [
+      {
+        "line": 5782,
+        "offset": 529628
+      },
+      {
+        "line": 7099,
+        "offset": 614040
+      }
+    ],
+    "phase0Action": "Commit A records definition locations. Commit B will trace active runtime reachability without deduplicating.",
+    "runtimeRule": "JavaScript function declarations with the same name are hoisted; the later definition is the active binding in the global scope."
+  },
+  "fixturePolicy": "synthetic only; no real or identifiable client data",
+  "phase": "Phase 0 current behavior capture",
+  "scenarios": [
+    {
+      "baseline": "scenarios/pcos_weight_management.json",
+      "condition": "PCOS",
+      "id": "pcos_weight_management",
+      "targetKcal": 1585
+    },
+    {
+      "baseline": "scenarios/diabetes_hypertension.json",
+      "condition": "Diabetes",
+      "id": "diabetes_hypertension",
+      "targetKcal": 1610
+    },
+    {
+      "baseline": "scenarios/ckd_caps.json",
+      "condition": "CKD",
+      "id": "ckd_caps",
+      "targetKcal": 1500
+    },
+    {
+      "baseline": "scenarios/vegetarian_high_protein.json",
+      "condition": "General",
+      "id": "vegetarian_high_protein",
+      "targetKcal": 1850
+    },
+    {
+      "baseline": "scenarios/high_calorie_weight_gain.json",
+      "condition": "Sports",
+      "id": "high_calorie_weight_gain",
+      "targetKcal": 2400
+    },
+    {
+      "baseline": "scenarios/sports_performance_balanced.json",
+      "condition": "Sports",
+      "id": "sports_performance_balanced",
+      "targetKcal": 2200
+    },
+    {
+      "baseline": "scenarios/general_healthy_baseline.json",
+      "condition": "General",
+      "id": "general_healthy_baseline",
+      "targetKcal": 1800
+    },
+    {
+      "baseline": "scenarios/fixed_breakfast_fixed_dinner.json",
+      "condition": "General",
+      "id": "fixed_breakfast_fixed_dinner",
+      "targetKcal": 1700
+    },
+    {
+      "baseline": "scenarios/zero_exchange_edge.json",
+      "condition": "General",
+      "id": "zero_exchange_edge",
+      "targetKcal": 0
+    },
+    {
+      "baseline": "scenarios/missing_profile_fields.json",
+      "condition": "General",
+      "id": "missing_profile_fields",
+      "targetKcal": 0
+    },
+    {
+      "baseline": "scenarios/extreme_calorie_target.json",
+      "condition": "General",
+      "id": "extreme_calorie_target",
+      "targetKcal": 3200
+    },
+    {
+      "baseline": "scenarios/obesity_standard_weight_loss.json",
+      "condition": "Obesity",
+      "id": "obesity_standard_weight_loss",
+      "targetKcal": 1450
+    },
+    {
+      "baseline": "scenarios/dyslipidemia_both_main_meals_fixed.json",
+      "condition": "Dyslipidemia",
+      "id": "dyslipidemia_both_main_meals_fixed",
+      "targetKcal": 1600
+    },
+    {
+      "baseline": "scenarios/pescatarian_standard_pattern.json",
+      "condition": "General",
+      "id": "pescatarian_standard_pattern",
+      "targetKcal": 1750
+    },
+    {
+      "baseline": "scenarios/hypertension_dash_pattern.json",
+      "condition": "Hypertension",
+      "id": "hypertension_dash_pattern",
+      "targetKcal": 1725
+    },
+    {
+      "baseline": "scenarios/thyroid_hashimoto_general.json",
+      "condition": "Thyroid",
+      "id": "thyroid_hashimoto_general",
+      "targetKcal": 1650
+    },
+    {
+      "baseline": "scenarios/ibs_low_fodmap.json",
+      "condition": "IBS",
+      "id": "ibs_low_fodmap",
+      "targetKcal": 1550
+    },
+    {
+      "baseline": "scenarios/food_intolerance_allergy.json",
+      "condition": "FoodIntolerance",
+      "id": "food_intolerance_allergy",
+      "targetKcal": 1680
+    },
+    {
+      "baseline": "scenarios/pregnancy_energy_needs.json",
+      "condition": "Pregnancy",
+      "id": "pregnancy_energy_needs",
+      "targetKcal": 2050
+    },
+    {
+      "baseline": "scenarios/menopause_metabolic.json",
+      "condition": "Menopause",
+      "id": "menopause_metabolic",
+      "targetKcal": 1500
+    },
+    {
+      "baseline": "scenarios/gerd_small_meals.json",
+      "condition": "GERD",
+      "id": "gerd_small_meals",
+      "targetKcal": 1525
+    },
+    {
+      "baseline": "scenarios/osteoporosis_bone_health.json",
+      "condition": "Osteoporosis",
+      "id": "osteoporosis_bone_health",
+      "targetKcal": 1700
+    },
+    {
+      "baseline": "scenarios/migraines_regular_meals.json",
+      "condition": "Migraines",
+      "id": "migraines_regular_meals",
+      "targetKcal": 1600
+    },
+    {
+      "baseline": "scenarios/nafld_mediterranean_pattern.json",
+      "condition": "NAFLD",
+      "id": "nafld_mediterranean_pattern",
+      "targetKcal": 1550
+    },
+    {
+      "baseline": "scenarios/vegan_high_fiber.json",
+      "condition": "General",
+      "id": "vegan_high_fiber",
+      "targetKcal": 1800
+    },
+    {
+      "baseline": "scenarios/hemodialysis_caps_reference.json",
+      "condition": "Hemodialysis",
+      "id": "hemodialysis_caps_reference",
+      "targetKcal": 1900
+    },
+    {
+      "baseline": "scenarios/celiac_gluten_free_reference.json",
+      "condition": "Celiac",
+      "id": "celiac_gluten_free_reference",
+      "targetKcal": 1750
+    },
+    {
+      "baseline": "scenarios/thalassemia_reference.json",
+      "condition": "Thalassemia",
+      "id": "thalassemia_reference",
+      "targetKcal": 1800
+    }
+  ]
+}

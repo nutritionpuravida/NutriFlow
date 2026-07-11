@@ -1,0 +1,1457 @@
+{
+  "active": {
+    "allocation": {
+      "allocated": {
+        "dairy": 1,
+        "fat": 8,
+        "fruit": 3,
+        "protein": 7,
+        "starch": 7,
+        "veg": 7
+      },
+      "allocatedExchangeKcal": 1705,
+      "dairyDist": {
+        "brk": 1,
+        "din": 0,
+        "lun": 0,
+        "sleep": 0,
+        "snk1": 0,
+        "snk2": 0
+      },
+      "exchangeDiff": {},
+      "exchangeTarget": {
+        "dairy": 1,
+        "fat": 8,
+        "fruit": 3,
+        "protein": 7,
+        "starch": 7,
+        "veg": 7
+      },
+      "exchangeTotalKcal": 1705,
+      "fixed": {
+        "dairy": 1,
+        "fat": 1,
+        "fruit": 3,
+        "protein": 0,
+        "starch": 3,
+        "veg": 0
+      },
+      "fruitDist": {
+        "brk": 0,
+        "din": 0,
+        "lun": 0,
+        "sleep": 1,
+        "snk1": 1,
+        "snk2": 1
+      },
+      "plan": {
+        "breakfast": "BRK_OATS_VEGAN",
+        "dinner": "DIN_TOFU_STIRFRY",
+        "lunch": "LUN_TOFU_RICE",
+        "sleepExtras": [],
+        "snack1Extras": [
+          "fruit"
+        ],
+        "snack2Extras": [
+          "fruit",
+          "nuts"
+        ]
+      },
+      "portions": {
+        "dinner": {
+          "fat": 3,
+          "prot": 4,
+          "starch": 2,
+          "veg": 3
+        },
+        "lunch": {
+          "fat": 4,
+          "prot": 3,
+          "starch": 2,
+          "veg": 4
+        }
+      },
+      "snacks": {
+        "sleepBuilt": {
+          "addOnKcal": 0,
+          "exch": {
+            "dairy": 0,
+            "fat": 0,
+            "fruit": 1,
+            "protein": 0,
+            "starch": 0,
+            "veg": 0
+          },
+          "text": "1 φρούτο"
+        },
+        "snk1Built": {
+          "addOnKcal": 0,
+          "exch": {
+            "dairy": 0,
+            "fat": 0,
+            "fruit": 1,
+            "protein": 0,
+            "starch": 0,
+            "veg": 0
+          },
+          "text": "1 φρούτο"
+        },
+        "snk2Built": {
+          "addOnKcal": 0,
+          "exch": {
+            "dairy": 0,
+            "fat": 1,
+            "fruit": 1,
+            "protein": 0,
+            "starch": 0,
+            "veg": 0
+          },
+          "text": "1 φρούτο + 6 αμύγδαλα ή 4 καρύδια"
+        }
+      },
+      "warnings": []
+    },
+    "ex": {
+      "dairy": 1,
+      "fat": 8,
+      "fruit": 3,
+      "protein": 7,
+      "starch": 7,
+      "veg": 7
+    },
+    "mealSel": {
+      "breakfast": "BRK_OATS_VEGAN",
+      "dinner": "DIN_TOFU_STIRFRY",
+      "lunch": "LUN_TOFU_RICE",
+      "sleepExtras": [],
+      "snack1Extras": [
+        "fruit"
+      ],
+      "snack2Extras": [
+        "fruit",
+        "nuts"
+      ]
+    },
+    "totals": {
+      "addOnKcal": 0,
+      "allocatedExchangeKcal": 1705,
+      "allocatedExchanges": {
+        "dairy": 1,
+        "fat": 8,
+        "fruit": 3,
+        "protein": 7,
+        "starch": 7,
+        "veg": 7
+      },
+      "brkKcal": 323,
+      "dinKcal": 565,
+      "exchangeDiff": {},
+      "exchangeGap": 0,
+      "exchangeTarget": {
+        "dairy": 1,
+        "fat": 8,
+        "fruit": 3,
+        "protein": 7,
+        "starch": 7,
+        "veg": 7
+      },
+      "exchangeTotalKcal": 1705,
+      "extraFoodKcal": 0,
+      "gap": -589,
+      "lunKcal": 592,
+      "slpKcal": 60,
+      "snk1Kcal": 60,
+      "snk2Kcal": 105,
+      "target": 2294,
+      "totalKcal": 1705,
+      "warnings": []
+    }
+  },
+  "app_fingerprint": "B4C80AEA",
+  "condition": "General",
+  "description": "Synthetic vegan diet-type coverage.",
+  "dom": {
+    "reportText": "",
+    "weekViewText": "\n    \n       7-Day Meal Plan\n      \n        \n    \n      \n         Plan Quality: Needs review before sharing with client\n        \n      \n    \n    \n         Calories: Significantly off target Carbs: Significantly off target Protein: Significantly off target Fat: Significantly off target\n      \n  \n        \n        \n    \n       Αποθήκευση Πλάνου\n       Χρήση Προτύπου\n      ✨ Δημιουργία Πλάνου με AI\n      ✨ Επαναϊσορρόπηση Εβδομάδας\n      \n    \n    \n      \n      \n        Ημέρα\n        Εβδομάδα\n      \n    \n  \n  \n  \n  \n    ←\n    ΔευΤρίΤετΠέμΠαρΣάβΚυρ\n    →\n  \n    \n      Ημέρα\n      Πρωινό\n      Σνακ 1\n      Μεσημεριανό\n      Σνακ 2\n      Βραδινό\n      Πριν τον ύπνο\n      Kcal\n    \n    \n        Δευτέρα\n        Τοστ (2 φέτες ψωμί ολικής) – 1 φέτα τυρί light + αγγούρι / ντοματίνια\n        1 φρούτο + 1 φλ. γάλα 1,5%\n        Κοτόπουλο + ρύζι (90g μαγειρεμένο κρέας/κοτόπουλο (ή 100g ψάρι) + 1 ⅓ φλ. ρύζι + 17 κ.γ. ελαιόλαδο) – σαλάτα (4 φλ.)\n        1 φρούτο\n        Ψάρι + πατάτα (140g μαγειρεμένο ψάρι + 1 μέτρια πατάτα (~150g) + 3 κ.γ. ελαιόλαδο) – σαλάτα (2 φλ.)\n        1 φρούτο\n        2245\n      \n        Τρίτη\n        Βρώμη (5 κ.σ. / ~40g) – 1 φλ. γάλα 1,5%\n        1 φρούτο\n        Ψάρι + πατάτα (100g μαγειρεμένο ψάρι + 1 μεγάλη πατάτα (~200g) + 16 κ.γ. ελαιόλαδο) – σαλάτα (4 φλ.)\n        1 φρούτο + 6 αμύγδαλα ή 4 καρύδια\n        Κοτόπουλο + ρύζι (120g μαγειρεμένο κρέας/κοτόπουλο (ή 140g ψάρι) + ⅔ φλ. ρύζι + 3 κ.γ. ελαιόλαδο) – σαλάτα (3 φλ.)\n        1 φρούτο\n        2245\n      \n        Τετάρτη\n        Τοστ (2 φέτες ψωμί ολικής) – 1 φέτα τυρί light + αγγούρι / ντοματίνια\n        1 φρούτο\n        Τόνος + πατάτα (100g τόνο + 1 μεγάλη πατάτα (~200g) + 21 κ.γ. ελαιόλαδο) – σαλάτα (2 φλ.)\n        1 φρούτο\n        Ομελέτα (3 αυγά) + 1 φέτα ψωμί + 3 κ.γ. ελαιόλαδο – βραστά λαχανικά (2 φλ.) + 30g γαλοπούλα light\n        1 φρούτο + 1 γιαούρτι 2% (~170g)\n        2253\n      \n        Πέμπτη\n        Βρώμη (5 κ.σ. / ~40g) – 1 φλ. γάλα 1,5%\n        1 μερίδα αποξηραμένων φρούτων\n        Φασολάκια + χοιρινό (90g μαγειρεμένο χοιρινό + 1 μεγάλη πατάτα (~200g) + 16 κ.γ. ελαιόλαδο) – φασολάκια + σαλάτα (4 φλ.)\n        1 φρούτο + 6 αμύγδαλα ή 4 καρύδια\n        Κοτόπουλο + ρύζι (120g μαγειρεμένο κρέας/κοτόπουλο (ή 140g ψάρι) + ⅔ φλ. ρύζι + 3 κ.γ. ελαιόλαδο) – σαλάτα (3 φλ.)\n        1 φρούτο\n        2245\n      \n        Παρασκευή\n        Τοστ (2 φέτες ψωμί ολικής) – 1 φέτα τυρί light + αγγούρι / ντοματίνια\n        1 φρούτο + 1 φλ. γάλα 1,5%\n        Μακαρόνια + κιμάς (90g μαγειρεμένο κιμά + 1 ⅓ φλ. ζυμαρικά + 17 κ.γ. ελαιόλαδο) – σαλάτα (4 φλ.)\n        1 φρούτο\n        Ψάρι + πατάτα (140g μαγειρεμένο ψάρι + 1 μέτρια πατάτα (~150g) + 3 κ.γ. ελαιόλαδο) – σαλάτα (2 φλ.)\n        1 φρούτο\n        2245\n      \n        Σάββατο\n        Βρώμη (5 κ.σ. / ~40g) – 1 φλ. γάλα 1,5%\n        1 φρούτο\n        Μακαρόνια + κιμάς (90g μαγειρεμένο κιμά + ⅔ φλ. ζυμαρικά + 16 κ.γ. ελαιόλαδο) – σαλάτα (4 φλ.)\n        1 φρούτο + 6 αμύγδαλα ή 4 καρύδια\n        Σουβλάκι κοτόπουλο (140g) + μικρή κυπριακή πίτα – σαλάτα (3 φλ.) + 3 κ.γ. ελαιόλαδο\n        1 φρούτο\n        2245\n      \n        Κυριακή\n        Τοστ (2 φέτες ψωμί ολικής) – 1 φέτα τυρί light + αγγούρι / ντοματίνια\n        1 φρούτο\n        Κοτόπουλο + ρύζι (90g μαγειρεμένο κρέας/κοτόπουλο (ή 100g ψάρι) + ⅔ φλ. ρύζι + 14 κ.γ. ελαιόλαδο) – σαλάτα (3 φλ.)\n        1 φρούτο\n        Μπιφτέκι + πλιγούρι (⅓ φλ. πλιγούρι + 2 κ.γ. ελαιόλαδο) – σαλάτα (3 φλ.)\n        1 φρούτο + 1 γιαούρτι 2% (~170g)\n        2245\n      \n      \n        Στόχος/ημέρα\n        \n        2294 kcal\n      \n    \n      \n    \n  "
+  },
+  "exchangeValues": {
+    "dairy": 80,
+    "fat": 45,
+    "fruit": 60,
+    "protein": 46,
+    "starch": 81,
+    "veg": 28
+  },
+  "fixture_hash": "1544f5d0b02ac11ee438f633c608971c52987526f93a2981fd71690cdd14d52f",
+  "scenario_id": "vegan_high_fiber",
+  "targetKcal": 1800,
+  "week": [
+    {
+      "allocation": {
+        "allocated": {
+          "dairy": 0,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "allocatedExchangeKcal": 1625,
+        "dairyDist": {
+          "brk": 0,
+          "din": 0,
+          "lun": 0,
+          "sleep": 0,
+          "snk1": 0,
+          "snk2": 0
+        },
+        "exchangeDiff": {
+          "dairy": 1
+        },
+        "exchangeTarget": {
+          "dairy": 1,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "exchangeTotalKcal": 1705,
+        "fixed": {
+          "dairy": 0,
+          "fat": 3,
+          "fruit": 3,
+          "protein": 4,
+          "starch": 3,
+          "veg": 3
+        },
+        "fruitDist": {
+          "brk": 0,
+          "din": 0,
+          "lun": 0,
+          "sleep": 1,
+          "snk1": 1,
+          "snk2": 1
+        },
+        "plan": {
+          "breakfast": "BRK_TOAST",
+          "dinner": "DIN_FISH_POTATO",
+          "lunch": "LUN_CHICKEN_RICE",
+          "sleepExtras": [
+            "fruit"
+          ],
+          "snack1Extras": [
+            "fruit"
+          ],
+          "snack2Extras": [
+            "fruit"
+          ]
+        },
+        "portions": {
+          "dinner": {
+            "fat": 0,
+            "prot": 0,
+            "starch": 0,
+            "veg": 0
+          },
+          "lunch": {
+            "fat": 5,
+            "prot": 3,
+            "starch": 4,
+            "veg": 4
+          }
+        },
+        "snacks": {
+          "sleepBuilt": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          },
+          "snk1Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          },
+          "snk2Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          }
+        },
+        "warnings": [
+          "1 dairy serving(s) unallocated — add Milk/Yogurt to another snack slot or adjust Exchange System.",
+          "1 dairy exchange(s) remain unallocated."
+        ]
+      },
+      "day": "Δευτέρα",
+      "dayEn": "Monday",
+      "index": 0,
+      "keys": {
+        "breakfast": "BRK_TOAST",
+        "dinner": "DIN_FISH_POTATO",
+        "lunch": "LUN_CHICKEN_RICE"
+      },
+      "text": {
+        "en": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        },
+        "gr": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        }
+      },
+      "totals": {
+        "displayEn": {
+          "brk": 236,
+          "din": 410,
+          "lun": 1429,
+          "sleep": 60,
+          "snk1": 60,
+          "snk2": 60
+        },
+        "displayGr": {
+          "brk": 236,
+          "din": 410,
+          "lun": 1429,
+          "sleep": 60,
+          "snk1": 60,
+          "snk2": 60
+        },
+        "en": {
+          "brk": 236,
+          "din": 410,
+          "lun": 1429,
+          "sleep": 60,
+          "snk1": 60,
+          "snk2": 60
+        },
+        "gr": {
+          "brk": 236,
+          "din": 410,
+          "lun": 1429,
+          "sleep": 60,
+          "snk1": 60,
+          "snk2": 60
+        }
+      },
+      "warnings": [
+        "1 dairy serving(s) unallocated — add Milk/Yogurt to another snack slot or adjust Exchange System.",
+        "1 dairy exchange(s) remain unallocated.",
+        "1 dairy serving(s) unallocated — add Milk/Yogurt to another snack slot or adjust Exchange System.",
+        "1 dairy exchange(s) remain unallocated."
+      ]
+    },
+    {
+      "allocation": {
+        "allocated": {
+          "dairy": 2,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "allocatedExchangeKcal": 1785,
+        "dairyDist": {
+          "brk": 1,
+          "din": 0,
+          "lun": 0,
+          "sleep": 0,
+          "snk1": 1,
+          "snk2": 0
+        },
+        "exchangeDiff": {
+          "dairy": -1
+        },
+        "exchangeTarget": {
+          "dairy": 1,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "exchangeTotalKcal": 1705,
+        "fixed": {
+          "dairy": 2,
+          "fat": 1,
+          "fruit": 3,
+          "protein": 0,
+          "starch": 3,
+          "veg": 0
+        },
+        "fruitDist": {
+          "brk": 0,
+          "din": 0,
+          "lun": 0,
+          "sleep": 1,
+          "snk1": 1,
+          "snk2": 1
+        },
+        "plan": {
+          "breakfast": "BRK_CEREAL",
+          "dinner": "DIN_CHICKEN_RICE",
+          "lunch": "LUN_FISH_POTATO",
+          "sleepExtras": [
+            "fruit"
+          ],
+          "snack1Extras": [
+            "fruit",
+            "yogurt"
+          ],
+          "snack2Extras": [
+            "fruit",
+            "nuts"
+          ]
+        },
+        "portions": {
+          "dinner": {
+            "fat": 3,
+            "prot": 4,
+            "starch": 2,
+            "veg": 3
+          },
+          "lunch": {
+            "fat": 4,
+            "prot": 3,
+            "starch": 2,
+            "veg": 4
+          }
+        },
+        "snacks": {
+          "sleepBuilt": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          },
+          "snk1Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 1,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο + 1 γιαούρτι 2% (~170g)"
+          },
+          "snk2Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 1,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο + 6 αμύγδαλα ή 4 καρύδια"
+          }
+        },
+        "warnings": [
+          "1 dairy exchange(s) are over-allocated."
+        ]
+      },
+      "day": "Τρίτη",
+      "dayEn": "Tuesday",
+      "index": 1,
+      "keys": {
+        "breakfast": "BRK_CEREAL",
+        "dinner": "DIN_CHICKEN_RICE",
+        "lunch": "LUN_FISH_POTATO"
+      },
+      "text": {
+        "en": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        },
+        "gr": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        }
+      },
+      "totals": {
+        "displayEn": {
+          "brk": 323,
+          "din": 565,
+          "lun": 1087,
+          "sleep": 60,
+          "snk1": 140,
+          "snk2": 105
+        },
+        "displayGr": {
+          "brk": 323,
+          "din": 565,
+          "lun": 1087,
+          "sleep": 60,
+          "snk1": 140,
+          "snk2": 105
+        },
+        "en": {
+          "brk": 323,
+          "din": 565,
+          "lun": 1087,
+          "sleep": 60,
+          "snk1": 140,
+          "snk2": 105
+        },
+        "gr": {
+          "brk": 323,
+          "din": 565,
+          "lun": 1087,
+          "sleep": 60,
+          "snk1": 140,
+          "snk2": 105
+        }
+      },
+      "warnings": [
+        "1 dairy exchange(s) are over-allocated.",
+        "1 dairy exchange(s) are over-allocated."
+      ]
+    },
+    {
+      "allocation": {
+        "allocated": {
+          "dairy": 1,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "allocatedExchangeKcal": 1705,
+        "dairyDist": {
+          "brk": 0,
+          "din": 0,
+          "lun": 0,
+          "sleep": 1,
+          "snk1": 0,
+          "snk2": 0
+        },
+        "exchangeDiff": {},
+        "exchangeTarget": {
+          "dairy": 1,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "exchangeTotalKcal": 1705,
+        "fixed": {
+          "dairy": 1,
+          "fat": 3,
+          "fruit": 3,
+          "protein": 5,
+          "starch": 3,
+          "veg": 3
+        },
+        "fruitDist": {
+          "brk": 0,
+          "din": 0,
+          "lun": 0,
+          "sleep": 1,
+          "snk1": 1,
+          "snk2": 1
+        },
+        "plan": {
+          "breakfast": "BRK_TOAST",
+          "dinner": "DIN_OMELETTE",
+          "lunch": "LUN_LOUVI_TUNA",
+          "sleepExtras": [
+            "fruit",
+            "yogurt"
+          ],
+          "snack1Extras": [
+            "fruit"
+          ],
+          "snack2Extras": [
+            "fruit"
+          ]
+        },
+        "portions": {
+          "dinner": {
+            "fat": 0,
+            "prot": 0,
+            "starch": 0,
+            "veg": 0
+          },
+          "lunch": {
+            "fat": 5,
+            "prot": 2,
+            "starch": 4,
+            "veg": 4
+          }
+        },
+        "snacks": {
+          "sleepBuilt": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 1,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο + 1 γιαούρτι 2% (~170g)"
+          },
+          "snk1Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          },
+          "snk2Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          }
+        },
+        "warnings": []
+      },
+      "day": "Τετάρτη",
+      "dayEn": "Wednesday",
+      "index": 2,
+      "keys": {
+        "breakfast": "BRK_TOAST",
+        "dinner": "DIN_OMELETTE",
+        "lunch": "LUN_LOUVI_TUNA"
+      },
+      "text": {
+        "en": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        },
+        "gr": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        }
+      },
+      "totals": {
+        "displayEn": {
+          "brk": 236,
+          "din": 456,
+          "lun": 1293,
+          "sleep": 140,
+          "snk1": 60,
+          "snk2": 60
+        },
+        "displayGr": {
+          "brk": 236,
+          "din": 456,
+          "lun": 1293,
+          "sleep": 140,
+          "snk1": 60,
+          "snk2": 60
+        },
+        "en": {
+          "brk": 236,
+          "din": 456,
+          "lun": 1293,
+          "sleep": 140,
+          "snk1": 60,
+          "snk2": 60
+        },
+        "gr": {
+          "brk": 236,
+          "din": 456,
+          "lun": 1293,
+          "sleep": 140,
+          "snk1": 60,
+          "snk2": 60
+        }
+      },
+      "warnings": []
+    },
+    {
+      "allocation": {
+        "allocated": {
+          "dairy": 1,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "allocatedExchangeKcal": 1705,
+        "dairyDist": {
+          "brk": 1,
+          "din": 0,
+          "lun": 0,
+          "sleep": 0,
+          "snk1": 0,
+          "snk2": 0
+        },
+        "exchangeDiff": {},
+        "exchangeTarget": {
+          "dairy": 1,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "exchangeTotalKcal": 1705,
+        "fixed": {
+          "dairy": 1,
+          "fat": 1,
+          "fruit": 3,
+          "protein": 0,
+          "starch": 3,
+          "veg": 0
+        },
+        "fruitDist": {
+          "brk": 0,
+          "din": 0,
+          "lun": 0,
+          "sleep": 1,
+          "snk1": 1,
+          "snk2": 1
+        },
+        "plan": {
+          "breakfast": "BRK_CEREAL",
+          "dinner": "DIN_TUNA_POTATO",
+          "lunch": "LUN_FASOLAKIA_PORK",
+          "sleepExtras": [
+            "fruit"
+          ],
+          "snack1Extras": [
+            "fruit",
+            "driedfruit"
+          ],
+          "snack2Extras": [
+            "fruit",
+            "nuts"
+          ]
+        },
+        "portions": {
+          "dinner": {
+            "fat": 3,
+            "prot": 4,
+            "starch": 2,
+            "veg": 3
+          },
+          "lunch": {
+            "fat": 4,
+            "prot": 3,
+            "starch": 2,
+            "veg": 4
+          }
+        },
+        "snacks": {
+          "sleepBuilt": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          },
+          "snk1Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 μερίδα αποξηραμένων φρούτων"
+          },
+          "snk2Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 1,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο + 6 αμύγδαλα ή 4 καρύδια"
+          }
+        },
+        "warnings": []
+      },
+      "day": "Πέμπτη",
+      "dayEn": "Thursday",
+      "index": 3,
+      "keys": {
+        "breakfast": "BRK_CEREAL",
+        "dinner": "DIN_TUNA_POTATO",
+        "lunch": "LUN_FASOLAKIA_PORK"
+      },
+      "text": {
+        "en": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        },
+        "gr": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        }
+      },
+      "totals": {
+        "displayEn": {
+          "brk": 323,
+          "din": 565,
+          "lun": 1132,
+          "sleep": 60,
+          "snk1": 60,
+          "snk2": 105
+        },
+        "displayGr": {
+          "brk": 323,
+          "din": 565,
+          "lun": 1132,
+          "sleep": 60,
+          "snk1": 60,
+          "snk2": 105
+        },
+        "en": {
+          "brk": 323,
+          "din": 565,
+          "lun": 1132,
+          "sleep": 60,
+          "snk1": 60,
+          "snk2": 105
+        },
+        "gr": {
+          "brk": 323,
+          "din": 565,
+          "lun": 1132,
+          "sleep": 60,
+          "snk1": 60,
+          "snk2": 105
+        }
+      },
+      "warnings": []
+    },
+    {
+      "allocation": {
+        "allocated": {
+          "dairy": 0,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "allocatedExchangeKcal": 1625,
+        "dairyDist": {
+          "brk": 0,
+          "din": 0,
+          "lun": 0,
+          "sleep": 0,
+          "snk1": 0,
+          "snk2": 0
+        },
+        "exchangeDiff": {
+          "dairy": 1
+        },
+        "exchangeTarget": {
+          "dairy": 1,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "exchangeTotalKcal": 1705,
+        "fixed": {
+          "dairy": 0,
+          "fat": 4,
+          "fruit": 3,
+          "protein": 4,
+          "starch": 4,
+          "veg": 3
+        },
+        "fruitDist": {
+          "brk": 0,
+          "din": 0,
+          "lun": 0,
+          "sleep": 1,
+          "snk1": 1,
+          "snk2": 1
+        },
+        "plan": {
+          "breakfast": "BRK_TOAST",
+          "dinner": "DIN_PASTA_MINCE",
+          "lunch": "LUN_TUNA_POTATO",
+          "sleepExtras": [
+            "fruit"
+          ],
+          "snack1Extras": [
+            "fruit"
+          ],
+          "snack2Extras": [
+            "fruit"
+          ]
+        },
+        "portions": {
+          "dinner": {
+            "fat": 4,
+            "prot": 3,
+            "starch": 3,
+            "veg": 4
+          },
+          "lunch": {
+            "fat": 0,
+            "prot": 0,
+            "starch": 0,
+            "veg": 0
+          }
+        },
+        "snacks": {
+          "sleepBuilt": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          },
+          "snk1Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          },
+          "snk2Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          }
+        },
+        "warnings": [
+          "1 dairy serving(s) unallocated — add Milk/Yogurt to another snack slot or adjust Exchange System.",
+          "1 dairy exchange(s) remain unallocated."
+        ]
+      },
+      "day": "Παρασκευή",
+      "dayEn": "Friday",
+      "index": 4,
+      "keys": {
+        "breakfast": "BRK_TOAST",
+        "dinner": "DIN_PASTA_MINCE",
+        "lunch": "LUN_TUNA_POTATO"
+      },
+      "text": {
+        "en": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        },
+        "gr": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        }
+      },
+      "totals": {
+        "displayEn": {
+          "brk": 236,
+          "din": 673,
+          "lun": 1166,
+          "sleep": 60,
+          "snk1": 60,
+          "snk2": 60
+        },
+        "displayGr": {
+          "brk": 236,
+          "din": 673,
+          "lun": 1166,
+          "sleep": 60,
+          "snk1": 60,
+          "snk2": 60
+        },
+        "en": {
+          "brk": 236,
+          "din": 673,
+          "lun": 1166,
+          "sleep": 60,
+          "snk1": 60,
+          "snk2": 60
+        },
+        "gr": {
+          "brk": 236,
+          "din": 673,
+          "lun": 1166,
+          "sleep": 60,
+          "snk1": 60,
+          "snk2": 60
+        }
+      },
+      "warnings": [
+        "1 dairy serving(s) unallocated — add Milk/Yogurt to another snack slot or adjust Exchange System.",
+        "1 dairy exchange(s) remain unallocated.",
+        "1 dairy serving(s) unallocated — add Milk/Yogurt to another snack slot or adjust Exchange System.",
+        "1 dairy exchange(s) remain unallocated."
+      ]
+    },
+    {
+      "allocation": {
+        "allocated": {
+          "dairy": 2,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "allocatedExchangeKcal": 1785,
+        "dairyDist": {
+          "brk": 1,
+          "din": 0,
+          "lun": 0,
+          "sleep": 0,
+          "snk1": 1,
+          "snk2": 0
+        },
+        "exchangeDiff": {
+          "dairy": -1
+        },
+        "exchangeTarget": {
+          "dairy": 1,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "exchangeTotalKcal": 1705,
+        "fixed": {
+          "dairy": 2,
+          "fat": 4,
+          "fruit": 3,
+          "protein": 4,
+          "starch": 5,
+          "veg": 3
+        },
+        "fruitDist": {
+          "brk": 0,
+          "din": 0,
+          "lun": 0,
+          "sleep": 1,
+          "snk1": 1,
+          "snk2": 1
+        },
+        "plan": {
+          "breakfast": "BRK_CEREAL",
+          "dinner": "DIN_SOUVLAKI_PITA",
+          "lunch": "LUN_PASTA_MINCE",
+          "sleepExtras": [
+            "fruit"
+          ],
+          "snack1Extras": [
+            "fruit",
+            "yogurt"
+          ],
+          "snack2Extras": [
+            "fruit",
+            "nuts"
+          ]
+        },
+        "portions": {
+          "dinner": {
+            "fat": 0,
+            "prot": 0,
+            "starch": 0,
+            "veg": 0
+          },
+          "lunch": {
+            "fat": 4,
+            "prot": 3,
+            "starch": 2,
+            "veg": 4
+          }
+        },
+        "snacks": {
+          "sleepBuilt": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          },
+          "snk1Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 1,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο + 1 γιαούρτι 2% (~170g)"
+          },
+          "snk2Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 1,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο + 6 αμύγδαλα ή 4 καρύδια"
+          }
+        },
+        "warnings": [
+          "1 dairy exchange(s) are over-allocated."
+        ]
+      },
+      "day": "Σάββατο",
+      "dayEn": "Saturday",
+      "index": 5,
+      "keys": {
+        "breakfast": "BRK_CEREAL",
+        "dinner": "DIN_SOUVLAKI_PITA",
+        "lunch": "LUN_PASTA_MINCE"
+      },
+      "text": {
+        "en": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        },
+        "gr": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        }
+      },
+      "totals": {
+        "displayEn": {
+          "brk": 323,
+          "din": 565,
+          "lun": 1087,
+          "sleep": 60,
+          "snk1": 140,
+          "snk2": 105
+        },
+        "displayGr": {
+          "brk": 323,
+          "din": 565,
+          "lun": 1087,
+          "sleep": 60,
+          "snk1": 140,
+          "snk2": 105
+        },
+        "en": {
+          "brk": 323,
+          "din": 565,
+          "lun": 1087,
+          "sleep": 60,
+          "snk1": 140,
+          "snk2": 105
+        },
+        "gr": {
+          "brk": 323,
+          "din": 565,
+          "lun": 1087,
+          "sleep": 60,
+          "snk1": 140,
+          "snk2": 105
+        }
+      },
+      "warnings": [
+        "1 dairy exchange(s) are over-allocated.",
+        "1 dairy exchange(s) are over-allocated."
+      ]
+    },
+    {
+      "allocation": {
+        "allocated": {
+          "dairy": 1,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "allocatedExchangeKcal": 1705,
+        "dairyDist": {
+          "brk": 0,
+          "din": 0,
+          "lun": 0,
+          "sleep": 1,
+          "snk1": 0,
+          "snk2": 0
+        },
+        "exchangeDiff": {},
+        "exchangeTarget": {
+          "dairy": 1,
+          "fat": 8,
+          "fruit": 3,
+          "protein": 7,
+          "starch": 7,
+          "veg": 7
+        },
+        "exchangeTotalKcal": 1705,
+        "fixed": {
+          "dairy": 1,
+          "fat": 4,
+          "fruit": 3,
+          "protein": 4,
+          "starch": 4,
+          "veg": 1
+        },
+        "fruitDist": {
+          "brk": 0,
+          "din": 0,
+          "lun": 0,
+          "sleep": 1,
+          "snk1": 1,
+          "snk2": 1
+        },
+        "plan": {
+          "breakfast": "BRK_TOAST",
+          "dinner": "DIN_BIFTEKI_BULGUR",
+          "lunch": "LUN_BIFTEKI_BULGUR",
+          "sleepExtras": [
+            "fruit",
+            "yogurt"
+          ],
+          "snack1Extras": [
+            "fruit"
+          ],
+          "snack2Extras": [
+            "fruit"
+          ]
+        },
+        "portions": {
+          "dinner": {
+            "fat": 2,
+            "prot": 0,
+            "starch": 1,
+            "veg": 3
+          },
+          "lunch": {
+            "fat": 2,
+            "prot": 3,
+            "starch": 2,
+            "veg": 3
+          }
+        },
+        "snacks": {
+          "sleepBuilt": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 1,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο + 1 γιαούρτι 2% (~170g)"
+          },
+          "snk1Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          },
+          "snk2Built": {
+            "addOnKcal": 0,
+            "exch": {
+              "dairy": 0,
+              "fat": 0,
+              "fruit": 1,
+              "protein": 0,
+              "starch": 0,
+              "veg": 0
+            },
+            "text": "1 φρούτο"
+          }
+        },
+        "warnings": []
+      },
+      "day": "Κυριακή",
+      "dayEn": "Sunday",
+      "index": 6,
+      "keys": {
+        "breakfast": "BRK_TOAST",
+        "dinner": "DIN_BIFTEKI_BULGUR",
+        "lunch": "LUN_BIFTEKI_BULGUR"
+      },
+      "text": {
+        "en": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        },
+        "gr": {
+          "breakfast": "",
+          "dinner": "",
+          "lunch": "",
+          "sleep": "",
+          "snack1": "",
+          "snack2": ""
+        }
+      },
+      "totals": {
+        "displayEn": {
+          "brk": 236,
+          "din": 735,
+          "lun": 1014,
+          "sleep": 140,
+          "snk1": 60,
+          "snk2": 60
+        },
+        "displayGr": {
+          "brk": 236,
+          "din": 735,
+          "lun": 1014,
+          "sleep": 140,
+          "snk1": 60,
+          "snk2": 60
+        },
+        "en": {
+          "brk": 236,
+          "din": 735,
+          "lun": 1014,
+          "sleep": 140,
+          "snk1": 60,
+          "snk2": 60
+        },
+        "gr": {
+          "brk": 236,
+          "din": 735,
+          "lun": 1014,
+          "sleep": 140,
+          "snk1": 60,
+          "snk2": 60
+        }
+      },
+      "warnings": []
+    }
+  ]
+}

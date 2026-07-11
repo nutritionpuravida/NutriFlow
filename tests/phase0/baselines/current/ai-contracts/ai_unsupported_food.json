@@ -1,0 +1,72 @@
+{
+  "aiPlanStatus": "",
+  "app_fingerprint": "B4C80AEA",
+  "changedWeekPlans": true,
+  "contract_id": "ai_unsupported_food",
+  "description": "Mocked AI-shaped output with unsupported food.",
+  "error": null,
+  "mockedOnly": true,
+  "note": "Application-side AI-shaped output contract fixture; not an LLM or Edge Function integration test.",
+  "weekPlansSample": [
+    {
+      "aiMeals": {
+        "dinner": {
+          "description_en": "Undefined supplement powder bowl",
+          "description_gr": "Undefined supplement powder bowl",
+          "kcal": 500,
+          "name": "Unsupported specialty meal"
+        }
+      },
+      "brk": "BRK_TOAST",
+      "day": "Δευτέρα",
+      "din": "DIN_FISH_POTATO",
+      "lun": "LUN_CHICKEN_RICE",
+      "manualMeals": {},
+      "sleepExtras": [
+        "fruit",
+        "milk"
+      ],
+      "snack1Extras": [
+        "fruit",
+        "milk"
+      ],
+      "snack2Extras": [
+        "fruit"
+      ],
+      "snk1Extras": [
+        "fruit",
+        "milk"
+      ],
+      "snk2Extras": [
+        "fruit"
+      ],
+      "source": "ai"
+    },
+    {
+      "brk": "BRK_CEREAL",
+      "day": "Τρίτη",
+      "din": "DIN_CHICKEN_RICE",
+      "lun": "LUN_FISH_POTATO",
+      "manualMeals": {},
+      "sleepExtras": [
+        "fruit"
+      ],
+      "snack1Extras": [
+        "fruit",
+        "yogurt"
+      ],
+      "snack2Extras": [
+        "fruit",
+        "nuts"
+      ],
+      "snk1Extras": [
+        "fruit",
+        "yogurt"
+      ],
+      "snk2Extras": [
+        "fruit",
+        "nuts"
+      ]
+    }
+  ]
+}

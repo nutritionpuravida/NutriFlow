@@ -1,0 +1,12 @@
+{
+  "aiPlanStatus": "",
+  "app_fingerprint": "B4C80AEA",
+  "applyResult": null,
+  "changedWeekPlans": false,
+  "contract_id": "ai_free_text_only",
+  "description": "Mocked free-text-only AI output.",
+  "error": "Unexpected token 'M', \"Monday: ea\"... is not valid JSON",
+  "mockedOnly": true,
+  "note": "Application-side AI-shaped output contract fixture; not an LLM or Edge Function integration test.",
+  "weekPlansSample": []
+}
