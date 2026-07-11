@@ -1695,6 +1695,24 @@ const S = {
   mealSel:{breakfast:'BRK_TOAST',lunch:'LUN_CHICKEN_RICE',dinner:'DIN_FISH_POTATO',snack1Extras:['fruit'],snack2Extras:['fruit'],sleepExtras:['fruit']}
 };
 
+// Phase 0 Decision Trace instrumentation.
+// Default-off and behavior-neutral: production/runtime output is unchanged
+// unless a test harness explicitly sets window.NUTRESE_PHASE0_TRACE = true.
+const NUTRESE_PHASE0_TRACE_VERSION = 'phase0.v1';
+function traceDecision(functionName, step, payload){
+  if(typeof window==='undefined' || !window.NUTRESE_PHASE0_TRACE) return;
+  try{
+    const trace = window.NUTRESE_DECISION_TRACE || (window.NUTRESE_DECISION_TRACE = []);
+    trace.push({
+      trace_version:NUTRESE_PHASE0_TRACE_VERSION,
+      sequence:trace.length+1,
+      function:functionName,
+      step,
+      payload:JSON.parse(JSON.stringify(payload || {}))
+    });
+  }catch(_e){}
+}
+
 // ═══════════════════════════════════════════
 //  AUTH / SUPABASE
 // ═══════════════════════════════════════════
@@ -2745,21 +2763,27 @@ Object.assign(MEALS_EN, {
 });
 
 function mealText(key, portions, lang){
-  if(isNoMealKey(key)) return '';
-  if(isCustomMealKey(key)) return customMealText(key, lang);
-  const map = (lang||S.mealLanguage)==='EN' ? MEALS_EN : MEALS;
-  const comp=FIXED_COMPOSITION_MEALS.has(key) ? (MEAL_EXCHANGES[key]||null) : null;
+  if(isNoMealKey(key)){
+    traceDecision('mealText','return-empty',{key, lang, reason:'no-meal'});
+    return '';
+  }
+  if(isCustomMealKey(key)){
+    const customText=customMealText(key, lang);
+    traceDecision('mealText','return-custom',{key, lang, text:customText});
+    return customText;
+  }
+  const comp=mealCatalogIsFixedComposition(key) ? (mealCatalogExchangeComposition(key)||null) : null;
   const textPortions=comp ? {
     prot:Number(comp.protein||0)+Number(portions?.prot||0),
     starch:Number(comp.starch||0)+Number(portions?.starch||0),
     fat:Number(comp.fat||0)+Number(portions?.fat||0),
     veg:Number(comp.veg||0)+Number(portions?.veg||0)
   } : portions;
-  let text = map[key] ? map[key](S.ex, textPortions) : '';
+  let text = mealCatalogRenderText(key, S.ex, textPortions, lang);
   const extraProt=Number(portions?.prot||0);
   const extraFat=Number(portions?.fat||0);
   const noFixedExtraDisplay=new Set(['DIN_SOUVLAKI_PITA','DIN_FISH_POTATO','LUN_TUNA_POTATO','DIN_OMELETTE','DIN_BIFTEKI_BULGUR']);
-  if(text && FIXED_COMPOSITION_MEALS.has(key) && extraProt>0 && !noFixedExtraDisplay.has(key)){
+  if(text && mealCatalogIsFixedComposition(key) && extraProt>0 && !noFixedExtraDisplay.has(key)){
     const gramsPerEx = Math.round(30 * (((S.exMeta && S.exMeta.protein && S.exMeta.protein.pro) || 7)/7));
     if((lang||S.mealLanguage)==='EN'){
       text += key==='DIN_OMELETTE'
@@ -2771,9 +2795,10 @@ function mealText(key, portions, lang){
         : ` + ${extraProt*gramsPerEx}g μαγειρεμένη άπαχη πρωτεΐνη`;
     }
   }
-  if(text && FIXED_COMPOSITION_MEALS.has(key) && extraFat>0 && !noFixedExtraDisplay.has(key)){
+  if(text && mealCatalogIsFixedComposition(key) && extraFat>0 && !noFixedExtraDisplay.has(key)){
     text += (lang||S.mealLanguage)==='EN' ? ` + ${extraFat} tsp olive oil` : ` + ${extraFat} κ.γ. ελαιόλαδο`;
   }
+  traceDecision('mealText','return',{key, lang, portions:textPortions, text});
   return text;
 }
 function isCustomMealKey(key){
@@ -2797,7 +2822,7 @@ function customMealKcal(key){
 }
 function effectivePortionsForKcal(mealKey, portions){
   if(isCustomMealKey(mealKey)) return null;
-  if(FIXED_COMPOSITION_MEALS.has(mealKey)){
+  if(mealCatalogIsFixedComposition(mealKey)){
     if(['DIN_FISH_POTATO','LUN_TUNA_POTATO','DIN_OMELETTE','DIN_BIFTEKI_BULGUR'].includes(mealKey)) return null;
     const prot=Number(portions?.prot||0);
     const fat=Number(portions?.fat||0);
@@ -2893,6 +2918,120 @@ const FIXED_COMPOSITION_MEALS = new Set([
   'DIN_GRILLED_FISH_RICE', 'DIN_CHICKPEAS_SALAD',
 ]);
 
+// ── PHASE 1 MEAL CATALOG ADAPTER ──
+// Batch 1 extracts a small high-frequency set into decomposed Meal Definition
+// records while preserving the legacy structures as the backing source. The
+// adapter is intentionally additive: old MEALS/MEALS_EN/MEAL_EXCHANGES/
+// FIXED_COMPOSITION_MEALS remain the runtime authority until parity is proven
+// for every migrated meal.
+const MEAL_CATALOG_BATCH_1_KEYS = [
+  'BRK_TOAST',
+  'BRK_CEREAL',
+  'LUN_CHICKEN_RICE',
+  'DIN_CHICKEN_RICE',
+  'LUN_TUNA_POTATO',
+  'DIN_FISH_POTATO',
+  'DIN_OMELETTE',
+  'LUN_GRILLED_FISH_RICE',
+  'DIN_CHICKEN_QUINOA',
+];
+
+const MEAL_CATALOG_BATCH_1_LABELS = {
+  BRK_TOAST:{GR:'Τοστ (τυρί)', EN:'Toast (cheese)'},
+  BRK_CEREAL:{GR:'Βρώμη + γάλα', EN:'Oats + milk'},
+  LUN_CHICKEN_RICE:{GR:'Κοτόπουλο + ρύζι', EN:'Chicken + rice'},
+  DIN_CHICKEN_RICE:{GR:'Κοτόπουλο + ρύζι', EN:'Chicken + rice'},
+  LUN_TUNA_POTATO:{GR:'Τόνος + πατάτα', EN:'Tuna + potato'},
+  DIN_FISH_POTATO:{GR:'Ψάρι + πατάτα', EN:'Fish + potato'},
+  DIN_OMELETTE:{GR:'Ομελέτα + ψωμί', EN:'Omelette + bread'},
+  LUN_GRILLED_FISH_RICE:{GR:'Ψητό ψάρι + ρύζι', EN:'Grilled fish + rice'},
+  DIN_CHICKEN_QUINOA:{GR:'Κοτόπουλο + κινόα', EN:'Chicken + quinoa'},
+};
+
+function mealCatalogSlotFromKey(key){
+  if(String(key||'').startsWith('BRK_')) return 'breakfast';
+  if(String(key||'').startsWith('LUN_')) return 'lunch';
+  if(String(key||'').startsWith('DIN_')) return 'dinner';
+  return 'unknown';
+}
+
+function mealCatalogLegacyLabel(key, lang='GR'){
+  const labels=MEAL_CATALOG_BATCH_1_LABELS[key] || {};
+  return lang==='EN' ? (labels.EN || labels.GR || key) : (labels.GR || labels.EN || key);
+}
+
+function buildLegacyMealDefinition(key){
+  const fixed = FIXED_COMPOSITION_MEALS.has(key);
+  return {
+    core:{
+      id:key,
+      legacyKey:key,
+      kind:'meal-definition',
+      catalogVersion:'phase1-adapter-batch1',
+      status:'legacy_wrapped'
+    },
+    portionFormula:{
+      mode:fixed ? 'fixed-composition' : 'legacy-dynamic-portions',
+      exchangeComposition:MEAL_EXCHANGES[key] || {},
+      dynamicPortionInputs:fixed ? [] : ['protein','starch','fat','veg'],
+      legacyPortionFunction:fixed ? null : 'mealSuffix / mealSuffixEn'
+    },
+    localizedPresentation:{
+      labels:{GR:mealCatalogLegacyLabel(key,'GR'), EN:mealCatalogLegacyLabel(key,'EN')},
+      textRenderer:{GR:'MEALS', EN:'MEALS_EN', key}
+    },
+    nutrientData:{
+      status:'unknown',
+      sourceRefs:[],
+      note:'Legacy exchange-only meal; detailed nutrient data intentionally not inferred.'
+    },
+    classificationMetadata:{
+      factsOnly:true,
+      slot:mealCatalogSlotFromKey(key),
+      legacyPrefix:String(key).split('_')[0],
+      fixedComposition:fixed,
+      hasGreekPresentation:typeof MEALS[key]==='function',
+      hasEnglishPresentation:typeof MEALS_EN[key]==='function'
+    },
+    provenance:{
+      source:'legacy-index-html',
+      wraps:['MEALS','MEALS_EN','MEAL_EXCHANGES','FIXED_COMPOSITION_MEALS'],
+      migrationPhase:'Phase 1',
+      migrationBatch:'batch-1-high-frequency'
+    },
+    validationStatus:{
+      state:'legacy_approved_pending_catalog_review',
+      parityGate:'Phase 0 baseline must remain unchanged'
+    }
+  };
+}
+
+const MEAL_CATALOG_DEFINITIONS = Object.fromEntries(
+  MEAL_CATALOG_BATCH_1_KEYS.map(key=>[key, buildLegacyMealDefinition(key)])
+);
+
+function getMealDefinition(key){
+  return MEAL_CATALOG_DEFINITIONS[key] || null;
+}
+
+function mealCatalogExchangeComposition(key){
+  const def=getMealDefinition(key);
+  return def ? def.portionFormula.exchangeComposition : (MEAL_EXCHANGES[key] || {});
+}
+
+function mealCatalogIsFixedComposition(key){
+  const def=getMealDefinition(key);
+  return def ? def.portionFormula.mode==='fixed-composition' : FIXED_COMPOSITION_MEALS.has(key);
+}
+
+function mealCatalogRenderText(key, ex, portions, lang='GR'){
+  const def=getMealDefinition(key);
+  const renderer = (lang||S.mealLanguage)==='EN' ? MEALS_EN : MEALS;
+  // Phase 1 adapter intentionally delegates to the same legacy renderer so
+  // output remains byte-for-byte comparable with Phase 0 baselines.
+  return renderer[key] ? renderer[key](ex, portions) : '';
+}
+
 const NEW_MEAL_THEME_LABELS = {
   CHICKEN_POTATO:{gr:'Κοτόπουλο + πατάτα', en:'Chicken + potato'},
   FASOLAKIA_CHICKEN:{gr:'Φασολάκια + κοτόπουλο', en:'Green beans + chicken'},
@@ -2962,7 +3101,9 @@ function adjustOliveOilText(text, delta, lang='GR'){
 }
 
 function mealTextWithOilBalance(key, portions, lang='GR', oilDelta=0){
-  return adjustOliveOilText(mealText(key, portions, lang), oilDelta, lang);
+  const text=adjustOliveOilText(mealText(key, portions, lang), oilDelta, lang);
+  traceDecision('mealTextWithOilBalance','return',{key, lang, oilDelta, portions, text});
+  return text;
 }
 
 // Calculates a full day's exchange usage and kcal breakdown from the
@@ -3093,9 +3234,9 @@ function calcDayTotals(){
   }
   const allocation = getDayMealAllocation(ms);
   const portions = allocation.portions;
-  const brkComp  = MEAL_EXCHANGES[ms.breakfast] || {};
-  const lunComp  = MEAL_EXCHANGES[ms.lunch]     || {};
-  const dinComp  = MEAL_EXCHANGES[ms.dinner]    || {};
+  const brkComp  = mealCatalogExchangeComposition(ms.breakfast);
+  const lunComp  = mealCatalogExchangeComposition(ms.lunch);
+  const dinComp  = mealCatalogExchangeComposition(ms.dinner);
 
   const snk1Built = allocation.snacks.snk1Built;
   const snk2Built = allocation.snacks.snk2Built;
@@ -3972,6 +4113,7 @@ function getOneDaySnackExtras(elId, stateKey){
 // distribution assigns a non-zero count to this slot — completely
 // independent of which extras are ticked, so it can never be silently lost.
 function buildSlotSnack(slot, extras, lang='GR', breakfastKey, plan=null, fruitDist=null, dairyDist=null){
+  traceDecision('buildSlotSnack','entry',{slot, extras, lang, breakfastKey, fruitDist, dairyDist});
   fruitDist=fruitDist||getFruitDistribution(plan);
   dairyDist=dairyDist||getDairyDistribution(breakfastKey, plan);
   const fruitCount=fruitDist[slot]||0;
@@ -4023,7 +4165,9 @@ function buildSlotSnack(slot, extras, lang='GR', breakfastKey, plan=null, fruitD
   });
   if(addCoffee){ parts.push(lang==='EN' ? 'Coffee (without sugar)' : 'Καφές (χωρίς ζάχαρη)'); }
 
-  return {exch, addOnKcal, text: parts.length ? parts.join(' + ') : '—'};
+  const result={exch, addOnKcal, text: parts.length ? parts.join(' + ') : '—'};
+  traceDecision('buildSlotSnack','return',{slot, extras, lang, fruitCount, dairyCount, starchChoice, comboChoices, result});
+  return result;
 }
 
 function autoSnackExtrasForPlan(plan){
@@ -4272,15 +4416,18 @@ function addMainMealFixedUse(target, comp, mealScales){
   target.dairy   += Number(comp?.dairy||0);
 }
 function allocateRemainingExchange(exKey, portionKey, ex, fixed, scalableSlots, portions, perMealMax, warnings){
+  traceDecision('allocateRemainingExchange','entry',{exKey, portionKey, target:Number(ex?.[exKey]||0), fixed:Number(fixed?.[exKey]||0), scalableSlots, perMealMax, portions});
   const target=Number(ex?.[exKey]||0);
   const alreadyUsed=Number(fixed?.[exKey]||0);
   const remaining=target-alreadyUsed;
   if(remaining<0){
     warnings.push(`${exKey} fixed meals exceed daily exchange target by ${Math.abs(remaining)} exchange(s).`);
+    traceDecision('allocateRemainingExchange','fixed-over-target',{exKey, remaining, warnings});
     return;
   }
   if(remaining>0 && !scalableSlots.length){
     warnings.push(`${remaining} ${exKey} exchange(s) cannot be allocated because both main meals are fixed.`);
+    traceDecision('allocateRemainingExchange','no-scalable-slots',{exKey, remaining, warnings});
     return;
   }
   const split=splitAcrossMeals(remaining, scalableSlots.length, perMealMax);
@@ -4290,6 +4437,7 @@ function allocateRemainingExchange(exKey, portionKey, ex, fixed, scalableSlots, 
       warnings.push(`${slot} ${exKey} exceeds per-meal cap (${split[i]} > ${perMealMax}).`);
     }
   });
+  traceDecision('allocateRemainingExchange','return',{exKey, remaining, split, portions, warnings});
 }
 function fishProteinExchangeCap(){
   const proPerEx = (S.exMeta && S.exMeta.protein && S.exMeta.protein.pro) || 7;
@@ -4300,14 +4448,16 @@ function mealUsesFishProtein(mealKey){
   return /FISH|TUNA/.test(String(mealKey||''));
 }
 function allowsProteinTopUp(mealKey){
-  return !isCustomMealKey(mealKey) && !FIXED_COMPOSITION_MEALS.has(mealKey);
+  return !isCustomMealKey(mealKey) && !mealCatalogIsFixedComposition(mealKey);
 }
 function allocateProteinRemaining(ex, fixed, scalableSlots, portions, p, caps, warnings){
+  traceDecision('allocateProteinRemaining','entry',{target:Number(ex?.protein||0), fixed:Number(fixed?.protein||0), scalableSlots, portions, plan:p, caps});
   const target=Number(ex?.protein||0);
   const alreadyUsed=Number(fixed?.protein||0);
   let remaining=target-alreadyUsed;
   if(remaining<0){
     warnings.push(`protein fixed meals exceed daily exchange target by ${Math.abs(remaining)} exchange(s).`);
+    traceDecision('allocateProteinRemaining','fixed-over-target',{remaining, warnings});
     return;
   }
   const proteinSlots=['lunch','dinner'].filter(slot=>{
@@ -4316,6 +4466,7 @@ function allocateProteinRemaining(ex, fixed, scalableSlots, portions, p, caps, w
   });
   if(remaining>0 && !proteinSlots.length){
     warnings.push(`${remaining} protein exchange(s) cannot be allocated because both main meals are custom or fixed-composition.`);
+    traceDecision('allocateProteinRemaining','no-protein-slots',{remaining, warnings});
     return;
   }
   const slotCaps={};
@@ -4326,7 +4477,7 @@ function allocateProteinRemaining(ex, fixed, scalableSlots, portions, p, caps, w
   while(remaining>0){
     const available=proteinSlots.filter(slot=>{
       const mealKey=slot==='lunch'?p.lunch:p.dinner;
-      const base=Number(MEAL_EXCHANGES[mealKey]?.protein||0);
+      const base=Number(mealCatalogExchangeComposition(mealKey)?.protein||0);
       return base + Number(portions[slot]?.prot||0) < slotCaps[slot];
     });
     if(!available.length){
@@ -4340,8 +4491,8 @@ function allocateProteinRemaining(ex, fixed, scalableSlots, portions, p, caps, w
     available.sort((a,b)=>{
       const mealA=a==='lunch'?p.lunch:p.dinner;
       const mealB=b==='lunch'?p.lunch:p.dinner;
-      const pa=Number(MEAL_EXCHANGES[mealA]?.protein||0)+Number(portions[a]?.prot||0);
-      const pb=Number(MEAL_EXCHANGES[mealB]?.protein||0)+Number(portions[b]?.prot||0);
+      const pa=Number(mealCatalogExchangeComposition(mealA)?.protein||0)+Number(portions[a]?.prot||0);
+      const pb=Number(mealCatalogExchangeComposition(mealB)?.protein||0)+Number(portions[b]?.prot||0);
       if(pa!==pb) return pa-pb;
       // Prefer dinner on ties so breakfast-light days do not keep giving
       // the remainder to lunch first.
@@ -4351,28 +4502,32 @@ function allocateProteinRemaining(ex, fixed, scalableSlots, portions, p, caps, w
     portions[slot].prot += 1;
     remaining--;
   }
+  traceDecision('allocateProteinRemaining','return',{proteinSlots, slotCaps, portions, warnings});
 }
 function allocateFatRemaining(ex, fixed, portions, p, warnings, caps){
+  traceDecision('allocateFatRemaining','entry',{target:Number(ex?.fat||0), fixed:Number(fixed?.fat||0), portions, plan:p, caps});
   const target=Number(ex?.fat||0);
   const alreadyUsed=Number(fixed?.fat||0);
   let remaining=target-alreadyUsed;
   if(remaining<0){
     warnings.push(`fat fixed meals/snacks exceed daily exchange target by ${Math.abs(remaining)} exchange(s).`);
+    traceDecision('allocateFatRemaining','fixed-over-target',{remaining, warnings});
     return;
   }
   const slots=['lunch','dinner'].filter(slot=>{
     const mealKey=slot==='lunch'?p.lunch:p.dinner;
-    return !isCustomMealKey(mealKey) && !FIXED_COMPOSITION_MEALS.has(mealKey);
+    return !isCustomMealKey(mealKey) && !mealCatalogIsFixedComposition(mealKey);
   });
   const maxPerMeal=(caps && Number.isFinite(caps.fatPerMealMax)) ? caps.fatPerMealMax : 6;
   if(remaining>0 && !slots.length){
     warnings.push(`${remaining} fat exchange(s) cannot be allocated because both main meals are custom or fixed-composition.`);
+    traceDecision('allocateFatRemaining','no-fat-slots',{remaining, warnings});
     return;
   }
   while(remaining>0){
     const available=slots.filter(slot=>{
       const mealKey=slot==='lunch'?p.lunch:p.dinner;
-      const base=Number(MEAL_EXCHANGES[mealKey]?.fat||0);
+      const base=Number(mealCatalogExchangeComposition(mealKey)?.fat||0);
       return base + Number(portions[slot]?.fat||0) < maxPerMeal;
     });
     if(!available.length){
@@ -4392,24 +4547,26 @@ function allocateFatRemaining(ex, fixed, portions, p, warnings, caps){
       remaining--;
     }
   }
+  traceDecision('allocateFatRemaining','return',{slots, maxPerMeal, portions, warnings});
 }
 
 // Daily exchange ledger: subtract fixed breakfast/snack/fixed-meal exchanges
 // first, then distribute only the remainder to scalable lunch/dinner meals.
 function getDayMealAllocation(plan=S.mealSel, lang=S.mealLanguage||'GR'){
   const p=normalizeMealPlan(plan);
+  traceDecision('getDayMealAllocation','entry',{lang, plan:p, exchanges:S.ex, conditions:S.conditions});
   const ex=S.ex||{};
   const caps=S.effCaps || getEffectiveCaps(S.conditions);
-  const brkComp=MEAL_EXCHANGES[p.breakfast]||{};
-  const lunComp=MEAL_EXCHANGES[p.lunch]||{};
-  const dinComp=MEAL_EXCHANGES[p.dinner]||{};
+  const brkComp=mealCatalogExchangeComposition(p.breakfast);
+  const lunComp=mealCatalogExchangeComposition(p.lunch);
+  const dinComp=mealCatalogExchangeComposition(p.dinner);
   const fruitDist=getFruitDistribution(p);
   const dairyDist=getDairyDistribution(p.breakfast, p);
   const snk1Built=buildSlotSnack('snk1', p.snack1Extras||[], lang, p.breakfast, p, fruitDist, dairyDist);
   const snk2Built=buildSlotSnack('snk2', p.snack2Extras||[], lang, p.breakfast, p, fruitDist, dairyDist);
   const sleepBuilt=buildSlotSnack('sleep', p.sleepExtras||[], lang, p.breakfast, p, fruitDist, dairyDist);
-  const lunchScales=!FIXED_COMPOSITION_MEALS.has(p.lunch) && !isCustomMealKey(p.lunch);
-  const dinnerScales=!FIXED_COMPOSITION_MEALS.has(p.dinner) && !isCustomMealKey(p.dinner);
+  const lunchScales=!mealCatalogIsFixedComposition(p.lunch) && !isCustomMealKey(p.lunch);
+  const dinnerScales=!mealCatalogIsFixedComposition(p.dinner) && !isCustomMealKey(p.dinner);
   const fixed=zeroExchangeUse();
   addExchangeUse(fixed, brkComp);
   addExchangeUse(fixed, snk1Built.exch);
@@ -4457,7 +4614,9 @@ function getDayMealAllocation(plan=S.mealSel, lang=S.mealLanguage||'GR'){
   });
   const exchangeTotalKcal=exchangeSystemTotalKcal(exchangeTarget);
   const allocatedExchangeKcal=exchangeUseTotalKcal(allocated);
-  return {plan:p,portions,snacks:{snk1Built,snk2Built,sleepBuilt},fruitDist,dairyDist,fixed,allocated,exchangeTarget,exchangeDiff,exchangeTotalKcal,allocatedExchangeKcal,warnings};
+  const result={plan:p,portions,snacks:{snk1Built,snk2Built,sleepBuilt},fruitDist,dairyDist,fixed,allocated,exchangeTarget,exchangeDiff,exchangeTotalKcal,allocatedExchangeKcal,warnings};
+  traceDecision('getDayMealAllocation','return',{lang, plan:p, portions, fruitDist, dairyDist, fixed, allocated, exchangeTarget, exchangeDiff, exchangeTotalKcal, allocatedExchangeKcal, warnings});
+  return result;
 }
 
 // Backwards-compatible wrapper for older callers.
@@ -5673,11 +5832,12 @@ function buildOneDayPlan(){
 // dinner AND its own snack1/snack2/sleep selection — true per-day variety,
 // per dietitian feedback after real client testing).
 function calcDayTotalsForPlan(dayPlan, lang='GR', dayIndex=0){
+  traceDecision('calcDayTotalsForPlan','entry',{dayIndex, lang, dayPlan});
   const allocation=getDayMealAllocation(dayPlan, lang);
   const portions=allocation.portions;
-  const brkComp  = MEAL_EXCHANGES[dayPlan.brk] || {};
-  const lunComp  = MEAL_EXCHANGES[dayPlan.lun] || {};
-  const dinComp  = MEAL_EXCHANGES[dayPlan.din] || {};
+  const brkComp  = mealCatalogExchangeComposition(dayPlan.brk);
+  const lunComp  = mealCatalogExchangeComposition(dayPlan.lun);
+  const dinComp  = mealCatalogExchangeComposition(dayPlan.din);
   const snk1Built = allocation.snacks.snk1Built;
   const snk2Built = allocation.snacks.snk2Built;
   const sleepBuilt = allocation.snacks.sleepBuilt;
@@ -5721,16 +5881,19 @@ function calcDayTotalsForPlan(dayPlan, lang='GR', dayIndex=0){
   const oilDeltaKcal = (oilBalance.lun + oilBalance.din) * 45;
   const balancedExchangeTotalKcal = (allocation.exchangeTotalKcal||0) + oilDeltaKcal;
   const exchangeGap = totalKcal - balancedExchangeTotalKcal;
-  return {brkKcal,lunKcal,dinKcal,snk1Kcal,snk2Kcal,slpKcal,totalKcal,target,gap,
+  const result={brkKcal,lunKcal,dinKcal,snk1Kcal,snk2Kcal,slpKcal,totalKcal,target,gap,
           snk1Text:snk1Built.text, snk2Text:snk2Built.text, slpText:sleepBuilt.text,
           portions, oilBalance, exchangeTotalKcal:balancedExchangeTotalKcal,
           allocatedExchangeKcal:(allocation.allocatedExchangeKcal||0)+oilDeltaKcal,
           exchangeGap, addOnKcal, extraFoodKcal,
           exchangeTarget:allocation.exchangeTarget, allocatedExchanges:allocation.allocated,
           exchangeDiff:allocation.exchangeDiff, warnings:allocation.warnings};
+  traceDecision('calcDayTotalsForPlan','return',{dayIndex, lang, dayPlan, result});
+  return result;
 }
 
 function buildSevenDay(){
+  traceDecision('buildSevenDay','entry',{definition:'buildSevenDay#1', mealLanguage:S.mealLanguage, sevenDayView:S.sevenDayView});
   updateMealLanguageButtons();
   const lang=S.mealLanguage||'GR';
   if(!S.weekPlans) S.weekPlans = WEEK_PLANS.map(p=>({...p}));
@@ -6399,22 +6562,25 @@ async function saveWeeklyPlan(){
 window.saveWeeklyPlan=saveWeeklyPlan;
 
 function calcDayTotalsForPlanDisplay(dayPlan, lang='GR', dayIndex=0){
+  traceDecision('calcDayTotalsForPlanDisplay','entry',{dayIndex, lang, dayPlan});
   if(dayPlan?.aiMeals){
     const slotKcal=Object.fromEntries(SEVEN_DAY_SLOTS.map(s=>[s.key, Math.round(Number(dayPlan.aiMeals?.[s.ai]?.kcal||0)) + extraKcal(s.key, dayIndex)]));
     const totalKcal=SEVEN_DAY_SLOTS.reduce((sum,s)=>sum+slotKcal[s.key],0);
     const target=Math.round(S.goalKcal||0);
-    return {
+    const result={
       brkKcal:slotKcal.brk, snk1Kcal:slotKcal.snk1, lunKcal:slotKcal.lun,
       snk2Kcal:slotKcal.snk2, dinKcal:slotKcal.din, slpKcal:slotKcal.sleep,
       totalKcal, target, gap:totalKcal-target, portions:{lunch:{},dinner:{}},
       snk1Text:aiMealText(dayPlan.aiMeals.snack1, lang), snk2Text:aiMealText(dayPlan.aiMeals.snack2, lang), slpText:aiMealText(dayPlan.aiMeals.before_sleep, lang),
       exchangeTotalKcal:exchangeSystemTotalKcal(S.ex||{}), exchangeGap:totalKcal-exchangeSystemTotalKcal(S.ex||{}), warnings:[]
     };
+    traceDecision('calcDayTotalsForPlanDisplay','return-ai',{dayIndex, lang, result});
+    return result;
   }
   const strict=strictFallbackLedger(dayPlan, dayIndex);
   if(strict){
     if(!strict.valid){
-      return {
+      const result={
         brkKcal:0, snk1Kcal:0, lunKcal:0, snk2Kcal:0, dinKcal:0, slpKcal:0,
         totalKcal:0, target:1581, gap:-1581, portions:{lunch:{},dinner:{}},
         snk1Text:'—', snk2Text:'—', slpText:'—',
@@ -6422,6 +6588,8 @@ function calcDayTotalsForPlanDisplay(dayPlan, lang='GR', dayIndex=0){
         exchangeTotalKcal:1581, exchangeGap:-1581,
         warnings:['Strict ledger failed — see console for exchange mismatch.']
       };
+      traceDecision('calcDayTotalsForPlanDisplay','return-strict-invalid',{dayIndex, lang, result});
+      return result;
     }
     const slots=JSON.parse(JSON.stringify(strict.slots||{}));
     const target=Math.round(S.goalKcal||strict.totalKcal||0);
@@ -6453,7 +6621,7 @@ function calcDayTotalsForPlanDisplay(dayPlan, lang='GR', dayIndex=0){
       }
     }
     const totals={...strict.totals, fat:(Number(strict.totals?.fat||0)+(Number(slots.lun.fat||0)-Number(strict.slots.lun?.fat||0))+(Number(slots.din.fat||0)-Number(strict.slots.din?.fat||0)))};
-    return {
+    const result={
       brkKcal,
       snk1Kcal,
       lunKcal,
@@ -6479,8 +6647,12 @@ function calcDayTotalsForPlanDisplay(dayPlan, lang='GR', dayIndex=0){
       exchangeDiff:{},
       warnings:[]
     };
+    traceDecision('calcDayTotalsForPlanDisplay','return-strict',{dayIndex, lang, result});
+    return result;
   }
-  return calcDayTotalsForPlan(dayPlan, lang, dayIndex);
+  const result=calcDayTotalsForPlan(dayPlan, lang, dayIndex);
+  traceDecision('calcDayTotalsForPlanDisplay','return-fallback',{dayIndex, lang, result});
+  return result;
 }
 
 // ── FIXED MEAL-PLAN TEMPLATES ──
@@ -7038,6 +7210,7 @@ function renderMicronutrientCoverage(){
 }
 
 function buildSevenDay(){
+  traceDecision('buildSevenDay','entry',{definition:'buildSevenDay#2', mealLanguage:S.mealLanguage, sevenDayView:S.sevenDayView, activeIndex:S.sevenDayActiveIndex});
   updateMealLanguageButtons();
   ensureWeekPlans();
   const lang=S.mealLanguage||'GR';
@@ -7285,6 +7458,7 @@ async function generateAiSevenDayPlan(){
 window.generateAiSevenDayPlan=generateAiSevenDayPlan;
 
 function applyAiSevenDayPlan(plan){
+  traceDecision('applyAiSevenDayPlan','entry',{plan});
   if(typeof plan==='string') plan=JSON.parse(plan);
   if(!plan || typeof plan!=='object') throw new Error('AI response did not contain a meal plan.');
   const keys=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
@@ -7321,6 +7495,7 @@ function applyAiSevenDayPlan(plan){
   } else {
     S.aiOilWarnings=null;
   }
+  traceDecision('applyAiSevenDayPlan','return',{oilWarnings, weekPlans:S.weekPlans});
 }
 
 let flexibleMealEditContext=null;
@@ -10641,19 +10816,6 @@ updateOnlineStatus();
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
