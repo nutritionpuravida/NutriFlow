@@ -4515,15 +4515,14 @@ function mainMealFallbackFloor(mealKey, slot){
   const key=String(mealKey||'');
   const isDinner=slot==='dinner';
   const baseFat=isDinner ? 3 : 2;
+  const baseStarch=isDinner ? 1 : 2;
   if(/LOUVI|LENTILS|CHICKPEA|BEAN|TOFU|PEAS|SPINACH/.test(key)){
-    return {prot:2, starch:1, fat:1};
+    return {prot:2, starch:baseStarch, fat:1};
   }
-  if(/HALLOUMI|TRACHANAS/.test(key)) return {prot:2, starch:1, fat:1};
-  return {prot:3, starch:1, fat:baseFat};
+  if(/HALLOUMI|TRACHANAS/.test(key)) return {prot:2, starch:baseStarch, fat:1};
+  return {prot:3, starch:baseStarch, fat:baseFat};
 }
 function preserveVisibleMainMealFloors(portions, plan, replacements, warnings){
-  const hasReplacement=Object.values(replacements||{}).some(v=>Number(v||0)>0);
-  if(!hasReplacement) return;
   [['lunch','lunch'],['dinner','dinner']].forEach(([slot,planKey])=>{
     const mealKey=plan?.[planKey];
     const p=portions?.[slot];
@@ -4535,7 +4534,6 @@ function preserveVisibleMainMealFloors(portions, plan, replacements, warnings){
     p.prot=Math.max(Number(p.prot||0), floor.prot);
     p.starch=Math.max(Number(p.starch||0), floor.starch);
     p.fat=Math.max(Number(p.fat||0), floor.fat);
-    warnings.push(`${slot} was protected from becoming vegetables-only after snack exchange replacement; review Exchange System if this exceeds target.`);
   });
 }
 function addMainMealFixedUse(target, comp, mealScales){
@@ -4746,8 +4744,8 @@ function getDayMealAllocation(plan=S.mealSel, lang=S.mealLanguage||'GR'){
   allocateProteinRemaining(ex,fixedForAllocation,scalableSlots,portions,p,caps,warnings);
   allocateFatRemaining(ex,fixedForAllocation,portions,p,warnings,caps);
   allocateRemainingExchange('veg','veg',ex,fixedForAllocation,scalableSlots,portions,99,warnings);
-  const snackReplacementLog=applyMainMealReplacement(portions, p, snackReplacements, warnings);
   preserveVisibleMainMealFloors(portions, p, snackReplacements, warnings);
+  const snackReplacementLog=applyMainMealReplacement(portions, p, snackReplacements, warnings);
   const allocated=zeroExchangeUse();
   addExchangeUse(allocated, fixed);
   scalableSlots.forEach(slot=>{
