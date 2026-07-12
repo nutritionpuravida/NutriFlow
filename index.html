@@ -4447,6 +4447,53 @@ function zeroExchangeUse(){ return {fruit:0,veg:0,dairy:0,starch:0,protein:0,fat
 function addExchangeUse(target, comp){
   Object.keys(target).forEach(k=>{ target[k]+=Number(comp?.[k]||0); });
 }
+function subtractExchangeUse(comp, replacement){
+  const out=zeroExchangeUse();
+  Object.keys(out).forEach(k=>{ out[k]=Math.max(0, Number(comp?.[k]||0)-Number(replacement?.[k]||0)); });
+  return out;
+}
+function snackMainReplacementUse(slot, extras){
+  const use=zeroExchangeUse();
+  const selected=extras||[];
+  if(slot!=='sleep'){
+    const starchValue=selectedStarchSnackValue(selected);
+    if(starchValue){
+      use.starch += 1;
+      if(starchSnackIncludesFat(starchValue)) use.fat += 1;
+    }
+    selected.forEach(choice=>{
+      const comboEx=SNACK_COMBO_EXCHANGES[choice];
+      if(!comboEx) return;
+      use.starch += Number(comboEx.starch||0);
+      use.protein += Number(comboEx.protein||0);
+      use.fat += Number(comboEx.fat||0);
+    });
+  }
+  if(selected.includes('nuts')) use.fat += 1;
+  return use;
+}
+function addSnackUseForAllocation(target, built, replacement){
+  addExchangeUse(target, subtractExchangeUse(built?.exch||{}, replacement||{}));
+}
+function applyMainMealReplacement(portions, plan, replacements, warnings){
+  const slotOrder=['lunch','dinner'];
+  const keyMap={starch:'starch', protein:'prot', fat:'fat'};
+  Object.entries(keyMap).forEach(([exchangeKey, portionKey])=>{
+    let remaining=Number(replacements?.[exchangeKey]||0);
+    while(remaining>0){
+      const slot=slotOrder.find(name=>{
+        const mealKey=name==='lunch'?plan.lunch:plan.dinner;
+        return !isCustomMealKey(mealKey) && !mealCatalogIsFixedComposition(mealKey) && Number(portions?.[name]?.[portionKey]||0)>0;
+      });
+      if(!slot){
+        warnings.push(`Snack ${exchangeKey} replacement selected but no adjustable main-meal ${exchangeKey} exchange was available to remove.`);
+        break;
+      }
+      portions[slot][portionKey]=Math.max(0, Number(portions[slot][portionKey]||0)-1);
+      remaining--;
+    }
+  });
+}
 function addMainMealFixedUse(target, comp, mealScales){
   if(!mealScales){
     addExchangeUse(target, comp);
@@ -4611,15 +4658,29 @@ function getDayMealAllocation(plan=S.mealSel, lang=S.mealLanguage||'GR'){
   const snk1Built=buildSlotSnack('snk1', p.snack1Extras||[], lang, p.breakfast, p, fruitDist, dairyDist);
   const snk2Built=buildSlotSnack('snk2', p.snack2Extras||[], lang, p.breakfast, p, fruitDist, dairyDist);
   const sleepBuilt=buildSlotSnack('sleep', p.sleepExtras||[], lang, p.breakfast, p, fruitDist, dairyDist);
+  const snk1Replacement=snackMainReplacementUse('snk1', p.snack1Extras||[]);
+  const snk2Replacement=snackMainReplacementUse('snk2', p.snack2Extras||[]);
+  const sleepReplacement=snackMainReplacementUse('sleep', p.sleepExtras||[]);
+  const snackReplacements=zeroExchangeUse();
+  addExchangeUse(snackReplacements, snk1Replacement);
+  addExchangeUse(snackReplacements, snk2Replacement);
+  addExchangeUse(snackReplacements, sleepReplacement);
   const lunchScales=!mealCatalogIsFixedComposition(p.lunch) && !isCustomMealKey(p.lunch);
   const dinnerScales=!mealCatalogIsFixedComposition(p.dinner) && !isCustomMealKey(p.dinner);
   const fixed=zeroExchangeUse();
+  const fixedForAllocation=zeroExchangeUse();
   addExchangeUse(fixed, brkComp);
   addExchangeUse(fixed, snk1Built.exch);
   addExchangeUse(fixed, snk2Built.exch);
   addExchangeUse(fixed, sleepBuilt.exch);
   addMainMealFixedUse(fixed, lunComp, lunchScales);
   addMainMealFixedUse(fixed, dinComp, dinnerScales);
+  addExchangeUse(fixedForAllocation, brkComp);
+  addSnackUseForAllocation(fixedForAllocation, snk1Built, snk1Replacement);
+  addSnackUseForAllocation(fixedForAllocation, snk2Built, snk2Replacement);
+  addSnackUseForAllocation(fixedForAllocation, sleepBuilt, sleepReplacement);
+  addMainMealFixedUse(fixedForAllocation, lunComp, lunchScales);
+  addMainMealFixedUse(fixedForAllocation, dinComp, dinnerScales);
 
   const portions={
     lunch:{prot:0,starch:0,fat:0,veg:0},
@@ -4637,10 +4698,11 @@ function getDayMealAllocation(plan=S.mealSel, lang=S.mealLanguage||'GR'){
   if(dairyGap>0){
     warnings.push(`${dairyGap} dairy serving(s) unallocated — add Milk/Yogurt to another snack slot or adjust Exchange System.`);
   }
-  allocateRemainingExchange('starch','starch',ex,fixed,scalableSlots,portions,caps.starchPerMealMax,warnings);
-  allocateProteinRemaining(ex,fixed,scalableSlots,portions,p,caps,warnings);
-  allocateFatRemaining(ex,fixed,portions,p,warnings,caps);
-  allocateRemainingExchange('veg','veg',ex,fixed,scalableSlots,portions,99,warnings);
+  allocateRemainingExchange('starch','starch',ex,fixedForAllocation,scalableSlots,portions,caps.starchPerMealMax,warnings);
+  allocateProteinRemaining(ex,fixedForAllocation,scalableSlots,portions,p,caps,warnings);
+  allocateFatRemaining(ex,fixedForAllocation,portions,p,warnings,caps);
+  allocateRemainingExchange('veg','veg',ex,fixedForAllocation,scalableSlots,portions,99,warnings);
+  applyMainMealReplacement(portions, p, snackReplacements, warnings);
   const allocated=zeroExchangeUse();
   addExchangeUse(allocated, fixed);
   scalableSlots.forEach(slot=>{
@@ -4660,8 +4722,8 @@ function getDayMealAllocation(plan=S.mealSel, lang=S.mealLanguage||'GR'){
   });
   const exchangeTotalKcal=exchangeSystemTotalKcal(exchangeTarget);
   const allocatedExchangeKcal=exchangeUseTotalKcal(allocated);
-  const result={plan:p,portions,snacks:{snk1Built,snk2Built,sleepBuilt},fruitDist,dairyDist,fixed,allocated,exchangeTarget,exchangeDiff,exchangeTotalKcal,allocatedExchangeKcal,warnings};
-  traceDecision('getDayMealAllocation','return',{lang, plan:p, portions, fruitDist, dairyDist, fixed, allocated, exchangeTarget, exchangeDiff, exchangeTotalKcal, allocatedExchangeKcal, warnings});
+  const result={plan:p,portions,snacks:{snk1Built,snk2Built,sleepBuilt},fruitDist,dairyDist,fixed,fixedForAllocation,snackReplacements,allocated,exchangeTarget,exchangeDiff,exchangeTotalKcal,allocatedExchangeKcal,warnings};
+  traceDecision('getDayMealAllocation','return',{lang, plan:p, portions, fruitDist, dairyDist, fixed, fixedForAllocation, snackReplacements, allocated, exchangeTarget, exchangeDiff, exchangeTotalKcal, allocatedExchangeKcal, warnings});
   return result;
 }
 
