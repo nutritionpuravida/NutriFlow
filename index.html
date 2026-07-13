@@ -450,6 +450,22 @@ html[data-theme="dark"] .week-summary-table td:last-child {
 .food-add-panel.open { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .food-add-panel input, .food-add-panel select { font-size: 11px; padding: 5px 6px; }
 
+#page-clients .clients-toolbar { display:grid; grid-template-columns:minmax(220px, 1fr) auto; gap:10px; align-items:end; margin:2px 0 14px; }
+#page-clients .clients-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+#page-clients .clients-table-modern { border-collapse:separate; border-spacing:0 8px; }
+#page-clients .clients-table-modern thead th { border:0; color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:.06em; padding:0 12px 4px; background:transparent; }
+#page-clients .clients-table-modern tbody tr { background:var(--bg-surface); box-shadow:0 10px 28px rgba(32,45,35,.04); }
+#page-clients .clients-table-modern tbody td { border-top:1px solid rgba(212,221,209,.65); border-bottom:1px solid rgba(212,221,209,.65); padding:12px; vertical-align:middle; }
+#page-clients .clients-table-modern tbody td:first-child { border-left:1px solid rgba(212,221,209,.65); border-radius:14px 0 0 14px; }
+#page-clients .clients-table-modern tbody td:last-child { border-right:1px solid rgba(212,221,209,.65); border-radius:0 14px 14px 0; }
+#page-clients .client-empty-state { padding:42px 18px; border:1px dashed rgba(15,118,110,.22); border-radius:16px; background:linear-gradient(145deg, rgba(15,118,110,.055), rgba(255,255,255,.65)); text-align:center; }
+#page-clients .client-empty-state i { font-size:28px; color:var(--teal-700); }
+#page-clients .client-empty-state strong { display:block; margin-top:8px; font-size:17px; color:var(--text-primary); }
+#page-clients .client-empty-state span { display:block; margin:6px auto 0; max-width:480px; color:var(--text-secondary); font-size:13px; line-height:1.5; }
+[data-theme="dark"] #page-clients .clients-table-modern tbody tr { box-shadow:none; }
+[data-theme="dark"] #page-clients .clients-table-modern tbody td { border-color:var(--border); }
+[data-theme="dark"] #page-clients .client-empty-state { background:rgba(255,255,255,.025); border-color:var(--border); }
+@media (max-width: 720px) { #page-clients .clients-toolbar { grid-template-columns:1fr; } #page-clients .clients-actions { justify-content:flex-start; } }
 .client-cards-mobile { display:none; }
 @media (max-width: 640px) {
   #clients-table table { display:none; }
@@ -1043,15 +1059,17 @@ table th,
     <div class="card">
       <div class="card-header"><span class="card-title"><i class="ti ti-users" aria-hidden="true"></i> <span class="i18n" data-en="My Clients" data-gr="Οι Πελάτες μου">My Clients</span></span><button class="btn primary" style="padding:6px 12px;font-size:12px;margin-left:auto" onclick="newClient()"><i class="ti ti-plus" aria-hidden="true"></i> <span class="i18n" data-en="New client" data-gr="Νέος πελάτης">New client</span></button></div>
       <div class="card-body">
-        <div class="alert info" style="font-size:12px;padding:8px 10px;margin-bottom:8px"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Clients save automatically to your account. &quot;Open&quot; restores a client's full data anytime." data-gr="Οι πελάτες αποθηκεύονται αυτόματα στον λογαριασμό σας. Το «Άνοιγμα» επαναφέρει πλήρως τα δεδομένα ενός πελάτη ανά πάσα στιγμή.">Clients save automatically to your account. "Open" restores a client's full data anytime.</span></div>
-        <div class="alert warn" id="local-backup-warning" style="display:none;font-size:12px;padding:8px 10px;margin-bottom:8px"><span><i class="ti ti-alert-triangle" aria-hidden="true"></i> <span class="i18n" data-en="Some clients are only saved in this browser." data-gr="Ορισμένοι πελάτες είναι αποθηκευμένοι μόνο σε αυτόν τον browser."><strong>Some clients are only saved in this browser.</strong></span> <span class="i18n" data-en="Download a backup before switching devices or clearing browser data." data-gr="Κατεβάστε αντίγραφο ασφαλείας πριν αλλάξετε συσκευή ή διαγράψετε δεδομένα browser.">Download a backup before switching devices or clearing browser data.</span></span></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-          <button class="btn" style="padding:6px 10px;font-size:12px" onclick="exportAllClients()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Download Backup" data-gr="Λήψη Αντιγράφου Ασφαλείας">Download Backup</span></button>
-          <label class="btn" style="cursor:pointer;margin:0;padding:6px 10px;font-size:12px"><i class="ti ti-file-import" aria-hidden="true"></i> <span class="i18n" data-en="Restore from Backup" data-gr="Επαναφορά από Αντίγραφο Ασφαλείας">Restore from Backup</span><input type="file" accept=".json" onchange="importClientsFile(this)" style="display:none"></label>
-        </div>
-        <div class="form-field" style="max-width:340px;margin-bottom:14px">
-          <label><i class="ti ti-search" aria-hidden="true"></i> <span class="i18n" data-en="Search clients by name" data-gr="Αναζήτηση πελατών με όνομα">Search clients by name</span></label>
-          <input type="text" id="client-search" class="i18n-ph" data-en-ph="Type a name…" data-gr-ph="Πληκτρολογήστε όνομα…" placeholder="Type a name…" oninput="filterClientList()" autocomplete="off">
+        <div class="alert info" style="font-size:12px;padding:8px 10px;margin-bottom:12px"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Clients save to your Nutrese account. Open restores the full profile, notes, labs, exchanges and saved meal plan." data-gr="Οι πελάτες αποθηκεύονται στον λογαριασμό Nutrese. Το Άνοιγμα επαναφέρει πλήρες προφίλ, σημειώσεις, εξετάσεις, ισοδύναμα και αποθηκευμένο πλάνο.">Clients save to your Nutrese account. Open restores the full profile, notes, labs, exchanges and saved meal plan.</span></div>
+        <div class="alert warn" id="local-backup-warning" style="display:none;font-size:12px;padding:8px 10px;margin-bottom:12px"><span><i class="ti ti-alert-triangle" aria-hidden="true"></i> <span class="i18n" data-en="Some clients are only saved in this browser." data-gr="Ορισμένοι πελάτες είναι αποθηκευμένοι μόνο σε αυτόν τον browser."><strong>Some clients are only saved in this browser.</strong></span> <span class="i18n" data-en="Download a backup before switching devices or clearing browser data." data-gr="Κατεβάστε αντίγραφο ασφαλείας πριν αλλάξετε συσκευή ή διαγράψετε δεδομένα browser.">Download a backup before switching devices or clearing browser data.</span></span></div>
+        <div class="clients-toolbar">
+          <div class="form-field" style="margin:0">
+            <label><i class="ti ti-search" aria-hidden="true"></i> <span class="i18n" data-en="Search clients" data-gr="Αναζήτηση πελατών">Search clients</span></label>
+            <input type="text" id="client-search" class="i18n-ph" data-en-ph="Name, reference, condition…" data-gr-ph="Όνομα, αναφορά, πάθηση…" placeholder="Name, reference, condition…" oninput="filterClientList()" autocomplete="off">
+          </div>
+          <div class="clients-actions">
+            <button class="btn" style="padding:8px 11px;font-size:12px" onclick="exportAllClients()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Backup" data-gr="Αντίγραφο">Backup</span></button>
+            <label class="btn" style="cursor:pointer;margin:0;padding:8px 11px;font-size:12px"><i class="ti ti-file-import" aria-hidden="true"></i> <span class="i18n" data-en="Restore" data-gr="Επαναφορά">Restore</span><input type="file" accept=".json" onchange="importClientsFile(this)" style="display:none"></label>
+          </div>
         </div>
         <div id="clients-table"></div>
       </div>
@@ -10865,8 +10883,8 @@ function renderClientListRows(clients){
   if(!clients || !clients.length){
     const hasCache = S.clientListCache && S.clientListCache.length>0;
     el.innerHTML = hasCache
-      ? '<div style="color:var(--text-muted);text-align:center;padding:24px">No clients match that search.</div>'
-      : '<div style="color:var(--text-muted);text-align:center;padding:24px">No saved clients yet. Fill in Client Profile and click "<i class="ti ti-device-floppy" aria-hidden="true"></i> Save Client".</div>';
+      ? `<div class="client-empty-state"><i class="ti ti-search" aria-hidden="true"></i><strong>${window.appLang==='gr'?'Δεν βρέθηκαν πελάτες':'No clients found'}</strong><span>${window.appLang==='gr'?'Δοκιμάστε διαφορετικό όνομα, αναφορά ή πάθηση.':'Try a different name, reference or condition.'}</span></div>`
+      : `<div class="client-empty-state"><i class="ti ti-users-plus" aria-hidden="true"></i><strong>${window.appLang==='gr'?'Δεν υπάρχουν ακόμη πελάτες':'No saved clients yet'}</strong><span>${window.appLang==='gr'?'Δημιουργήστε νέο πελάτη ή συμπληρώστε το Προφίλ Πελάτη και πατήστε Αποθήκευση Πελάτη.':'Create a new client, or fill Client Profile and click Save Client.'}</span><div style="margin-top:12px"><button class="btn primary" onclick="newClient()"><i class="ti ti-user-plus" aria-hidden="true"></i> ${window.appLang==='gr'?'Νέος πελάτης':'New client'}</button></div></div>`;
     return;
   }
   const isGr = window.appLang === 'gr';
@@ -10878,7 +10896,7 @@ function renderClientListRows(clients){
     return {c,cond,savedAt,badge};
   });
   const loadLbl=isGr?'Άνοιγμα':'Open', delLbl=isGr?'Διαγραφή':'Delete', unnamedLbl=isGr?'Χωρίς όνομα':'Unnamed client', lastSavedLbl=isGr?'Τελ. αποθήκευση':'Last saved';
-  const tableHtml='<table><thead><tr><th></th><th>'+(isGr?'Όνομα':'Name')+'</th><th>'+(isGr?'Αναφορά':'Reference')+'</th><th>'+lastSavedLbl+'</th><th></th></tr></thead><tbody>'+
+  const tableHtml='<table class="clients-table-modern"><thead><tr><th></th><th>'+(isGr?'Όνομα':'Name')+'</th><th>'+(isGr?'Αναφορά':'Reference')+'</th><th>'+lastSavedLbl+'</th><th></th></tr></thead><tbody>'+
     rows.map(({c,cond,savedAt,badge})=>`<tr><td style="width:44px">${clientAvatarHtml(c.data&&c.data.clientPhoto, c.name, 32)}</td><td><strong>${safeHtml(c.name||unnamedLbl)}</strong>${badge}<div style="font-size:11px;color:var(--text-muted)">${safeHtml(cond)}</div></td><td>${safeHtml(c.client_ref||'—')}</td><td>${safeHtml(savedAt)}</td>
         <td style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" style="padding:5px 10px;font-size:12px" onclick="loadClientById('${c.id}')"><i class="ti ti-eye" aria-hidden="true"></i> ${loadLbl}</button><button class="btn" style="padding:5px 10px;font-size:12px" onclick="deleteClientById('${c.id}')"><i class="ti ti-trash" aria-hidden="true"></i> ${delLbl}</button></td></tr>`).join('')+
     '</tbody></table>';
@@ -10901,7 +10919,7 @@ function filterClientList(){
   const list = S.clientListCache || [];
   if(!query){ renderClientListRows(list); return; }
   const nq = normalize(query);
-  const filtered = list.filter(c => normalize(c.name).includes(nq));
+  const filtered = list.filter(c => { const cond=((c.data&&c.data.conditions)||[]).map(conditionLabel).join(' '); return [c.name,c.client_ref,cond].some(value=>normalize(value).includes(nq)); });
   renderClientListRows(filtered);
 }
 
