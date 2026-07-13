@@ -604,6 +604,46 @@ html[data-theme="dark"] .week-summary-table td:last-child {
 .appointment-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
 .appointment-time { font-weight: 800; min-width: 52px; }
 
+/* Client report controls refinement: screen-only polish; printed report output remains untouched. */
+#page-report > .card.no-print {
+  border:1px solid var(--border)!important;
+  border-radius:18px!important;
+  background:linear-gradient(145deg,var(--bg-surface),var(--bg-page))!important;
+  box-shadow:0 22px 60px rgba(32,45,35,.07)!important;
+  overflow:hidden;
+}
+#page-report > .card.no-print .card-header {
+  background:transparent!important;
+  border-bottom:1px solid var(--border)!important;
+  padding:16px 18px!important;
+}
+#page-report > .card.no-print .card-body { padding:18px!important; }
+#page-report #report-days-selector,
+#page-report #report-logo-preview {
+  border-radius:14px;
+  background:rgba(15,118,110,.035);
+}
+#page-report #report-logo-preview img {
+  border-radius:12px!important;
+  padding:8px!important;
+  box-shadow:0 10px 28px rgba(32,45,35,.08);
+}
+#page-report .report-options-card {
+  border-radius:14px!important;
+  background:rgba(255,255,255,.45)!important;
+}
+[data-theme="dark"] #page-report > .card.no-print {
+  background:var(--bg-surface)!important;
+  box-shadow:none!important;
+}
+[data-theme="dark"] #page-report #report-days-selector,
+[data-theme="dark"] #page-report #report-logo-preview {
+  background:rgba(255,255,255,.025);
+}
+[data-theme="dark"] #page-report > .card.no-print .card-header { background:transparent!important; }
+@media (max-width: 760px) {
+  #page-report > .card.no-print .card-body > div { grid-template-columns:1fr!important; }
+}
 /* ─── PRINT ─── */
 @media print {
   /* Default: portrait A4 for client report (clean, readable handout) */
