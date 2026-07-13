@@ -1103,6 +1103,7 @@ table th,
         <div class="alert info" style="margin-top:14px"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Blood test results have their own page —" data-gr="Τα αποτελέσματα εξετάσεων έχουν τη δική τους σελίδα —">Blood test results have their own page —</span> <a onclick="nav('labs')" style="color:inherit;text-decoration:underline;cursor:pointer"><span class="i18n" data-en="Blood Analysis →" data-gr="Αιματολογικός Έλεγχος →">Blood Analysis →</span></a></div>
         <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <button class="btn primary" onclick="saveClientIntake()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Save Intake & Clinical Notes" data-gr="Αποθήκευση Ιστορικού & Κλινικών Σημειώσεων">Save Intake & Clinical Notes</span></button>
+          <button class="btn" onclick="printClientIntakeForm()"><i class="ti ti-printer" aria-hidden="true"></i> <span class="i18n" data-en="Print Client Intake Form" data-gr="Εκτύπωση Φόρμας Ιστορικού">Print Client Intake Form</span></button>
         </div>
       </div>
     </div>
@@ -8548,6 +8549,32 @@ function renderTrackingChart(){
 
 function saveIntake(){S.intake={goal:v('i-goal'),goalWhy:v('i-goal-why'),tried:v('i-goal-tried'),lifestyle:v('i-lifestyle'),exercise:v('i-exercise'),steps:v('i-steps'),sleep:v('i-sleep'),stress:v('i-stress'),smoking:v('i-smoking'),alcohol:v('i-alcohol'),typicalDiet:v('i-typical-diet'),skipMeals:v('i-skip-meals'),cravings:v('i-cravings'),intolerances:v('i-intolerances'),digestion:v('i-digestion'),coachNotes:v('i-coach-notes')};}
 function saveNotes(){S.notes={diagnoses:v('n-diagnoses'),medication:v('n-medication'),allergies:v('n-allergies'),dislikes:v('n-dislikes'),adherence:v('n-adherence'),clinician_notes:v('n-clinician-notes')};}
+function printClientIntakeForm(){
+  const isEn=(S.mealLanguage||'GR')==='EN';
+  const esc=s=>String(s||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const title=isEn?'Client Intake Questionnaire':'Ερωτηματολόγιο Ιστορικού Πελάτη';
+  const today=typeof formatDateDMY==='function'?formatDateDMY(new Date()):new Date().toLocaleDateString();
+  const sections=isEn?[
+    ['Client details',['Full name','Date of birth / age','Phone / email','Main reason for appointment','Main health goal']],
+    ['Medical history',['Diagnoses / health conditions','Medication and supplements','Allergies','Food intolerances','Digestive symptoms / discomfort foods','Smoking status','Alcohol intake']],
+    ['Eating pattern',['Usual breakfast','Usual lunch','Usual dinner','Snacks','Skipped meals','Cravings','Dislikes / foods to avoid','Water intake']],
+    ['Lifestyle',['Physical activity / steps','Sleep hours','Stress level','Work schedule','Barriers to following a plan']],
+    ['Client notes',['Anything else you want your dietitian to know']]
+  ]:[
+    ['Στοιχεία πελάτη',['Ονοματεπώνυμο','Ημερομηνία γέννησης / ηλικία','Τηλέφωνο / email','Κύριος λόγος επίσκεψης','Κύριος στόχος υγείας']],
+    ['Ιατρικό ιστορικό',['Διαγνώσεις / παθήσεις','Φαρμακευτική αγωγή και συμπληρώματα','Αλλεργίες','Δυσανεξίες τροφίμων','Πεπτικά συμπτώματα / τρόφιμα που προκαλούν ενόχληση','Κάπνισμα','Κατανάλωση αλκοόλ']],
+    ['Διατροφικό μοτίβο',['Συνηθισμένο πρωινό','Συνηθισμένο μεσημεριανό','Συνηθισμένο βραδινό','Σνακ','Παράλειψη γευμάτων','Λιγούρες','Δεν αρέσουν / τρόφιμα προς αποφυγή','Κατανάλωση νερού']],
+    ['Τρόπος ζωής',['Φυσική δραστηριότητα / βήματα','Ώρες ύπνου','Επίπεδο άγχους','Ωράριο εργασίας','Εμπόδια στην τήρηση πλάνου']],
+    ['Σημειώσεις πελάτη',['Οτιδήποτε άλλο θέλετε να γνωρίζει ο/η διαιτολόγος']]
+  ];
+  const rows=sections.map(([h,items])=>`<section><h2>${esc(h)}</h2>${items.map(item=>`<div class="q"><label>${esc(item)}</label><div class="line"></div></div>`).join('')}</section>`).join('');
+  const win=window.open('','_blank','width=900,height=1000');
+  if(!win) return alert(isEn?'Please allow pop-ups to print the form.':'Παρακαλώ επιτρέψτε τα αναδυόμενα παράθυρα για εκτύπωση της φόρμας.');
+  win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(title)}</title><style>
+    body{font-family:Arial,Helvetica,sans-serif;color:#17201b;margin:28px;line-height:1.35} h1{font-size:22px;margin:0 0 4px} .sub{color:#667085;font-size:12px;margin-bottom:18px} h2{font-size:14px;margin:18px 0 8px;border-bottom:1px solid #d8e2dc;padding-bottom:4px;color:#0f766e} .q{break-inside:avoid;margin:9px 0 12px} label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.line{height:22px;border-bottom:1px solid #9ca3af}.footer{margin-top:24px;font-size:11px;color:#667085}@media print{body{margin:16mm}.no-print{display:none}}
+  </style></head><body><h1>${esc(title)}</h1><div class="sub">Nutrese · ${esc(today)}</div>${rows}<div class="footer">${esc(isEn?'Please complete and return this form to your dietitian before your appointment.':'Παρακαλώ συμπληρώστε και επιστρέψτε τη φόρμα στον/στη διαιτολόγο πριν από το ραντεβού σας.')}</div><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
+  win.document.close();
+}
 async function saveClientIntake(){
   saveIntake();
   saveNotes();
