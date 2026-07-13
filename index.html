@@ -6951,7 +6951,16 @@ const MEAL_PLAN_TEMPLATES = {
       din:['DIN_CHICKPEA_STEW','DIN_HALLOUMI_SALAD','DIN_BEAN_PASTA']},
     snacks:{snk1:['fruit'], snk2:['fruit','nuts'], sleep:['yogurt']}
   },
-  DASHHeartHealthy: {
+  Pescatarian: {
+    nameEn:'Pescatarian', nameGr:'Ψαροφαγική',
+    descEn:'Fish, eggs and dairy with no meat or poultry. Useful when the client wants Mediterranean-style variety without chicken-heavy plans.',
+    descGr:'Ψάρι, αυγά και γαλακτοκομικά χωρίς κρέας ή πουλερικά. Χρήσιμο για μεσογειακή ποικιλία χωρίς πολλά γεύματα με κοτόπουλο.',
+    macros:{c:45,p:25,f:30}, dietType:'Pescatarian', condition:null,
+    meals:{brk:['BRK_CEREAL','BRK_YOGURT_HONEY_WALNUTS','BRK_EGGS_TOAST','BRK_RUSKS_ANTHOTYRO'],
+      lun:['LUN_GRILLED_FISH_RICE','LUN_SALMON_QUINOA','LUN_BAKED_FISH_VEG','LUN_FISH_POTATO','LUN_LENTIL_SOUP','LUN_CHICKPEA_STEW'],
+      din:['DIN_GRILLED_FISH_RICE','DIN_SALMON_POTATO','DIN_BAKED_FISH_VEG','DIN_FISH_POTATO','DIN_OMELETTE','DIN_HALLOUMI_SALAD']},
+    snacks:{snk1:['fruit','yogurt'], snk2:['fruit','nuts'], sleep:['yogurt']}
+  },  DASHHeartHealthy: {
     nameEn:'DASH (Heart Healthy)', nameGr:'DASH (Καρδιολογική)',
     descEn:'Dietary Approaches to Stop Hypertension — high fruit/veg/whole grain, lean protein, low sodium. Uses the same macro split this app already applies for Hypertension.',
     descGr:'Diet Approaches to Stop Hypertension — υψηλή πρόσληψη φρούτων/λαχανικών/ολικής άλεσης, άπαχη πρωτεΐνη, χαμηλό νάτριο. Χρησιμοποιεί την ίδια κατανομή μακροθρεπτικών που εφαρμόζεται ήδη για Υπέρταση.',
@@ -6982,7 +6991,7 @@ const MEAL_PLAN_TEMPLATES = {
     snacks:{snk1:['fruit'], snk2:['fruit','nuts'], sleep:['fruit']}
   },
 };
-const MEAL_PLAN_TEMPLATE_ORDER=['MediterraneanWeightLoss','PCOSBalanced','DiabetesFriendly','HighProtein','SportsPerformance','BoneHealth','Vegetarian','DASHHeartHealthy','IBSLowFODMAP','GeneralHealthyEating'];
+const MEAL_PLAN_TEMPLATE_ORDER=['MediterraneanWeightLoss','PCOSBalanced','DiabetesFriendly','HighProtein','SportsPerformance','BoneHealth','Vegetarian','Pescatarian','DASHHeartHealthy','IBSLowFODMAP','GeneralHealthyEating'];
 
 function openTemplatePicker(){
   closeTemplatePicker();
