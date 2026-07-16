@@ -658,7 +658,7 @@ html[data-theme="dark"] .week-summary-table td:last-child {
   /* Clinical pages override: landscape A4 */
   @page landscape-page { size: A4 landscape; margin: 8mm 10mm; }
   /* Weekly plan inside the client report needs wider columns. */
-  @page report-week-landscape { size: A4 landscape; margin: 6mm; }
+  @page report-week-landscape { size: A4 landscape; margin: 3mm; }
 
   /* ── Hide all UI chrome ── */
   .sidebar, .topbar, .topbar-actions, .bottom-nav, .hamburger,
@@ -728,7 +728,7 @@ html[data-theme="dark"] .week-summary-table td:last-child {
   .report-week-table tbody tr:nth-child(odd) td { background: #f8fffe !important; }
   .report-week-table tbody tr:nth-child(even) td { background: #f0faf6 !important; }
   .report-week-table tbody tr:last-child td { background: #e1f5ee !important; font-weight: 700 !important; border-top: 2px solid #0f6e56 !important; }
-  .report-week-section { page: report-week-landscape; width: 100% !important; margin: 0 !important; padding: 0 !important; border: 0 !important; }
+  .report-week-section { page: report-week-landscape; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; }
   .report-page-one.with-week { break-after: page; page-break-after: always; }
   .report-page-one .report-section-compact { break-inside: avoid; page-break-inside: avoid; }
   .report-page-one { page: auto; }
@@ -3865,13 +3865,14 @@ function printHtmlDocument({html,title,orientation='portrait'}){
     document.head.appendChild(styleEl);
   }
   const pageSize=orientation==='landscape' ? 'A4 landscape' : 'A4 portrait';
-  const pageMargin=orientation==='landscape' ? '6mm' : '1cm';
+  const pageMargin=orientation==='landscape' ? '3mm' : '1cm';
   styleEl.textContent=`
     @media screen { #nutriflow-print-only { display:none; } }
     @media print {
       @page { size: ${pageSize}; margin: ${pageMargin}; }
+      html, body { margin:0 !important; padding:0 !important; width:100% !important; }
       body > *:not(#nutriflow-print-only) { display:none !important; }
-      #nutriflow-print-only { display:block !important; background:#fff !important; color:#111 !important; font-family:Arial,sans-serif !important; font-size:12px !important; line-height:1.35 !important; }
+      #nutriflow-print-only { display:block !important; width:100% !important; max-width:none !important; margin:0 !important; padding:0 !important; background:#fff !important; color:#111 !important; font-family:Arial,sans-serif !important; font-size:12px !important; line-height:1.35 !important; }
       #nutriflow-print-only * { color:inherit; box-sizing:border-box; }
       #nutriflow-print-only h1, #nutriflow-print-only h2, #nutriflow-print-only h3 { color:#0f3f34 !important; margin:0 0 8px !important; }
       #nutriflow-print-only .client-report { max-width:none !important; width:100% !important; margin:0 !important; padding:0 !important; background:#fff !important; }
@@ -3879,7 +3880,7 @@ function printHtmlDocument({html,title,orientation='portrait'}){
       #nutriflow-print-only .report-page-one.with-week { break-after:page !important; page-break-after:always !important; }
       #nutriflow-print-only .report-page-one .report-section-compact { break-inside:avoid !important; page-break-inside:avoid !important; }
       #nutriflow-print-only .report-header-summary { display:grid !important; grid-template-columns:repeat(4,1fr) !important; gap:6px !important; margin:0 0 10px !important; }
-      #nutriflow-print-only .report-week-section { break-before:auto !important; page-break-before:auto !important; width:100% !important; max-width:none !important; margin:0 !important; padding:0 !important; border:0 !important; }
+      #nutriflow-print-only .report-week-section { break-before:auto !important; page-break-before:auto !important; display:block !important; width:100% !important; max-width:none !important; margin:0 !important; padding:0 !important; border:0 !important; }
       #nutriflow-print-only .report-title { color:#0f3f34 !important; }
       #nutriflow-print-only table { width:100% !important; border-collapse:collapse !important; table-layout:fixed !important; }
       #nutriflow-print-only th { background:#0f6e56 !important; color:#fff !important; font-weight:700 !important; }
