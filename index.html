@@ -989,6 +989,21 @@ table th,
 [data-theme="dark"] #page-labs #vitamin-suggestions th { background:rgba(255,255,255,.035); }
 [data-theme="dark"] #page-labs #labs-table tbody tr:hover,
 [data-theme="dark"] #page-labs #vitamin-suggestions tbody tr:hover { background:rgba(255,255,255,.025); }
+.autosave-status { font-size:11px; color:var(--text-muted); border:1px solid var(--border); border-radius:999px; padding:4px 9px; background:var(--bg-surface); white-space:nowrap; }
+.autosave-status.saving { color:#b45309; border-color:rgba(245,158,11,.45); background:rgba(245,158,11,.08); }
+.autosave-status.saved { color:var(--teal-700); border-color:rgba(15,118,110,.28); background:rgba(15,118,110,.08); }
+.autosave-status.error { color:#b91c1c; border-color:rgba(239,68,68,.35); background:rgba(239,68,68,.08); }
+.client-documents-panel { border:1px solid var(--border); border-radius:16px; padding:14px; background:color-mix(in srgb,var(--bg-surface) 86%,var(--teal-50)); margin:12px 0 16px; }
+.client-documents-list { display:grid; gap:8px; margin-top:10px; }
+.client-document-row { display:flex; gap:10px; align-items:center; justify-content:space-between; border:1px solid var(--border); border-radius:12px; padding:9px 10px; background:var(--bg-surface); }
+.client-document-row strong { color:var(--text-primary); }
+.bmi-scale-card { margin-top:12px; border:1px solid var(--border); border-radius:14px; padding:12px; background:var(--bg-surface); }
+.bmi-scale-track { position:relative; height:12px; border-radius:999px; overflow:hidden; background:linear-gradient(90deg,#60a5fa 0 18.5%,#22c55e 18.5% 25%,#facc15 25% 30%,#ef4444 30% 100%); }
+.bmi-scale-marker { position:absolute; top:-5px; width:3px; height:22px; border-radius:999px; background:var(--text-primary); box-shadow:0 0 0 2px var(--bg-surface); transform:translateX(-50%); }
+.bmi-scale-labels { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:8px; font-size:10px; color:var(--text-muted); font-weight:700; }
+.recipe-template-img{width:100%;height:118px;object-fit:cover;display:block;background:var(--bg-muted);}
+.recipe-photo-thumb{width:100%;height:110px;object-fit:cover;display:block;background:var(--bg-muted);}
+
 
 /* Modern 7-day day editor cards: visual-only layer, keeps existing handlers/calculation intact. */
 .seven-day-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px;align-items:start}
@@ -1252,6 +1267,7 @@ table th,
     <div class="topbar-actions">
       <span class="no-print" style="font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:6px;padding:4px 10px" title="Opened-on date — this is today's date, whenever you happen to open this file. Build fingerprint is computed fresh from this file's exact content, so identical content always produces an identical fingerprint."><i class="ti ti-info-circle" aria-hidden="true"></i> <span id="opened-date-topbar">—</span><span style="opacity:.5">·</span><span id="build-date-topbar" style="font-family:monospace">—</span></span>
       <span class="no-print" id="user-email" style="display:none"></span>
+      <span class="no-print autosave-status saved" id="autosave-status">Saved ✓</span>
       <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle dark mode"><i class="ti ti-moon" aria-hidden="true"></i> Dark</button>
       <button class="btn" onclick="toggleLanguage()" id="lang-btn" title="Switch language">GR</button>
     </div>
@@ -1421,7 +1437,8 @@ table th,
         <div class="alert info" style="margin-top:14px"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Blood test results have their own page —" data-gr="Τα αποτελέσματα εξετάσεων έχουν τη δική τους σελίδα —">Blood test results have their own page —</span> <a onclick="nav('labs')" style="color:inherit;text-decoration:underline;cursor:pointer"><span class="i18n" data-en="Blood Analysis →" data-gr="Αιματολογικός Έλεγχος →">Blood Analysis →</span></a></div>
         <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <button class="btn primary" onclick="saveClientIntake()"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span class="i18n" data-en="Save Intake & Clinical Notes" data-gr="Αποθήκευση Ιστορικού & Κλινικών Σημειώσεων">Save Intake & Clinical Notes</span></button>
-          <button class="btn" onclick="printClientIntakeForm()"><i class="ti ti-printer" aria-hidden="true"></i> <span class="i18n" data-en="Print Client Intake Form" data-gr="Εκτύπωση Φόρμας Ιστορικού">Print Client Intake Form</span></button>
+          <button class="btn" onclick="printClientIntakeForm()"><i class="ti ti-printer" aria-hidden="true"></i> <span class="i18n" data-en="Print Blank Intake Questionnaire" data-gr="Εκτύπωση Κενού Ερωτηματολογίου">Print Blank Intake Questionnaire</span></button>
+          <button class="btn" onclick="printCompletedClientIntakeSummary()"><i class="ti ti-file-text" aria-hidden="true"></i> <span class="i18n" data-en="Print Completed Intake Summary" data-gr="Εκτύπωση Συμπληρωμένης Σύνοψης">Print Completed Intake Summary</span></button>
         </div>
       </div>
     </div>
@@ -1787,6 +1804,11 @@ table th,
       <div class="card-header"><span class="card-title"><i class="ti ti-droplet" aria-hidden="true"></i> <span class="i18n" data-en="Blood Analysis" data-gr="Αιματολογικός Έλεγχος">Blood Analysis</span></span></div>
       <div class="card-body">
         <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Enter available lab values. Reference ranges are general adult ranges — always confirm against the lab's own reference range. Status updates live as you type." data-gr="Εισάγετε τις διαθέσιμες εργαστηριακές τιμές. Τα εύρη αναφοράς είναι γενικά για ενήλικες — πάντα επιβεβαιώνετε με το εύρος αναφοράς του εργαστηρίου. Η κατάσταση ενημερώνεται ζωντανά καθώς πληκτρολογείτε.">Enter available lab values. Reference ranges are general adult ranges — always confirm against the lab's own reference range. Status updates live as you type.</span></div>
+        <div class="form-grid two" style="margin:12px 0 14px">
+          <div class="form-field"><label><span class="i18n" data-en="Laboratory date" data-gr="Ημερομηνία εργαστηριακών">Laboratory date</span></label><input type="date" id="lab-date" onchange="saveLabDate()"></div>
+          <div class="form-field"><label><span class="i18n" data-en="Doctor report / lab PDF" data-gr="Ιατρική αναφορά / PDF εξετάσεων">Doctor report / lab PDF</span></label><input type="file" id="client-document-input" accept="application/pdf,image/png,image/jpeg" onchange="handleClientDocumentUpload(this)"><div class="field-note"><span class="i18n" data-en="PDF, PNG or JPG, max 3 MB. Saved with this client record." data-gr="PDF, PNG ή JPG, έως 3 MB. Αποθηκεύεται με τον φάκελο του πελάτη.">PDF, PNG or JPG, max 3 MB. Saved with this client record.</span></div></div>
+        </div>
+        <div class="client-documents-panel"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><strong><span class="i18n" data-en="Uploaded clinical documents" data-gr="Ανεβασμένα κλινικά έγγραφα">Uploaded clinical documents</span></strong><span id="client-document-status" class="field-note"></span></div><div id="client-documents-list" class="client-documents-list"></div></div>
         <div id="labs-table"></div>
         <div class="section-label"><span class="i18n" data-en="Nutrients to Consider (Clinical Reference Only)" data-gr="Θρεπτικά Συστατικά προς Εξέταση (Μόνο Κλινική Αναφορά)">Nutrients to Consider (Clinical Reference Only)</span></div>
         <div id="vitamin-suggestions"></div>
@@ -2083,7 +2105,7 @@ const S = {
   exAuto:{starch:true,protein:true,fat:true},
   exMeta:null, lastDairyType:'Moderate-fat', lastMeatType:'Lean', weightSuggestionLocked:false, bcManual:{fatmass:false,ffm:false,muscle:false},
   bc:{bf:null,water:null,fatmass:null,ffm:null,muscle:null,metage:null,visceral:null},
-  tracking:[],intake:{},notes:{},labValues:{},foodResults:[],recipes:[],recipeDraft:[],editingRecipeId:null,extraFoods:[],appointments:[],equivalentNotes:{},reportLogo:'',mealLanguage:'GR',reportOptions:{oneDay:false,sevenDay:true,includeBlood:true,includeEquivalents:false,days:[0,1,2,3,4,5,6]},
+  tracking:[],intake:{},notes:{},labValues:{},labDate:'',clientDocuments:[],foodResults:[],recipes:[],recipeDraft:[],editingRecipeId:null,extraFoods:[],appointments:[],equivalentNotes:{},reportLogo:'',mealLanguage:'GR',reportOptions:{oneDay:false,sevenDay:true,includeBlood:true,includeEquivalents:false,days:[0,1,2,3,4,5,6]},
   sevenDayView:'day', sevenDayActiveIndex:0, weekViewTheme:'light', aiPlanStatus:'',
   customMeals:[], customMealDraft:[], customMealContext:null,
   mealSel:{breakfast:'BRK_TOAST',lunch:'LUN_CHICKEN_RICE',dinner:'DIN_FISH_POTATO',snack1Extras:['fruit'],snack2Extras:['fruit'],sleepExtras:[]}
@@ -3555,16 +3577,32 @@ function oliveOilAmountFromText(text, lang='GR'){
   return m?Number(m[1]||0):0;
 }
 
+function formatOilMeasure(tsp, lang='GR'){
+  const n=Number(tsp)||0;
+  const isEn=lang==='EN';
+  if(n<=0) return '';
+  const whole=Math.round(n*10)/10;
+  if(whole<3 || whole%1!==0) return isEn ? `${whole} tsp olive oil` : `${whole} κ.γ. ελαιόλαδο`;
+  const tbsp=Math.floor(whole/3);
+  const rem=whole%3;
+  if(isEn){
+    const tbspText=`${tbsp} tbsp${tbsp>1?'s':''}`;
+    return rem ? `${tbspText} + ${rem} tsp olive oil` : `${tbspText} olive oil`;
+  }
+  return rem ? `${tbsp} κ.σ. + ${rem} κ.γ. ελαιόλαδο` : `${tbsp} κ.σ. ελαιόλαδο`;
+}
+
+
 function adjustOliveOilText(text, delta, lang='GR'){
   if(!delta) return text;
   const isEn=lang==='EN';
   const src=String(text||'');
   const re=isEn?/(\d+(?:\.\d+)?)\s*tsp olive oil/i:/(\d+(?:\.\d+)?)\s*κ\.γ\. ελαιόλαδο/i;
   const m=src.match(re);
-  if(!m && delta>0) return `${src} + ${delta} ${isEn?'tsp olive oil':'κ.γ. ελαιόλαδο'}`;
+  if(!m && delta>0) return `${src} + ${formatOilMeasure(delta, lang)}`;
   if(!m) return src;
   const next=Math.max(0, Number(m[1]||0)+delta);
-  const phrase=isEn?`${next} tsp olive oil`:`${next} κ.γ. ελαιόλαδο`;
+  const phrase=formatOilMeasure(next, lang);
   if(next>0) return src.replace(re, phrase);
   const removeRe=isEn?/\s*\+\s*\d+(?:\.\d+)?\s*tsp olive oil/i:/\s*\+\s*\d+(?:\.\d+)?\s*κ\.γ\. ελαιόλαδο/i;
   return src.replace(removeRe,'').replace(/\s{2,}/g,' ').trim();
@@ -3791,7 +3829,7 @@ function mealSuffix(ex, p, veg, proteinSource, carbName, proteinLabel, isFishPro
   // dish, etc.) — alternatives are something the clinician advises
   // separately, not something the printed plan needs to spell out.
   if (p.starch > 0) parts.push(carbName==='πατάτα' ? formatPotatoPortion(p.starch, 'GR') : `${formatCups(p.starch)} φλ. ${carbName||'ρύζι'}`);
-  if (p.fat > 0)    parts.push(`${p.fat} κ.γ. ελαιόλαδο`);
+  if (p.fat > 0)    parts.push(formatOilMeasure(p.fat,'GR'));
   const portionTxt = parts.length ? ' (' + parts.join(' + ') + ')' : '';
   // 1 veg exchange = 1 cup raw vegetables (per Equivalents Guide) — direct
   // mapping so the displayed cup count always matches the actual exchange
@@ -3822,7 +3860,7 @@ function mealSuffixEn(ex, p, veg, proteinSource, carbName, proteinLabel, isFishP
     }
   }
   if (p.starch > 0) parts.push(carbName==='potato' ? formatPotatoPortion(p.starch, 'EN') : `${formatCups(p.starch)} cup ${carbName||'rice'}`);
-  if (p.fat > 0)    parts.push(`${p.fat} tsp olive oil`);
+  if (p.fat > 0)    parts.push(formatOilMeasure(p.fat,'EN'));
   const portionTxt = parts.length ? ' (' + parts.join(' + ') + ')' : '';
   const vegForThisMeal = (p && p.veg!==undefined) ? p.veg : (ex.veg||0);
   const vegCups = vegForThisMeal>0 ? `(${vegForThisMeal} cup)` : '';
@@ -4901,7 +4939,7 @@ function setMealLanguage(lang){
   refreshMealDropdownLabels();
   refreshSnackExtrasLabels();
   setEl('condition-guidance', renderCombinedGuidance(S.conditions));
-  if(document.getElementById('page-labs')?.classList.contains('active')) renderLabsTable();
+  if(document.getElementById('page-labs')?.classList.contains('active')) { const labDateEl=document.getElementById('lab-date'); if(labDateEl) labDateEl.value=S.labDate||''; renderClientDocuments(); renderLabsTable(); }
   if(document.getElementById('page-oneday')?.classList.contains('active')) buildOneDayPlan();
   if(document.getElementById('page-sevenday')?.classList.contains('active')) buildSevenDay();
   if(document.getElementById('page-report')?.classList.contains('active')) buildReport();
@@ -5857,7 +5895,7 @@ function nav(id) {
   if(id==='dashboard') renderDashboard();
   if(id==='clients') renderClientList();
   if(id==='equivalents') buildEquivalents();
-  if(id==='labs') renderLabsTable();
+  if(id==='labs') { const labDateEl=document.getElementById('lab-date'); if(labDateEl) labDateEl.value=S.labDate||''; renderClientDocuments(); renderLabsTable(); }
   if(id==='fooddb') { loadRecipes({render:false, mergeLocal:true}); }
   if(id==='recipes') { renderRecipeTemplates(); renderRecipeDraft(); loadRecipes(); }
   if(id==='appointments') { loadAppointments(true).then(()=>{renderAppointments();}); checkCalendarConnectionStatus(); }
@@ -6467,11 +6505,17 @@ function calcBodyComp(){
   const isLossGoal=goal==='Weight Loss';
   const targetWt=w ? (isLossGoal ? `${(w*0.95).toFixed(1)} kg` : isGainGoal ? `${(w*1.05).toFixed(1)} kg` : (isGr?'Συντήρηση τρέχοντος βάρους':'Maintain current weight')) : '—';
   const targetLabel=isLossGoal ? (isGr?'Στόχος βάρους (-5% αρχικό)':'Target weight (-5% initial)') : isGainGoal ? (isGr?'Στόχος βάρους (+5% αρχικό)':'Target weight (+5% initial)') : (isGr?'Στόχος βάρους':'Target weight');
-  setEl('bc-targets',`<div class="form-grid"><div class="metric"><div class="m-label">${targetLabel}</div><div class="m-value" style="font-size:20px">${targetWt}</div></div><div class="metric"><div class="m-label">${isGr?'Στόχος ΔΜΣ (μακροπρόθεσμα)':'Target BMI (long-term)'}</div><div class="m-value" style="font-size:20px">22–27</div><div class="m-sub">${isGr?'Κλινική ζώνη αναφοράς':'Clinical reference zone'}</div></div></div>`);
+  setEl('bc-targets',`<div class="form-grid"><div class="metric"><div class="m-label">${targetLabel}</div><div class="m-value" style="font-size:20px">${targetWt}</div></div><div class="metric"><div class="m-label">${isGr?'Στόχος ΔΜΣ (μακροπρόθεσμα)':'Target BMI (long-term)'}</div><div class="m-value" style="font-size:20px">22–27</div><div class="m-sub">${isGr?'Κλινική ζώνη αναφοράς':'Clinical reference zone'}</div></div></div>${bmiVisualScaleHtml(S.bmi,isGr)}`);
   renderFoldMeasurementSummary(folds, isGr);
   setEl('d-bf',bf?bf.toFixed(1)+'%':'—');
 }
 
+function bmiVisualScaleHtml(bmi, isGr=false){
+  const val=Number(bmi);
+  const pct=Number.isFinite(val) ? Math.max(0, Math.min(100, ((val-14)/(40-14))*100)) : 0;
+  const status=Number.isFinite(val) ? `${val.toFixed(1)} BMI` : '—';
+  return `<div class="bmi-scale-card"><div class="m-label">${isGr?'Οπτική Κλίμακα ΔΜΣ':'BMI Visual Scale'}</div><div style="display:flex;justify-content:space-between;gap:10px;align-items:end;margin:6px 0 8px"><div class="m-sub">${isGr?'Λιποβαρές · Υγιές · Υπέρβαρο · Παχυσαρκία':'Underweight · Healthy · Overweight · Obesity'}</div><strong>${status}</strong></div><div class="bmi-scale-track"><span class="bmi-scale-marker" style="left:${pct}%"></span></div><div class="bmi-scale-labels"><span>${isGr?'Λιποβαρές':'Underweight'}<br>&lt;18.5</span><span>${isGr?'Υγιές':'Healthy'}<br>18.5–24.9</span><span>${isGr?'Υπέρβαρο':'Overweight'}<br>25–29.9</span><span>${isGr?'Παχυσαρκία':'Obesity'}<br>30+</span></div></div>`;
+}
 function renderFoldMeasurementSummary(folds={}, isGr=false){
   const labels={
     triceps:{en:'Triceps',gr:'Τρικέφαλος'},
@@ -7111,15 +7155,15 @@ function strictMainDescription(mealKey, exch, lang='GR'){
   const pitaPortionEN=starch=>starch>=4?'1 standard Cypriot pita':starch>=2?'1 small Cypriot pita':'1/2 small Cypriot pita';
   const starchGR=portions.starch>0 ? (mealKey.includes('SOUVLAKI') ? pitaPortionGR(portions.starch) : mealKey.includes('POTATO') ? formatPotatoPortion(portions.starch,'GR') : `${formatCups(portions.starch)} φλ. ${mealKey.includes('PASTA')?'ζυμαρικά':mealKey.includes('BIFTEKI')?'πλιγούρι':'ρύζι'}`) : '';
   const starchEN=portions.starch>0 ? (mealKey.includes('SOUVLAKI') ? pitaPortionEN(portions.starch) : mealKey.includes('POTATO') ? formatPotatoPortion(portions.starch,'EN') : `${formatCups(portions.starch)} cup ${mealKey.includes('PASTA')?'pasta':mealKey.includes('BIFTEKI')?'bulgur':'rice'}`) : '';
-  const fatGR=portions.fat>0 ? `${portions.fat} κ.γ. ελαιόλαδο` : '';
-  const fatEN=portions.fat>0 ? `${portions.fat} tsp olive oil` : '';
+  const fatGR=portions.fat>0 ? formatOilMeasure(portions.fat,'GR') : '';
+  const fatEN=portions.fat>0 ? formatOilMeasure(portions.fat,'EN') : '';
   const vegGR=`σαλάτα (${portions.veg} φλ.)`;
   const vegEN=`salad (${portions.veg} cups)`;
   const joinParts=parts=>parts.filter(Boolean).join(' + ');
   const theme=mealThemeFromKey(mealKey);
   const builtInHalloumiFat=theme==='HALLOUMI_POTATO' || theme==='TRACHANAS_HALLOUMI';
-  const visibleFatGR=builtInHalloumiFat ? `${Math.max(0, portions.fat-2)} κ.γ. ελαιόλαδο` : fatGR;
-  const visibleFatEN=builtInHalloumiFat ? `${Math.max(0, portions.fat-2)} tsp olive oil` : fatEN;
+  const visibleFatGR=builtInHalloumiFat ? formatOilMeasure(Math.max(0, portions.fat-2),'GR') : fatGR;
+  const visibleFatEN=builtInHalloumiFat ? formatOilMeasure(Math.max(0, portions.fat-2),'EN') : fatEN;
   const soupVegGR=theme==='AVGOLEMONO_SOUP' ? `λαχανικά σούπας (${portions.veg} φλ.)` : theme==='VEG_SOUP_CHICKEN' ? `χορτόσουπα (${portions.veg} φλ.)` : theme==='TRACHANAS_HALLOUMI' ? `λαχανικά (${portions.veg} φλ.)` : vegGR;
   const soupVegEN=theme==='AVGOLEMONO_SOUP' ? `soup vegetables (${portions.veg} cups)` : theme==='VEG_SOUP_CHICKEN' ? `vegetable soup (${portions.veg} cups)` : theme==='TRACHANAS_HALLOUMI' ? `vegetables (${portions.veg} cups)` : vegEN;
   const grMap={
@@ -9296,6 +9340,43 @@ function printClientIntakeForm(){
   </style></head><body><h1>${esc(title)}</h1><div class="sub">Nutrese · ${esc(today)}</div>${rows}<div class="footer">${esc(isEn?'Please complete and return this form to your dietitian before your appointment.':'Παρακαλώ συμπληρώστε και επιστρέψτε τη φόρμα στον/στη διαιτολόγο πριν από το ραντεβού σας.')}</div><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
   win.document.close();
 }
+
+function printCompletedClientIntakeSummary(){
+  saveIntake(); saveNotes();
+  const isEn=(S.mealLanguage||'GR')==='EN';
+  const esc=s=>String(s||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const get=(id)=>v(id)||'—';
+  const rows=[
+    [isEn?'Primary goal':'Κύριος στόχος', get('i-goal')],
+    [isEn?'Motivation / reason':'Κίνητρο / λόγος', get('i-goal-why')],
+    [isEn?'Previous attempts':'Προηγούμενες προσπάθειες', get('i-goal-tried')],
+    [isEn?'Lifestyle / work routine':'Τρόπος ζωής / εργασία', get('i-lifestyle')],
+    [isEn?'Exercise':'Άσκηση', get('i-exercise')],
+    [isEn?'Steps / daily movement':'Βήματα / καθημερινή κίνηση', get('i-steps')],
+    [isEn?'Sleep':'Ύπνος', get('i-sleep')],
+    [isEn?'Stress':'Στρες', get('i-stress')],
+    [isEn?'Smoking':'Κάπνισμα', get('i-smoking')],
+    [isEn?'Alcohol':'Αλκοόλ', get('i-alcohol')],
+    [isEn?'Typical diet':'Τυπική διατροφή', get('i-typical-diet')],
+    [isEn?'Skipped meals':'Παράλειψη γευμάτων', get('i-skip-meals')],
+    [isEn?'Cravings':'Λιγούρες', get('i-cravings')],
+    [isEn?'Intolerances / allergies':'Δυσανεξίες / αλλεργίες', get('i-intolerances')],
+    [isEn?'Digestion':'Πεπτικό', get('i-digestion')],
+    [isEn?'Diagnoses':'Διαγνώσεις', get('n-diagnoses')],
+    [isEn?'Medication / supplements':'Φαρμακευτική αγωγή / συμπληρώματα', get('n-medication')],
+    [isEn?'Allergies':'Αλλεργίες', get('n-allergies')],
+    [isEn?'Dislikes / avoidances':'Δεν προτιμά / αποφεύγει', get('n-dislikes')],
+    [isEn?'Adherence barriers':'Εμπόδια συμμόρφωσης', get('n-adherence')],
+    [isEn?'Dietitian notes':'Σημειώσεις διαιτολόγου', get('n-clinician-notes')]
+  ];
+  const clientName=esc(S.name||'');
+  const today=typeof formatDateDMY==='function'?formatDateDMY(new Date()):new Date().toLocaleDateString();
+  const title=isEn?'Completed Client Intake Summary':'Συμπληρωμένη Σύνοψη Ιστορικού Πελάτη';
+  const win=window.open('','_blank'); if(!win) return;
+  win.document.write(`<!doctype html><html><head><title>${title}</title><style>body{font-family:Inter,Arial,sans-serif;margin:26px;color:#111827;background:#fff;font-size:13px;line-height:1.45}h1{font-size:22px;margin:0;color:#0f766e}.meta{color:#64748b;margin:4px 0 18px}.section{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#0f766e;border-bottom:2px solid #0f766e;padding-bottom:5px;margin:18px 0 10px}table{width:100%;border-collapse:collapse}td{border:1px solid #d9eee7;padding:8px;vertical-align:top}td:first-child{width:30%;font-weight:700;background:#eef8f4;color:#134e4a}@media print{body{margin:12mm;font-size:12px}}</style></head><body><h1>${title}</h1><div class="meta">${clientName||'—'} · ${today}</div><div class="section">${isEn?'Intake & clinical notes':'Ιστορικό & κλινικές σημειώσεις'}</div><table>${rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join('')}</table><script>window.print()<\/script></body></html>`);
+  win.document.close();
+}
+
 async function saveClientIntake(){
   saveIntake();
   saveNotes();
@@ -9359,12 +9440,12 @@ function applyConditionMacros(){
 // the lab's own reference range, which can vary by method/population) ──
 const LAB_TESTS = [
   {key:'glucose',  gr:'Γλυκόζη νηστείας', en:'Fasting Glucose', unit:'mg/dL', low:70, high:100, highMsg:'Πιθανή προδιαβητική/διαβητική εικόνα — έλεγχος HbA1c', cat:'Μεταβολισμός & Σάκχαρο', catEn:'Metabolic & Glucose'},
-  {key:'hba1c',    gr:'HbA1c', en:'HbA1c', unit:'%', low:4.0, high:5.6, highMsg:'5.7–6.4% προδιαβήτης, ≥6.5% συνάδει με διαβήτη', cat:'Μεταβολισμός & Σάκχαρο', catEn:'Metabolic & Glucose'},
+  {key:'hba1c',    gr:'HbA1c (Γλυκοζυλιωμένη Αιμοσφαιρίνη)', en:'HbA1c (Glycated Haemoglobin)', unit:'%', low:4.0, high:5.6, highMsg:'5.7–6.4% προδιαβήτης, ≥6.5% συνάδει με διαβήτη', cat:'Μεταβολισμός & Σάκχαρο', catEn:'Metabolic & Glucose'},
   {key:'totalchol',gr:'Ολική Χοληστερόλη', en:'Total Cholesterol', unit:'mg/dL', low:0, high:200, highMsg:'Αυξημένος καρδιαγγειακός κίνδυνος', cat:'Λιπίδια', catEn:'Lipids'},
   {key:'ldl',      gr:'LDL Χοληστερόλη', en:'LDL Cholesterol', unit:'mg/dL', low:0, high:100, highMsg:'Στόχος εξαρτάται από συνολικό καρδιαγγειακό κίνδυνο', cat:'Λιπίδια', catEn:'Lipids'},
   {key:'hdl',      gr:'HDL Χοληστερόλη', en:'HDL Cholesterol', unit:'mg/dL', low:40, high:100, lowMsg:'Χαμηλό HDL — καρδιαγγειακός παράγοντας κινδύνου', cat:'Λιπίδια', catEn:'Lipids'},
   {key:'trig',     gr:'Τριγλυκερίδια', en:'Triglycerides', unit:'mg/dL', low:0, high:150, highMsg:'Σχετίζεται με υδατάνθρακες/αλκοόλ/μεταβολικό σύνδρομο', cat:'Λιπίδια', catEn:'Lipids'},
-  {key:'egfr',     gr:'eGFR', en:'eGFR', unit:'mL/min/1.73m²', low:60, high:200, lowMsg:'Μειωμένη νεφρική λειτουργία (πιθανή CKD ≥G3)', cat:'Νεφρική Λειτουργία', catEn:'Kidney Function'},
+  {key:'egfr',     gr:'eGFR (Εκτιμώμενος Ρυθμός Σπειραματικής Διήθησης)', en:'eGFR (Estimated Glomerular Filtration Rate)', unit:'mL/min/1.73m²', low:60, high:200, lowMsg:'Μειωμένη νεφρική λειτουργία (πιθανή CKD ≥G3)', cat:'Νεφρική Λειτουργία', catEn:'Kidney Function'},
   {key:'creatinine',gr:'Κρεατινίνη', en:'Creatinine', unit:'mg/dL', low:0.6, high:1.2, highMsg:'Έλεγχος νεφρικής λειτουργίας', cat:'Νεφρική Λειτουργία', catEn:'Kidney Function'},
   {key:'urea',     gr:'Ουρία', en:'Urea (BUN)', unit:'mg/dL', low:15, high:45, highMsg:'Έλεγχος νεφρικής λειτουργίας/ενυδάτωσης', cat:'Νεφρική Λειτουργία', catEn:'Kidney Function'},
   {key:'albumin',  gr:'Αλβουμίνη', en:'Albumin', unit:'g/L', low:35, high:50, lowMsg:'Πιθανή υποθρεψία ή φλεγμονή — η αλβουμίνη επηρεάζεται έντονα από φλεγμονή, ερμηνεύστε μαζί με CRP/κλινική εικόνα, όχι ως μεμονωμένο δείκτη θρέψης', cat:'Νεφρική Λειτουργία', catEn:'Kidney Function'},
@@ -9538,8 +9619,9 @@ function abnormalLabRows(){
 function reportAbnormalLabsHtml(isEn){
   const rows=abnormalLabRows();
   if(!rows.length) return '';
+  const labDate=S.labDate ? ` · ${formatDateDMY(new Date(S.labDate))}` : '';
   return `<div class="report-labs-section">
-    <div style="font-size:14px;font-weight:700;color:var(--teal-800);margin:14px 0 6px;border-bottom:2px solid var(--teal-600);padding-bottom:4px"><i class="ti ti-droplet" aria-hidden="true"></i> ${isEn?'BLOOD ANALYSIS SUMMARY':'ΣΥΝΟΨΗ ΑΙΜΑΤΟΛΟΓΙΚΟΥ ΕΛΕΓΧΟΥ'}</div>
+    <div style="font-size:14px;font-weight:700;color:var(--teal-800);margin:14px 0 6px;border-bottom:2px solid var(--teal-600);padding-bottom:4px"><i class="ti ti-droplet" aria-hidden="true"></i> ${isEn?'BLOOD ANALYSIS SUMMARY':'ΣΥΝΟΨΗ ΑΙΜΑΤΟΛΟΓΙΚΟΥ ΕΛΕΓΧΟΥ'}${labDate}</div>
     <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px">
       <thead><tr style="background:var(--teal-600);color:#fff">
         <th style="padding:5px;text-align:left">${isEn?'Test':'Εξέταση'}</th>
@@ -9567,6 +9649,66 @@ function onLabInput(key){
   setEl('lab-'+key+'-note', labStatusNote(t,status));
   renderVitaminSuggestions();
   scheduleAutosave();
+}
+function saveLabDate(){
+  S.labDate=v('lab-date')||'';
+  scheduleAutosave();
+}
+function renderClientDocuments(){
+  const el=document.getElementById('client-documents-list');
+  const status=document.getElementById('client-document-status');
+  if(!el) return;
+  const docs=Array.isArray(S.clientDocuments)?S.clientDocuments:[];
+  if(status) status.textContent = docs.length ? `${docs.length} ${window.appLang==='gr'?'έγγραφο/α':'document(s)'}` : '';
+  if(!docs.length){
+    el.innerHTML=`<div class="field-note">${window.appLang==='gr'?'Δεν έχουν προστεθεί έγγραφα ακόμη.':'No documents uploaded yet.'}</div>`;
+    return;
+  }
+  el.innerHTML=docs.map(d=>`<div class="client-document-row">
+    <div><strong>${safeHtml(d.name||'Document')}</strong><div class="field-note">${safeHtml(d.type||'file')} · ${d.addedAt?formatDateDMY(new Date(d.addedAt)):''}</div></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+      <button class="btn" type="button" onclick="openClientDocument('${d.id}')"><i class="ti ti-external-link" aria-hidden="true"></i> ${window.appLang==='gr'?'Άνοιγμα':'Open'}</button>
+      <button class="btn" type="button" onclick="downloadClientDocument('${d.id}')"><i class="ti ti-download" aria-hidden="true"></i> ${window.appLang==='gr'?'Λήψη':'Download'}</button>
+      <button class="btn danger" type="button" onclick="deleteClientDocument('${d.id}')"><i class="ti ti-trash" aria-hidden="true"></i> ${window.appLang==='gr'?'Διαγραφή':'Delete'}</button>
+    </div>
+  </div>`).join('');
+}
+function handleClientDocumentUpload(input){
+  const file=input?.files?.[0];
+  if(!file) return;
+  const isGr=window.appLang==='gr';
+  const status=document.getElementById('client-document-status');
+  const maxBytes=3*1024*1024;
+  if(!/^(application\/pdf|image\/png|image\/jpeg)$/i.test(file.type)){
+    if(status) status.textContent=isGr?'Επιτρέπονται μόνο PDF, PNG ή JPG.':'Only PDF, PNG or JPG files are allowed.';
+    input.value=''; return;
+  }
+  if(file.size>maxBytes){
+    if(status) status.textContent=isGr?'Το αρχείο είναι πάνω από 3 MB.':'File is larger than 3 MB.';
+    input.value=''; return;
+  }
+  if(status) status.textContent=isGr?'Ανάγνωση αρχείου...':'Reading file...';
+  const reader=new FileReader();
+  reader.onload=()=>{
+    S.clientDocuments=[...(Array.isArray(S.clientDocuments)?S.clientDocuments:[]),{id:`doc_${Date.now()}`,name:file.name,type:file.type,size:file.size,dataUrl:String(reader.result||''),addedAt:new Date().toISOString()}];
+    input.value='';
+    renderClientDocuments();
+    scheduleAutosave();
+  };
+  reader.onerror=()=>{ if(status) status.textContent=isGr?'Δεν ήταν δυνατή η ανάγνωση του αρχείου.':'Could not read this file.'; };
+  reader.readAsDataURL(file);
+}
+function findClientDocument(id){ return (Array.isArray(S.clientDocuments)?S.clientDocuments:[]).find(d=>String(d.id)===String(id)); }
+function openClientDocument(id){ const d=findClientDocument(id); if(d?.dataUrl) window.open(d.dataUrl,'_blank'); }
+function downloadClientDocument(id){
+  const d=findClientDocument(id); if(!d?.dataUrl) return;
+  const a=document.createElement('a'); a.href=d.dataUrl; a.download=d.name||'document'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function deleteClientDocument(id){
+  const isGr=window.appLang==='gr';
+  if(!confirm(isGr?'Διαγραφή αυτού του εγγράφου;':'Delete this document?')) return;
+  S.clientDocuments=(Array.isArray(S.clientDocuments)?S.clientDocuments:[]).filter(d=>String(d.id)!==String(id));
+  renderClientDocuments(); scheduleAutosave();
 }
 
 // Splits a suggestion's nutrient-name field into individual tokens on
@@ -10104,7 +10246,7 @@ function renderRecipeTemplates(){
     const summary=isGr?t.summary.gr:t.summary.en;
     const image=recipeTemplateImage(t.imageKey);
     return `<div style="border:1px solid var(--border);border-radius:12px;background:var(--bg-surface);overflow:hidden;display:flex;flex-direction:column">
-      <img src="${image}" alt="" style="width:100%;height:118px;object-fit:cover;display:block">
+      <img class="recipe-template-img" src="${image}" alt="" loading="lazy" onerror="this.style.display='none'">
       <div style="padding:12px;display:flex;flex-direction:column;gap:8px">
         <div style="font-weight:800;color:var(--text-primary)">${safeHtml(name)}</div>
         <div style="font-size:12px;color:var(--text-secondary);line-height:1.45">${safeHtml(summary)}</div>
@@ -10125,7 +10267,7 @@ function loadRecipeTemplate(id){
   S.editingRecipeId=null;
   S.recipeDraftPhoto=recipeTemplateImage(t.imageKey);
   const preview=document.getElementById('recipe-photo-preview');
-  if(preview) preview.innerHTML=`<img src="${S.recipeDraftPhoto}" style="width:100%;height:100%;object-fit:cover">`;
+  if(preview) preview.innerHTML=`<img src="${S.recipeDraftPhoto}" loading="lazy" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`;
   renderRecipeDraft();
   updateRecipeSaveButton();
   setEl('recipe-save-status', isGr ? 'Το πρότυπο φορτώθηκε με εικόνα. Προσαρμόστε ποσότητες/οδηγίες και αποθηκεύστε το ως δική σας συνταγή.' : 'Template loaded with image. Adjust portions/instructions and save it as your own recipe.');
@@ -10386,7 +10528,7 @@ function loadRecipeIntoDraft(id){
   if(ins) ins.value=r.instructions||'';
   S.recipeDraftPhoto=r.photo||null;
   const preview=document.getElementById('recipe-photo-preview');
-  if(preview) preview.innerHTML = r.photo ? `<img src="${r.photo}" style="width:100%;height:100%;object-fit:cover">` : '<i class="ti ti-photo" aria-hidden="true" style="font-size:22px;color:var(--text-muted)"></i>';
+  if(preview) preview.innerHTML = r.photo ? `<img class="recipe-photo-thumb" src="${r.photo}" loading="lazy" onerror="this.style.display='none'">` : '<i class="ti ti-photo" aria-hidden="true" style="font-size:22px;color:var(--text-muted)"></i>';
   S.recipeDraft=(r.ingredients||[]).map(x=>({...x}));
   renderRecipeDraft();
   setEl('recipe-save-status', `Editing ${safeHtml(r.name||'recipe')}. Add/remove ingredients, adjust grams, then save updated recipe.`);
@@ -10399,7 +10541,7 @@ function renderRecipesList(){
     const total=r.nutrition||recipeTotals(r.ingredients||[]);
     const servings=Math.max(1,r.servings||1);
     const photoHtml = r.photo
-      ? `<div style="width:100%;height:110px;border-radius:10px 10px 0 0;overflow:hidden"><img src="${r.photo}" style="width:100%;height:100%;object-fit:cover"></div>`
+      ? `<div style="width:100%;height:110px;border-radius:10px 10px 0 0;overflow:hidden"><img class="recipe-photo-thumb" src="${r.photo}" loading="lazy" onerror="this.style.display='none'"></div>`
       : `<div style="width:100%;height:110px;border-radius:10px 10px 0 0;background:var(--bg-page);display:flex;align-items:center;justify-content:center"><i class="ti ti-tools-kitchen-2" aria-hidden="true" style="font-size:28px;color:var(--text-muted)"></i></div>`;
     const ingredientsLabel = isGr ? 'συστατικά' : `ingredient${(r.ingredients||[]).length===1?'':'s'}`;
     const servingsLabel = isGr ? 'μερίδα'+(servings===1?'':'ες') : `serving${servings===1?'':'s'}`;
@@ -10991,7 +11133,7 @@ return {
     weekPlans:S.weekPlans, savedWeeklyPlan:S.savedWeeklyPlan, customMeals:S.customMeals, mealLanguage:S.mealLanguage, reportOptions:S.reportOptions,
     sevenDayView:S.sevenDayView, sevenDayActiveIndex:S.sevenDayActiveIndex, aiPlanStatus:S.aiPlanStatus,
     weightSuggestionLocked:S.weightSuggestionLocked, calAdjAutoValue:S.calAdjAutoValue, bcManual:S.bcManual,
-    intake:S.intake, notes:S.notes, labValues:S.labValues, extraFoods:S.extraFoods, equivalentNotes:S.equivalentNotes,
+    intake:S.intake, notes:S.notes, labValues:S.labValues, labDate:S.labDate, clientDocuments:S.clientDocuments, extraFoods:S.extraFoods, equivalentNotes:S.equivalentNotes,
     clientPhoto:S.clientPhoto,
     savedAt:new Date().toISOString()
   };
@@ -11050,9 +11192,13 @@ function applyState(state){
   if(state.intake){ S.intake=state.intake; }
   if(state.notes){ S.notes=state.notes; }
   S.labValues=state.labValues||{};
+  S.labDate=state.labDate||'';
+  S.clientDocuments=Array.isArray(state.clientDocuments)?state.clientDocuments:[];
+  const labDateEl=document.getElementById('lab-date'); if(labDateEl) labDateEl.value=S.labDate;
+  renderClientDocuments();
   resetMacroExplanation();
   S.planQualityUserOverride=undefined;
-  if(document.getElementById('page-labs')?.classList.contains('active')) renderLabsTable();
+  if(document.getElementById('page-labs')?.classList.contains('active')) { const labDateEl=document.getElementById('lab-date'); if(labDateEl) labDateEl.value=S.labDate||''; renderClientDocuments(); renderLabsTable(); }
   calcAll(); calcBodyComp(); calcMacros();
 }
 
@@ -11087,14 +11233,14 @@ function resetForm(){
   S.exAuto={starch:true,protein:true,fat:true};
   S.exMeta=makeExMeta();
   S.lastDairyType='Moderate-fat'; S.lastMeatType='Lean';
-  S.tracking=[]; S.intake={}; S.notes={}; S.labValues={}; S.extraFoods=[]; S.equivalentNotes={};
+  S.tracking=[]; S.intake={}; S.notes={}; S.labValues={}; S.labDate=''; S.clientDocuments=[]; S.extraFoods=[]; S.equivalentNotes={};
   S.mealSel={breakfast:'BRK_TOAST',lunch:'LUN_CHICKEN_RICE',dinner:'DIN_FISH_POTATO',snack1Extras:['fruit'],snack2Extras:['fruit'],sleepExtras:[]};
   S.weekPlans=WEEK_PLANS.map(p=>({...p}));
   S.savedWeeklyPlan=null;
   S.mealLanguage='GR';
   S.reportOptions={oneDay:false,sevenDay:true,includeBlood:true,includeEquivalents:false,days:allReportDayIndexes()};
   syncReportModeControls();
-  if(document.getElementById('page-labs')?.classList.contains('active')) renderLabsTable();
+  if(document.getElementById('page-labs')?.classList.contains('active')) { const labDateEl=document.getElementById('lab-date'); if(labDateEl) labDateEl.value=S.labDate||''; renderClientDocuments(); renderLabsTable(); }
   try{localStorage.removeItem('nutriflow_autosave');}catch(e){}
   calcAll(); calcBodyComp(); calcMacros();
   renderClientPhotoControls();
@@ -11566,13 +11712,25 @@ function importClientsFile(input){
 }
 
 // ── AUTO-SAVE (so an accidental close doesn't lose data) ──
+function setAutosaveStatus(state, text){
+  const el=document.getElementById('autosave-status'); if(!el) return;
+  el.className='no-print autosave-status '+(state||'');
+  el.textContent=text || '';
+}
 function autosaveSession(){
-  try{ localStorage.setItem('nutriflow_autosave', JSON.stringify(captureState())); }catch(e){}
+  setAutosaveStatus('saving', window.appLang==='gr'?'Αποθήκευση...':'Saving...');
+  try{
+    localStorage.setItem('nutriflow_autosave', JSON.stringify(captureState()));
+    setAutosaveStatus('saved', window.appLang==='gr'?'Αποθηκεύτηκε ✓':'Saved ✓');
+  }catch(e){
+    setAutosaveStatus('error', window.appLang==='gr'?'Αποτυχία αποθήκευσης':'Save failed');
+  }
 }
 let autosaveTimer=null;
 let S_isDirty=false; // tracks whether changes exist that haven't been pushed via "Save Client" to the cloud
 function scheduleAutosave(){
   S_isDirty=true;
+  setAutosaveStatus('', window.appLang==='gr'?'Μη αποθηκευμένες αλλαγές':'Unsaved changes');
   clearTimeout(autosaveTimer);
   autosaveTimer=setTimeout(autosaveSession, 1000);
 }
@@ -11813,7 +11971,7 @@ function applyLanguage(lang){
   if(document.getElementById('page-tracking')?.classList.contains('active')) renderTracking();
   if(document.getElementById('page-account')?.classList.contains('active')) updateAccountPage();
   if(document.getElementById('page-profile')?.classList.contains('active')) calcAll();
-  if(document.getElementById('page-labs')?.classList.contains('active')) renderLabsTable();
+  if(document.getElementById('page-labs')?.classList.contains('active')) { const labDateEl=document.getElementById('lab-date'); if(labDateEl) labDateEl.value=S.labDate||''; renderClientDocuments(); renderLabsTable(); }
   if(document.getElementById('page-sevenday')?.classList.contains('active')) renderMicronutrientCoverage();
   if(document.getElementById('page-report')?.classList.contains('active')){ buildReport(); renderMicronutrientCoverage(); }
   if(document.getElementById('page-recipes')?.classList.contains('active')){ renderRecipeTemplates(); renderRecipeDraft(); renderRecipesList(); }
