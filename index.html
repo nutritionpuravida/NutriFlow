@@ -1010,15 +1010,27 @@ table th,
 .autosave-status.saving { color:#b45309; border-color:rgba(245,158,11,.45); background:rgba(245,158,11,.08); }
 .autosave-status.saved { color:var(--teal-700); border-color:rgba(15,118,110,.28); background:rgba(15,118,110,.08); }
 .autosave-status.error { color:#b91c1c; border-color:rgba(239,68,68,.35); background:rgba(239,68,68,.08); }
-.client-documents-panel { border:1px solid var(--border); border-radius:16px; padding:14px; background:color-mix(in srgb,var(--bg-surface) 86%,var(--teal-50)); margin:12px 0 16px; }
-.client-documents-list { display:grid; gap:8px; margin-top:10px; }
-.client-document-row { display:flex; gap:10px; align-items:center; justify-content:space-between; border:1px solid var(--border); border-radius:12px; padding:9px 10px; background:var(--bg-surface); }
-.client-document-row strong { color:var(--text-primary); }
+.client-documents-panel { border:1px solid rgba(15,118,110,.16); border-radius:16px; padding:12px; background:linear-gradient(145deg,rgba(15,118,110,.045),rgba(255,255,255,.72)); margin:10px 0 16px; }
+.client-documents-header { display:flex; justify-content:space-between; gap:10px; align-items:center; color:var(--text-secondary); font-size:12px; cursor:pointer; list-style:none; }
+.client-documents-header::-webkit-details-marker { display:none; }
+.client-documents-header::after { content:"⌄"; color:var(--text-muted); font-weight:800; transition:transform .16s ease; }
+.client-documents-panel:not([open]) .client-documents-header::after { transform:rotate(-90deg); }
+.client-documents-header strong { color:var(--text-primary); font-size:13px; }
+.client-documents-list { display:grid; gap:7px; margin-top:9px; }
+.client-document-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; border:1px solid rgba(15,118,110,.12); border-radius:14px; padding:9px 10px; background:color-mix(in srgb,var(--bg-surface) 94%,var(--teal-50)); }
+.client-document-title { display:flex; align-items:center; gap:8px; min-width:0; }
+.client-document-title strong { color:var(--text-primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.client-document-icon { width:28px; height:28px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; background:rgba(15,118,110,.1); color:var(--teal-700); flex:0 0 auto; }
+.client-document-actions { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+.client-document-actions .btn { padding:6px 9px; border-radius:999px; font-size:12px; }
+[data-theme="dark"] .client-documents-panel { background:rgba(255,255,255,.025); border-color:var(--border); }
+[data-theme="dark"] .client-document-row { background:rgba(255,255,255,.025); border-color:var(--border); }
+[data-theme="dark"] .client-document-icon { background:rgba(78,205,196,.1); color:var(--teal-300); }
 .bmi-scale-card { margin-top:12px; border:1px solid var(--border); border-radius:14px; padding:12px; background:var(--bg-surface); }
 .bmi-scale-track { position:relative; height:12px; border-radius:999px; overflow:hidden; background:linear-gradient(90deg,#60a5fa 0 18.5%,#22c55e 18.5% 25%,#facc15 25% 30%,#ef4444 30% 100%); }
 .bmi-scale-marker { position:absolute; top:-5px; width:3px; height:22px; border-radius:999px; background:var(--text-primary); box-shadow:0 0 0 2px var(--bg-surface); transform:translateX(-50%); }
 .bmi-scale-labels { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:8px; font-size:10px; color:var(--text-muted); font-weight:700; }
-.recipe-template-img{width:100%;height:118px;object-fit:cover;display:block;background:var(--bg-muted);}
+.recipe-template-img{width:100%;height:132px;object-fit:cover;display:block;background:var(--bg-muted);filter:saturate(1.03) contrast(1.02);}
 .recipe-photo-thumb{width:100%;height:110px;object-fit:cover;display:block;background:var(--bg-muted);}
 
 
@@ -1130,6 +1142,31 @@ table th,
 #page-recipes #recipe-photo-preview { border:1px solid rgba(212,221,209,.55); border-radius:16px!important; background:rgba(15,118,110,.04)!important; }
 #page-equivalents .equivalents-compact-table { font-size:13px!important; }
 #page-equivalents .equivalents-compact-table td:first-child { font-weight:900; color:var(--teal-700); }
+#page-macros .two-col { align-items:start; gap:18px!important; }
+#page-macros .card { border-radius:20px; box-shadow:0 18px 48px rgba(15,23,42,.06); overflow:hidden; }
+#page-macros .card-header { border-bottom:1px solid rgba(212,221,209,.48); background:linear-gradient(135deg,rgba(15,118,110,.045),rgba(255,255,255,.72)); }
+#page-macros .form-grid.three .form-field { padding:14px; border:1px solid rgba(212,221,209,.62); border-radius:16px; background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(248,252,250,.92)); }
+#page-macros .form-grid.three .form-field label { font-size:12px!important; font-weight:900!important; letter-spacing:.04em; text-transform:uppercase; color:var(--text-muted); }
+#page-macros .form-grid.three input { height:44px; border-radius:13px!important; font-size:18px; font-weight:850; }
+#page-macros #macro-check-row .alert { border-radius:16px; }
+#page-macros #macro-bars { display:grid; gap:10px; margin-top:12px; }
+#page-macros #macro-bars .macro-bar { margin:0; padding:12px 14px; border:1px solid rgba(212,221,209,.58); border-radius:16px; background:rgba(255,255,255,.64); }
+#page-macros #macro-bars .macro-track { height:9px; border-radius:999px; background:rgba(15,23,42,.08); }
+#page-macros #macro-bars .macro-fill { border-radius:999px; }
+#page-macros #clinical-macro-suggestions-body tr td:first-child { font-weight:750; }
+#page-macros #exchange-rows { max-width:920px; display:grid; gap:8px; }
+#page-macros #exchange-rows > div:first-child.exchange-head { border:0!important; border-radius:14px; padding:9px 12px!important; background:rgba(15,118,110,.08); }
+#page-macros .exchange-row { border:1px solid rgba(212,221,209,.62)!important; border-radius:16px; padding:12px!important; background:rgba(255,255,255,.66); }
+#page-macros .exchange-row input { border-radius:12px!important; height:36px; font-weight:800; }
+#page-macros .exchange-kcal { justify-self:start; padding:8px 12px; border-radius:999px; background:rgba(15,118,110,.10); color:var(--teal-700); font-weight:850!important; }
+[data-theme="dark"] #page-macros .card { box-shadow:none; }
+[data-theme="dark"] #page-macros .card-header { background:linear-gradient(135deg,rgba(15,118,110,.16),rgba(255,255,255,.025)); border-bottom-color:var(--border); }
+[data-theme="dark"] #page-macros .form-grid.three .form-field,
+[data-theme="dark"] #page-macros #macro-bars .macro-bar,
+[data-theme="dark"] #page-macros .exchange-row { background:rgba(255,255,255,.025); border-color:var(--border); }
+[data-theme="dark"] #page-macros #macro-bars .macro-track { background:rgba(255,255,255,.13); }
+[data-theme="dark"] #page-macros #exchange-rows > div:first-child.exchange-head { background:rgba(15,118,110,.18); }
+[data-theme="dark"] #page-macros .exchange-kcal { background:rgba(78,205,196,.12); color:var(--teal-100); }
 [data-theme="dark"] #page-fooddb .card,
 [data-theme="dark"] #page-recipes .card,
 [data-theme="dark"] #page-equivalents .card,
@@ -1834,7 +1871,7 @@ table th,
           <div class="form-field"><label><span class="i18n" data-en="Laboratory date" data-gr="Ημερομηνία εργαστηριακών">Laboratory date</span></label><input type="date" id="lab-date" onchange="saveLabDate()"></div>
           <div class="form-field"><label><span class="i18n" data-en="Doctor report / lab PDF" data-gr="Ιατρική αναφορά / PDF εξετάσεων">Doctor report / lab PDF</span></label><input type="file" id="client-document-input" accept="application/pdf,image/png,image/jpeg" onchange="handleClientDocumentUpload(this)"><div class="field-note"><span class="i18n" data-en="PDF, PNG or JPG, max 3 MB. Saved with this client record." data-gr="PDF, PNG ή JPG, έως 3 MB. Αποθηκεύεται με τον φάκελο του πελάτη.">PDF, PNG or JPG, max 3 MB. Saved with this client record.</span></div></div>
         </div>
-        <div class="client-documents-panel"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><strong><span class="i18n" data-en="Uploaded clinical documents" data-gr="Ανεβασμένα κλινικά έγγραφα">Uploaded clinical documents</span></strong><span id="client-document-status" class="field-note"></span></div><div id="client-documents-list" class="client-documents-list"></div></div>
+        <details class="client-documents-panel" open><summary class="client-documents-header"><strong><i class="ti ti-files" aria-hidden="true"></i> <span class="i18n" data-en="Uploaded clinical documents" data-gr="Ανεβασμένα κλινικά έγγραφα">Uploaded clinical documents</span></strong><span id="client-document-status" class="field-note"></span></summary><div id="client-documents-list" class="client-documents-list"></div></details>
         <div id="labs-table"></div>
         <div class="section-label"><span class="i18n" data-en="Nutrients to Consider (Clinical Reference Only)" data-gr="Θρεπτικά Συστατικά προς Εξέταση (Μόνο Κλινική Αναφορά)">Nutrients to Consider (Clinical Reference Only)</span></div>
         <div id="vitamin-suggestions"></div>
@@ -6241,8 +6278,8 @@ function renderExchanges(){
   const isGr = window.appLang!=='en';
   const grid=EX_ROW_GRID;
   const headers = isGr ? ['Κατηγορία','Μερίδες','Σύνολο kcal'] : ['Category','Servings','Total kcal'];
-  let html=`<div style="max-width:640px">`;
-  html+=`<div style="display:grid;grid-template-columns:${grid};gap:6px;padding:8px 0;border-bottom:2px solid var(--border-strong);font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase">
+  let html=`<div>`;
+  html+=`<div class="exchange-head" style="display:grid;grid-template-columns:${grid};gap:6px;padding:8px 0;border-bottom:2px solid var(--border-strong);font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase">
     ${headers.map(h=>`<span>${h}</span>`).join('')}</div>`;
   for(const key of ['fruit','veg','dairy','starch','protein','fat']){
     const meta=m[key], srv=ex[key]||0;
@@ -6251,13 +6288,13 @@ function renderExchanges(){
     const isAuto = hasAuto && S.exAuto[key];
     const srvBg = isAuto ? 'var(--bg-page)' : 'var(--bg-input)';
     const autoNote = hasAuto ? (isAuto ? (isGr?' · αυτόματο':' · auto') : (isGr?' · χειροκίνητα':' · manual')) : '';
-    html+=`<div style="display:grid;grid-template-columns:${grid};gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)">
+    html+=`<div class="exchange-row" style="display:grid;grid-template-columns:${grid};gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)">
       <div><div style="font-weight:600;font-size:13px">${meta.label}</div><div style="color:var(--text-muted);font-size:11px">${meta.food}${typeNote}${autoNote}</div></div>
       <div style="display:flex;align-items:center;gap:4px">
         <input id="ex-srv-${key}" type="number" value="${srv}" min="0" max="20" step="1" style="width:54px;padding:6px;text-align:center;border:1px solid var(--border-strong);border-radius:5px;background:${srvBg}" oninput="onExInput('${key}','srv',this.value)">
         ${hasAuto?`<button title="Reset to auto-calculated" onclick="resetExAuto('${key}')" style="border:none;background:none;cursor:pointer;font-size:14px;color:${isAuto?'var(--text-muted)':'var(--teal-600)'};padding:2px" ${isAuto?'disabled':''}>↻</button>`:''}
       </div>
-      <span id="ex-total-${key}" style="font-weight:600">${(srv*meta.kcal).toFixed(0)}</span>
+      <span id="ex-total-${key}" class="exchange-kcal" style="font-weight:600">${(srv*meta.kcal).toFixed(0)}</span>
     </div>`;
   }
   html+=`</div>`;
@@ -9690,14 +9727,18 @@ function renderClientDocuments(){
     el.innerHTML=`<div class="field-note">${window.appLang==='gr'?'Δεν έχουν προστεθεί έγγραφα ακόμη.':'No documents uploaded yet.'}</div>`;
     return;
   }
-  el.innerHTML=docs.map(d=>`<div class="client-document-row">
-    <div><strong>${safeHtml(d.name||'Document')}</strong><div class="field-note">${safeHtml(d.type||'file')} · ${d.addedAt?formatDateDMY(new Date(d.addedAt)):''}</div></div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
-      <button class="btn" type="button" onclick="openClientDocument('${d.id}')"><i class="ti ti-external-link" aria-hidden="true"></i> ${window.appLang==='gr'?'Άνοιγμα':'Open'}</button>
-      <button class="btn" type="button" onclick="downloadClientDocument('${d.id}')"><i class="ti ti-download" aria-hidden="true"></i> ${window.appLang==='gr'?'Λήψη':'Download'}</button>
-      <button class="btn danger" type="button" onclick="deleteClientDocument('${d.id}')"><i class="ti ti-trash" aria-hidden="true"></i> ${window.appLang==='gr'?'Διαγραφή':'Delete'}</button>
-    </div>
-  </div>`).join('');
+  el.innerHTML=docs.map(d=>{
+    const icon=String(d.type||'').includes('pdf')?'ti-file-type-pdf':'ti-photo';
+    const size=d.size?` · ${clientDocumentSizeLabel(d.size)}`:'';
+    return `<div class="client-document-row">
+      <div class="client-document-title"><span class="client-document-icon"><i class="ti ${icon}" aria-hidden="true"></i></span><div style="min-width:0"><strong>${safeHtml(d.name||'Document')}</strong><div class="field-note">${safeHtml(d.type||'file')}${size} · ${d.addedAt?formatDateDMY(new Date(d.addedAt)):''}</div></div></div>
+      <div class="client-document-actions">
+        <button class="btn" type="button" onclick="openClientDocument('${d.id}')"><i class="ti ti-external-link" aria-hidden="true"></i> ${window.appLang==='gr'?'Άνοιγμα':'Open'}</button>
+        <button class="btn" type="button" onclick="downloadClientDocument('${d.id}')"><i class="ti ti-download" aria-hidden="true"></i> ${window.appLang==='gr'?'Λήψη':'Download'}</button>
+        <button class="btn danger" type="button" onclick="deleteClientDocument('${d.id}')"><i class="ti ti-trash" aria-hidden="true"></i> ${window.appLang==='gr'?'Διαγραφή':'Delete'}</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 function handleClientDocumentUpload(input){
   const file=input?.files?.[0];
@@ -9725,6 +9766,12 @@ function handleClientDocumentUpload(input){
   reader.readAsDataURL(file);
 }
 function findClientDocument(id){ return (Array.isArray(S.clientDocuments)?S.clientDocuments:[]).find(d=>String(d.id)===String(id)); }
+function clientDocumentSizeLabel(bytes){
+  const n=Number(bytes)||0;
+  if(n>=1024*1024) return `${(n/1024/1024).toFixed(1)} MB`;
+  if(n>=1024) return `${Math.round(n/1024)} KB`;
+  return `${n} B`;
+}
 function clientDocumentBlobUrl(doc){
   const dataUrl=String(doc?.dataUrl||'');
   const comma=dataUrl.indexOf(',');
@@ -10265,7 +10312,20 @@ function localizeRecipeTemplateIngredient(ing){
   const isGr=window.appLang==='gr';
   return {...ing, name: typeof ing.name==='object' ? (isGr ? ing.name.gr : ing.name.en) : ing.name};
 }
-function recipeTemplateImage(key){
+function recipeTemplatePhotoUrl(key){
+  const photos={
+    lentils:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=960&q=80',
+    salmon:'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=960&q=80',
+    yogurt:'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=960&q=80',
+    peppers:'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=960&q=80',
+    sardines:'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=960&q=80',
+    tofu:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=960&q=80',
+    soup:'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=960&q=80',
+    chia:'https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=960&q=80'
+  };
+  return photos[key] || recipeTemplateFallbackImage(key);
+}
+function recipeTemplateFallbackImage(key){
   const palette={
     lentils:{bg:'#F3FAF5',accent:'#0F6E56',soft:'#CDEDE2',food:'#7A4D35',food2:'#F4C95D'},
     salmon:{bg:'#FFF6F1',accent:'#D96C4A',soft:'#FAD7CA',food:'#F28B6B',food2:'#78A86B'},
@@ -10292,6 +10352,7 @@ function recipeTemplateImage(key){
   </svg>`;
   return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
 }
+function recipeTemplateImage(key){ return recipeTemplatePhotoUrl(key); }
 function renderRecipeTemplates(){
   const el=document.getElementById('recipe-template-list'); if(!el) return;
   const isGr=window.appLang==='gr';
@@ -10303,7 +10364,7 @@ function renderRecipeTemplates(){
     const summary=isGr?t.summary.gr:t.summary.en;
     const image=recipeTemplateImage(t.imageKey);
     return `<div style="border:1px solid var(--border);border-radius:12px;background:var(--bg-surface);overflow:hidden;display:flex;flex-direction:column">
-      <img class="recipe-template-img" src="${image}" alt="" loading="lazy" onerror="this.style.display='none'">
+      <img class="recipe-template-img" src="${image}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=recipeTemplateFallbackImage('${t.imageKey}')">
       <div style="padding:12px;display:flex;flex-direction:column;gap:8px">
         <div style="font-weight:800;color:var(--text-primary)">${safeHtml(name)}</div>
         <div style="font-size:12px;color:var(--text-secondary);line-height:1.45">${safeHtml(summary)}</div>
