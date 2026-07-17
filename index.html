@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="el" data-theme="light">
 <head>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
@@ -1045,7 +1045,7 @@ table th,
 .seven-day-meal-desc{font-size:13px;line-height:1.6;color:var(--text-secondary)}
 .seven-day-card-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:-2px}
 .seven-day-kcal-pill{align-self:flex-start;border-radius:999px;background:color-mix(in srgb,var(--teal-600) 15%,transparent);color:var(--teal-700);font-size:12px;font-weight:900;padding:5px 10px;line-height:1}
-.seven-day-control,.seven-day-extras{border:1px solid color-mix(in srgb,var(--border) 58%,transparent);border-radius:14px;background:color-mix(in srgb,var(--bg-page) 42%,transparent);padding:10px;display:flex;flex-direction:column;gap:8px}.seven-day-extras{display:block}.seven-day-extras summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer}.seven-day-extras summary::-webkit-details-marker{display:none}.seven-day-extras summary:after{content:"›";font-size:18px;color:var(--text-muted);transition:transform .18s ease}.seven-day-extras[open] summary:after{transform:rotate(90deg)}
+.seven-day-control,.seven-day-extras{border:1px solid color-mix(in srgb,var(--border) 58%,transparent);border-radius:14px;background:color-mix(in srgb,var(--bg-page) 42%,transparent);padding:10px;display:flex;flex-direction:column;gap:8px}.seven-day-extras{display:block}.seven-day-extras summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer}.seven-day-extras summary::-webkit-details-marker{display:none}.seven-day-extras summary:after{content:"›";font-size:18px;color:var(--text-muted);transition:transform .18s ease}.seven-day-extras[open] summary:after{transform:rotate(90deg)}.custom-snack-food-row{margin-top:10px;display:flex}.custom-snack-food-btn{font-size:12px;padding:7px 10px;border-radius:999px}.custom-snack-food-btn i{font-size:14px}
 .seven-day-control-label{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)}
 .seven-day-select{width:100%;border-radius:12px;border:1px solid color-mix(in srgb,var(--border) 80%,transparent);background:var(--bg-surface);color:var(--text-primary);font-weight:800;font-size:13px;padding:9px 11px;outline:none}
 .seven-day-select:focus{border-color:var(--teal-600);box-shadow:0 0 0 3px color-mix(in srgb,var(--teal-600) 16%,transparent)}
@@ -1154,6 +1154,10 @@ table th,
 #page-macros #macro-bars .macro-track { height:9px; border-radius:999px; background:rgba(15,23,42,.08); }
 #page-macros #macro-bars .macro-fill { border-radius:999px; }
 #page-macros #clinical-macro-suggestions-body tr td:first-child { font-weight:750; }
+#page-macros .macro-suggestions-tools{display:grid;gap:10px;margin-bottom:12px}
+#page-macros .macro-suggestion-search-wrap{display:flex;align-items:center;gap:8px;max-width:420px;border:1px solid var(--border);border-radius:999px;background:var(--bg-input);padding:8px 12px;color:var(--text-muted)}
+#page-macros .macro-suggestion-search-wrap input{border:0!important;background:transparent!important;color:var(--text-primary);outline:0;width:100%;font-weight:700;padding:0!important;min-height:auto}
+[data-theme="dark"] #page-macros .macro-suggestion-search-wrap{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.14)}
 #page-macros #exchange-rows { max-width:920px; display:grid; gap:8px; }
 #page-macros #exchange-rows > div:first-child.exchange-head { border:0!important; border-radius:14px; padding:9px 12px!important; background:rgba(15,118,110,.08); }
 #page-macros .exchange-row { border:1px solid rgba(212,221,209,.62)!important; border-radius:16px; padding:12px!important; background:rgba(255,255,255,.66); }
@@ -1166,7 +1170,7 @@ table th,
 [data-theme="dark"] #page-macros .exchange-row { background:rgba(255,255,255,.025); border-color:var(--border); }
 [data-theme="dark"] #page-macros #macro-bars .macro-track { background:rgba(255,255,255,.13); }
 [data-theme="dark"] #page-macros #exchange-rows > div:first-child.exchange-head { background:rgba(15,118,110,.18); }
-[data-theme="dark"] #page-macros .exchange-kcal { background:rgba(78,205,196,.12); color:var(--teal-100); }
+[data-theme="dark"] #page-macros .exchange-kcal { background:rgba(78,205,196,.22); color:#eafffb; text-shadow:0 1px 0 rgba(0,0,0,.35); }
 [data-theme="dark"] #page-fooddb .card,
 [data-theme="dark"] #page-recipes .card,
 [data-theme="dark"] #page-equivalents .card,
@@ -1706,7 +1710,11 @@ table th,
       <div class="card">
         <div class="card-header"><span class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> <span class="i18n" data-en="Clinical Macro Suggestions" data-gr="Κλινικές Προτάσεις Μακροθρεπτικών">Clinical Macro Suggestions</span></span></div>
         <div class="card-body">
-          <table><thead><tr><th><span class="i18n" data-en="Condition" data-gr="Πάθηση">Condition</span></th><th><span class="i18n" data-en="Carb" data-gr="Υδατ.">Carb</span></th><th><span class="i18n" data-en="Prot" data-gr="Πρωτ.">Prot</span></th><th><span class="i18n" data-en="Fat" data-gr="Λίπος">Fat</span></th></tr></thead><tbody id="clinical-macro-suggestions-body"></tbody></table>
+                    <div class="macro-suggestions-tools">
+            <div class="field-note"><span class="i18n" data-en="Clinical starting points for common conditions. Search to show less common or higher-risk conditions. Always individualise to labs, medications and clinical judgement." data-gr="Κλινικά σημεία εκκίνησης για συχνές/ήπιες καταστάσεις. Αναζητήστε για λιγότερο συχνές ή υψηλότερου κινδύνου παθήσεις. Πάντα εξατομίκευση με βάση εξετάσεις, φάρμακα και κλινική κρίση.">Clinical starting points for common conditions. Search to show less common or higher-risk conditions. Always individualise to labs, medications and clinical judgement.</span></div>
+            <div class="macro-suggestion-search-wrap"><i class="ti ti-search" aria-hidden="true"></i><input id="macro-suggestion-search" type="search" oninput="renderClinicalMacroSuggestions()" placeholder="Search condition" aria-label="Search macro suggestions"></div>
+          </div><table><thead><tr><th><span class="i18n" data-en="Condition" data-gr="Πάθηση">Condition</span></th><th><span class="i18n" data-en="Carb" data-gr="Υδατ.">Carb</span></th><th><span class="i18n" data-en="Prot" data-gr="Πρωτ.">Prot</span></th><th><span class="i18n" data-en="Fat" data-gr="Λίπος">Fat</span></th></tr></thead><tbody id="clinical-macro-suggestions-body"></tbody></table>
+          <div id="clinical-macro-suggestions-note" class="field-note" style="margin-top:8px"></div>
         </div>
       </div>
     </div>
@@ -1763,12 +1771,15 @@ table th,
         <div class="form-grid three" style="margin-bottom:8px">
           <div class="form-field"><label>🍎 Σνακ 1 / Snack 1</label>
             <div id="s-snack1" style="display:flex;flex-wrap:wrap;gap:8px;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input)" onchange="buildOneDayPlan()"></div>
+            <div style="margin-top:8px"><button class="btn custom-snack-food-btn" type="button" onclick="openFoodDatabaseForSnack('snk1',null)"><i class="ti ti-database-plus" aria-hidden="true"></i> <span class="i18n" data-en="Custom food from database" data-gr="Προσαρμοσμένο τρόφιμο από βάση">Custom food from database</span></button></div>
           </div>
           <div class="form-field"><label>🍊 Σνακ 2 / Snack 2</label>
             <div id="s-snack2" style="display:flex;flex-wrap:wrap;gap:8px;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input)" onchange="buildOneDayPlan()"></div>
+            <div style="margin-top:8px"><button class="btn custom-snack-food-btn" type="button" onclick="openFoodDatabaseForSnack('snk2',null)"><i class="ti ti-database-plus" aria-hidden="true"></i> <span class="i18n" data-en="Custom food from database" data-gr="Προσαρμοσμένο τρόφιμο από βάση">Custom food from database</span></button></div>
           </div>
           <div class="form-field"><label>😴 Πριν τον ύπνο / Before sleep</label>
             <div id="s-sleep" style="display:flex;flex-wrap:wrap;gap:8px;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--bg-input)" onchange="buildOneDayPlan()"></div>
+            <div style="margin-top:8px"><button class="btn custom-snack-food-btn" type="button" onclick="openFoodDatabaseForSnack('sleep',null)"><i class="ti ti-database-plus" aria-hidden="true"></i> <span class="i18n" data-en="Custom food from database" data-gr="Προσαρμοσμένο τρόφιμο από βάση">Custom food from database</span></button></div>
           </div>
         </div>
         <div class="field-note" style="margin-bottom:12px"><span class="i18n" data-en="Fruit and dairy servings are assigned with the snack checkboxes and draw from the Exchange System totals. Choose fresh fruit or dried fruit, and milk or yogurt. Crackers replace 1 starch serving only. Oat biscuits and cereal bars replace 1 starch + 1 fat serving. Nuts count as 1 fat exchange and replace 1 tsp olive oil from the main meals — daily calorie total stays unchanged." data-gr="Οι μερίδες φρούτων και γαλακτοκομικών ορίζονται από τα checkbox των σνακ και αντλούνται από το Σύστημα Ισοδυνάμων. Επιλέξτε φρέσκο ή αποξηραμένο φρούτο, και γάλα ή γιαούρτι. Τα κράκερ αντικαθιστούν μόνο 1 μερίδα αμύλου. Τα μπισκότα βρώμης και οι μπάρες δημητριακών αντικαθιστούν 1 μερίδα αμύλου + 1 μερίδα λίπους. Οι ξηροί καρποί μετρούν ως 1 μερίδα λίπους και αντικαθιστούν 1 κ.γ. ελαιόλαδο από τα κύρια γεύματα — το ημερήσιο σύνολο θερμίδων μένει ίδιο.">Fruit and dairy servings are assigned with the snack checkboxes and draw from the Exchange System totals. Choose fresh fruit or dried fruit, and milk or yogurt. Crackers replace 1 starch serving only. Oat biscuits and cereal bars replace 1 starch + 1 fat serving. Nuts count as 1 fat exchange and replace 1 tsp olive oil from the main meals — daily calorie total stays unchanged.</span></div>
@@ -3698,18 +3709,19 @@ const EXTRA_FOOD_SLOTS=[
   {v:'din',label:'Dinner',gr:'Βραδινό',en:'Dinner'},
   {v:'sleep',label:'Before sleep',gr:'Πριν τον ύπνο',en:'Before sleep'},
 ];
-function extraFoodDayOptionsHtml(){
+function extraFoodDayOptionsHtml(selected='all'){
   const isEn=(S.mealLanguage||'GR')==='EN';
-  return EXTRA_FOOD_DAYS.map(d=>`<option value="${d.v}">${isEn?(d.en||d.label):(d.gr||d.label)}</option>`).join('');
+  return EXTRA_FOOD_DAYS.map(d=>`<option value="${d.v}" ${String(d.v)===String(selected)?'selected':''}>${isEn?(d.en||d.label):(d.gr||d.label)}</option>`).join('');
 }
-function extraFoodSlotOptionsHtml(){
+function extraFoodSlotOptionsHtml(selected='brk'){
   const isEn=(S.mealLanguage||'GR')==='EN';
-  return EXTRA_FOOD_SLOTS.map(s=>`<option value="${s.v}">${isEn?(s.en||s.label):(s.gr||s.label)}</option>`).join('');
+  return EXTRA_FOOD_SLOTS.map(s=>`<option value="${s.v}" ${String(s.v)===String(selected)?'selected':''}>${isEn?(s.en||s.label):(s.gr||s.label)}</option>`).join('');
 }
-function extraFoodSpecificDaysHtml(index){
+function extraFoodSpecificDaysHtml(index, selectedDays=[]){
+  const selectedSet=new Set((selectedDays||[]).map(String));
   return EXTRA_FOOD_DAYS.filter(d=>!['all','specific'].includes(d.v)).map(d=>`
     <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;cursor:pointer">
-      <input type="checkbox" id="food-add-specific-${index}-${d.v}" value="${d.v}" style="width:13px;height:13px;accent-color:var(--teal-600)">
+      <input type="checkbox" id="food-add-specific-${index}-${d.v}" value="${d.v}" ${selectedSet.has(String(d.v))?'checked':''} style="width:13px;height:13px;accent-color:var(--teal-600)">
       ${(d.gr||d.label)} / ${(d.en||d.label)}
     </label>`).join('');
 }
@@ -3717,6 +3729,24 @@ function toggleFoodSpecificDays(index){
   const box=document.getElementById(`food-add-specific-days-${index}`);
   if(!box) return;
   box.style.display = v(`food-add-day-${index}`)==='specific' ? 'flex' : 'none';
+}
+function customSnackFoodButton(slot, dayIndex=null, lang=(S.mealLanguage||'GR')){
+  const isEn=lang==='EN';
+  const dayArg=Number.isInteger(dayIndex) ? String(dayIndex) : 'null';
+  return `<button class="btn custom-snack-food-btn" type="button" onclick="openFoodDatabaseForSnack('${slot}',${dayArg})"><i class="ti ti-database-plus" aria-hidden="true"></i> ${isEn?'Custom food from database':'Προσαρμοσμένο τρόφιμο από βάση'}</button>`;
+}
+function openFoodDatabaseForSnack(slot='snk1', dayIndex=null){
+  const validSlot=EXTRA_FOOD_SLOTS.some(s=>s.v===slot) ? slot : 'snk1';
+  S._foodAddIntent={slot:validSlot, dayIndex:Number.isInteger(dayIndex)?dayIndex:null};
+  nav('fooddb');
+  const isEn=(S.mealLanguage||'GR')==='EN';
+  const slotObj=EXTRA_FOOD_SLOTS.find(s=>s.v===validSlot)||EXTRA_FOOD_SLOTS[1];
+  const slotLabel=isEn?(slotObj.en||slotObj.label):(slotObj.gr||slotObj.label);
+  setEl('fooddb-status', isEn
+    ? `Search a food, then add it to ${safeHtml(slotLabel)}. The slot is preselected below each result.`
+    : `Αναζητήστε τρόφιμο και προσθέστε το στο ${safeHtml(slotLabel)}. Η θέση είναι ήδη προεπιλεγμένη στα αποτελέσματα.`);
+  if(S.foodResults&&S.foodResults.length) renderFoodResults(S.foodResults);
+  setTimeout(()=>{ const search=document.getElementById('food-search'); if(search) search.focus(); }, 0);
 }
 function selectedExtraFoodDays(index){
   const dayChoice=v(`food-add-day-${index}`)||'all';
@@ -5503,6 +5533,7 @@ const COND_GUIDANCE = {
 };
 
 const CONDITION_ORDER = ['Obesity','Diabetes','Dyslipidemia','Hypertension','PCOS','Thyroid','IBS','FoodIntolerance','Pregnancy','Menopause','Sports','General','GERD','Osteoporosis','Migraines','CKD','NAFLD'];
+const MACRO_SUGGESTION_DEFAULT_CONDITIONS = ['General','Obesity','Diabetes','Dyslipidemia','Hypertension','PCOS','IBS','GERD','Menopause','Sports'];
 const CONDITION_LABELS = {
   GR:{
     Obesity:'Διαχείριση Βάρους',
@@ -5599,13 +5630,28 @@ function renderClinicalMacroSuggestions(){
   if(!body) return;
   const lang=S.mealLanguage||'GR';
   const selected=new Set((S.conditions&&S.conditions.length)?S.conditions:[S.condition||'General']);
-  body.innerHTML = CONDITION_ORDER.map(key=>{
+  const searchEl=document.getElementById('macro-suggestion-search');
+  if(searchEl) searchEl.placeholder = lang==='EN' ? 'Search condition' : 'Αναζήτηση πάθησης';
+  const rawSearch=(searchEl?.value||'').trim().toLowerCase();
+  const searchableLabel=key=>`${conditionLabel(key,'EN')} ${conditionLabel(key,'GR')} ${key}`.toLowerCase();
+  const defaultSet=new Set(MACRO_SUGGESTION_DEFAULT_CONDITIONS||[]);
+  let visibleKeys=CONDITION_ORDER.filter(key=>selected.has(key) || (rawSearch ? searchableLabel(key).includes(rawSearch) : defaultSet.has(key)));
+  if(!visibleKeys.length && rawSearch){ visibleKeys=[]; }
+  body.innerHTML = visibleKeys.map(key=>{
     const m=COND_MACROS[key] || COND_MACROS.General;
     const isSelected=selected.has(key);
-    return `<tr${isSelected?' style="background:var(--teal-50);font-weight:700"':''}>${isSelected?'<td style="padding-left:8px;border-left:3px solid var(--teal-600)">':'<td>'}${safeHtml(conditionLabel(key, lang))}${isSelected?' <i class="ti ti-circle-check" aria-hidden="true" style="color:var(--teal-600)"></i>':''}</td><td>${m.c}%</td><td>${m.p}%</td><td>${m.f}%</td></tr>`;
-  }).join('');
+    const selectedStyle=isSelected?' style="background:var(--teal-50);font-weight:700"':'';
+    const firstCell=isSelected?'<td style="padding-left:8px;border-left:3px solid var(--teal-600)">':'<td>';
+    return `<tr${selectedStyle}>${firstCell}${safeHtml(conditionLabel(key, lang))}${isSelected?' <i class="ti ti-circle-check" aria-hidden="true" style="color:var(--teal-600)"></i>':''}</td><td>${m.c}%</td><td>${m.p}%</td><td>${m.f}%</td></tr>`;
+  }).join('') || `<tr><td colspan="4" style="color:var(--text-muted);font-weight:700">${lang==='EN'?'No matching condition. Try another search term.':'Δεν βρέθηκε πάθηση. Δοκιμάστε άλλη αναζήτηση.'}</td></tr>`;
+  const note=document.getElementById('clinical-macro-suggestions-note');
+  if(note){
+    const hiddenCount=CONDITION_ORDER.length-visibleKeys.length;
+    note.textContent = rawSearch
+      ? (lang==='EN' ? `${visibleKeys.length} matching suggestion(s).` : `${visibleKeys.length} αντίστοιχες προτάσεις.`)
+      : (lang==='EN' ? `Showing common/milder clinical starting points. ${hiddenCount} additional condition(s) available by search.` : `Εμφανίζονται συχνές/ηπιότερες κλινικές αφετηρίες. ${hiddenCount} επιπλέον παθήσεις διαθέσιμες με αναζήτηση.`);
+  }
 }
-
 const REPORT_CONDITION_EN = {
   General:{name:'Healthy Eating', main:'Mediterranean diet as the core pattern: vegetables, fruit, whole grains/pulses, olive oil, fish and quality protein. Aim for 25-30g fibre/day, hydration and regular meals.', prefer:'Vegetables, fruit, olive oil, nuts, fish, pulses, whole grains and adequate protein for satiety and muscle maintenance.', avoid:'Ultra-processed foods, sweet drinks, extreme restriction and unrealistic meal combinations.'},
   Obesity:{name:'Weight Management', main:'Use a mild, sustainable calorie deficit with emphasis on minimally processed, Mediterranean/DASH-style foods.', prefer:'Vegetables, pulses, whole grains, lean protein for satiety and water instead of sweet drinks.', avoid:'Ultra-processed foods, sweet drinks, fast food and excess alcohol.'},
@@ -8289,6 +8335,7 @@ function renderSevenDayMealCard(dayPlan, dt, slot, lang, dayIndex){
   }).join('')}</div>` : '';
   const controlLabel=lang==='EN'?'Change meal':'Αλλαγή γεύματος';
   const addOnsLabel=lang==='EN'?'Snack add-ons':'Προσθήκες σνακ';
+  const customSnackButton=extraKey && !dayPlan.aiMeals ? customSnackFoodButton(slot.key, dayIndex, lang) : '';
   return `<div class="seven-day-card">
     <div class="seven-day-card-head">
       <div>
@@ -8300,7 +8347,7 @@ function renderSevenDayMealCard(dayPlan, dt, slot, lang, dayIndex){
     <div class="seven-day-meal-desc">${data.text||'—'}</div>
     <div class="seven-day-card-meta"><div class="seven-day-kcal-pill">${data.kcal||0} kcal</div></div>
     ${selectHtml ? `<div class="seven-day-control"><div class="seven-day-control-label">${controlLabel}</div>${selectHtml}</div>` : ''}
-    ${extrasHtml ? `<details class="seven-day-extras"><summary><span class="seven-day-control-label">${addOnsLabel}</span><span class="seven-day-selected-count">${extrasCountLabel}</span></summary>${extrasHtml}</details>` : ''}
+    ${extrasHtml ? `<details class="seven-day-extras"><summary><span class="seven-day-control-label">${addOnsLabel}</span><span class="seven-day-selected-count">${extrasCountLabel}</span></summary>${extrasHtml}<div class="custom-snack-food-row">${customSnackButton}</div></details>` : ''}
   </div>`;
 }
 
@@ -9740,6 +9787,29 @@ function renderClientDocuments(){
     </div>`;
   }).join('');
 }
+async function persistClientDocumentsNow(action='save'){
+  const status=document.getElementById('client-document-status');
+  const isGr=window.appLang==='gr';
+  const hasClient=(v('p-name')||'').trim();
+  if(!hasClient){
+    if(status) status.textContent=isGr?'Το έγγραφο θα αποθηκευτεί όταν συμπληρωθεί και αποθηκευτεί ο πελάτης.':'Document will save once the client profile is completed and saved.';
+    scheduleAutosave();
+    return false;
+  }
+  if(status) status.textContent=isGr?'Αποθήκευση εγγράφου...':'Saving document...';
+  try{
+    const ok=await saveCurrentClient({source:'lab-document', silent:true});
+    if(status) status.textContent=ok
+      ? (isGr?'Το έγγραφο αποθηκεύτηκε στον φάκελο πελάτη.':'Document saved to this client record.')
+      : (isGr?'Το έγγραφο αποθηκεύτηκε τοπικά προσωρινά. Πατήστε Save Client.':'Document saved locally for now. Please press Save Client.');
+    return !!ok;
+  }catch(err){
+    console.error('[Nutrese labs] document save failed',err);
+    if(status) status.textContent=isGr?'Δεν ολοκληρώθηκε η αποθήκευση. Πατήστε Save Client.':'Save did not complete. Please press Save Client.';
+    scheduleAutosave();
+    return false;
+  }
+}
 function handleClientDocumentUpload(input){
   const file=input?.files?.[0];
   if(!file) return;
@@ -9760,7 +9830,7 @@ function handleClientDocumentUpload(input){
     S.clientDocuments=[...(Array.isArray(S.clientDocuments)?S.clientDocuments:[]),{id:`doc_${Date.now()}`,name:file.name,type:file.type,size:file.size,dataUrl:String(reader.result||''),addedAt:new Date().toISOString()}];
     input.value='';
     renderClientDocuments();
-    scheduleAutosave();
+    persistClientDocumentsNow('upload');
   };
   reader.onerror=()=>{ if(status) status.textContent=isGr?'Δεν ήταν δυνατή η ανάγνωση του αρχείου.':'Could not read this file.'; };
   reader.readAsDataURL(file);
@@ -9812,7 +9882,7 @@ function deleteClientDocument(id){
   const isGr=window.appLang==='gr';
   if(!confirm(isGr?'Διαγραφή αυτού του εγγράφου;':'Delete this document?')) return;
   S.clientDocuments=(Array.isArray(S.clientDocuments)?S.clientDocuments:[]).filter(d=>String(d.id)!==String(id));
-  renderClientDocuments(); scheduleAutosave();
+  renderClientDocuments(); persistClientDocumentsNow('delete');
 }
 
 // Splits a suggestion's nutrient-name field into individual tokens on
@@ -10119,6 +10189,11 @@ function renderFoodResults(products){
   const el=document.getElementById('fooddb-results'); if(!el) return;
   if(!products || !products.length){ el.innerHTML=''; return; }
   const isGrFr = window.appLang==='gr';
+  const addIntent=S._foodAddIntent||{};
+  const defaultAddSlot=EXTRA_FOOD_SLOTS.some(s=>s.v===addIntent.slot)?addIntent.slot:'brk';
+  const intentDay=Number.isInteger(addIntent.dayIndex)?String(addIntent.dayIndex):null;
+  const defaultAddDay=intentDay!==null?'specific':'all';
+  const defaultSpecificDays=intentDay!==null?[intentDay]:[];
   const th = isGrFr ? ['Τρόφιμο','Μερίδα','kcal/100g','Υδατ.','Πρωτ.','Λίπος','Μικροθρεπτικά','Ενέργειες'] : ['Food','Serving','kcal/100g','Carb','Protein','Fat','Micronutrients','Actions'];
   el.innerHTML=`<table><thead><tr><th>${th[0]}</th><th>${th[1]}</th><th>${th[2]}</th><th>${th[3]}</th><th>${th[4]}</th><th>${th[5]}</th><th>${th[6]}</th><th>${th[7]}</th></tr></thead><tbody>${products.map((p,i)=>`
     <tr>
@@ -10135,10 +10210,10 @@ function renderFoodResults(products){
           <button class="btn primary" style="padding:4px 8px;font-size:11px" onclick="toggleFoodAddPanel(${i})">+ ${isGrFr?'Πλάνο γευμάτων':'Meal plan'}</button>
         </div>
         <div class="food-add-panel" id="food-add-panel-${i}">
-          <select id="food-add-day-${i}" onchange="toggleFoodSpecificDays(${i})">${extraFoodDayOptionsHtml()}</select>
-          <select id="food-add-slot-${i}">${extraFoodSlotOptionsHtml()}</select>
+          <select id="food-add-day-${i}" onchange="toggleFoodSpecificDays(${i})">${extraFoodDayOptionsHtml(defaultAddDay)}</select>
+          <select id="food-add-slot-${i}">${extraFoodSlotOptionsHtml(defaultAddSlot)}</select>
           <input id="food-add-grams-${i}" type="number" min="1" step="1" value="${Math.round(p.defaultGrams||100)}" placeholder="grams">
-          <div id="food-add-specific-days-${i}" style="display:none;gap:8px;flex-wrap:wrap;width:100%;padding:4px 0">${extraFoodSpecificDaysHtml(i)}</div>
+          <div id="food-add-specific-days-${i}" style="display:${defaultAddDay==='specific'?'flex':'none'};gap:8px;flex-wrap:wrap;width:100%;padding:4px 0">${extraFoodSpecificDaysHtml(i,defaultSpecificDays)}</div>
           <button class="btn primary" style="padding:5px 8px;font-size:11px" onclick="addFoodResultToMealPlan(${i})">${isGrFr?'Προσθήκη τροφίμου':'Add food'}</button>
         </div>
       </td>
@@ -11582,14 +11657,17 @@ async function newClient(){
 // Saves (or updates) the current client into the cloud (Supabase),
 // scoped to the signed-in user via Row Level Security
 async function saveCurrentClient(options={}){
+  const silent=!!options.silent;
   saveIntake();
   saveNotes();
   const name=(v('p-name')||'').trim();
   if(!name){
-    alert('Please enter a client name before saving.');
-    nav('profile');
-    setTimeout(()=>document.getElementById('p-name')?.focus(), 50);
-    return;
+    if(!silent){
+      alert('Please enter a client name before saving.');
+      nav('profile');
+      setTimeout(()=>document.getElementById('p-name')?.focus(), 50);
+    }
+    return false;
   }
   const identity=await ensureActiveClientIdentity();
   const state=captureState();
@@ -11604,10 +11682,10 @@ async function saveCurrentClient(options={}){
   if(!currentUser){
     upsertLocalClient(localRow);
     S_isDirty=false;
-    alert('<i class="ti ti-circle-check" aria-hidden="true"></i> Client saved locally: '+name+'\n\nFind it anytime under "My Clients".');
+    if(!silent) alert('<i class="ti ti-circle-check" aria-hidden="true"></i> Client saved locally: '+name+'\n\nFind it anytime under "My Clients".');
     await renderClientList();
     refreshConditionVisualState();
-    return;
+    return true;
   }
   let error=null;
   let savedRemote=null;
@@ -11634,14 +11712,15 @@ async function saveCurrentClient(options={}){
     console.error('[Nutrese clients] Supabase save failed', error);
     upsertLocalClient(localRow);
     S_isDirty=false;
-    alert('<i class="ti ti-circle-check" aria-hidden="true"></i> Client saved locally: '+name+'\n\nSupabase clients table is unavailable or not configured yet: '+(error.message||error));
+    if(!silent) alert('<i class="ti ti-circle-check" aria-hidden="true"></i> Client saved locally: '+name+'\n\nSupabase clients table is unavailable or not configured yet: '+(error.message||error));
   } else {
     if(savedRemote) upsertLocalClient({...savedRemote, localOnly:false});
     S_isDirty=false; // changes are now safely in the cloud
-    alert('<i class="ti ti-circle-check" aria-hidden="true"></i> Client saved: '+name+'\n\nFind it anytime under "My Clients" in the sidebar.');
+    if(!silent) alert('<i class="ti ti-circle-check" aria-hidden="true"></i> Client saved: '+name+'\n\nFind it anytime under "My Clients" in the sidebar.');
   }
   await renderClientList();
   refreshConditionVisualState();
+  return !error;
 }
 
 async function loadClientById(rowId){
