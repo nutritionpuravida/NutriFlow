@@ -75,6 +75,12 @@ select option { background-color: var(--bg-surface); color: var(--text-primary);
 
 /* ─── LAYOUT ─── */
 .app { display: flex; height: 100vh; overflow: hidden; }
+/* SECURITY: the app shell must be hidden until an authenticated, entitled
+   session is confirmed. It is shown/hidden via showAppShell()/hideAppShell()
+   (see the marketing/auth/subscription screen JS). Hidden by default here so
+   the protected UI is never rendered/interactive for anonymous visitors,
+   even before JS finishes running. */
+.app.hidden { display: none; }
 .sidebar { width: var(--nav-w); background: var(--bg-sidebar); border-right: 1px solid rgba(214,223,218,.82); display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; transition: transform .25s; z-index: 100; }
 .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .topbar { min-height: 56px; padding: 12px 16px; background: rgba(255,255,255,.86); backdrop-filter: saturate(180%) blur(14px); -webkit-backdrop-filter: saturate(180%) blur(14px); border-bottom: 1px solid rgba(214,223,218,.72); box-shadow: 0 1px 18px rgba(16,24,20,.04); display: flex; align-items: center; gap: 10px; flex-shrink: 0; position: sticky; top: 0; z-index: 50; }
@@ -1564,7 +1570,7 @@ table th,
   </div>
 </div>
 
-<div class="app">
+<div class="app hidden">
 
 <nav class="sidebar">
   <div class="logo-area">
@@ -2789,10 +2795,19 @@ function setMarketingMeta(pageKey='home'){
   if(!canonical){ canonical=document.createElement('link'); canonical.setAttribute('rel','canonical'); document.head.appendChild(canonical); }
   canonical.setAttribute('href', canonicalUrl);
 }
+function showAppShell(){
+  const el=document.querySelector('.app');
+  if(el) el.classList.remove('hidden');
+}
+function hideAppShell(){
+  const el=document.querySelector('.app');
+  if(el) el.classList.add('hidden');
+}
 function showMarketingSite(pageKey){
   const site=document.getElementById('marketing-site');
   if(!site || currentUser || isPasswordRecoveryFlow) return;
   const route=pageKey || marketingRouteFromHash() || 'home';
+  hideAppShell();
   hideAuthScreen();
   hideSubscriptionScreen();
   site.classList.remove('hidden');
@@ -2857,6 +2872,7 @@ function completeSignedOutUi(wasIntentionalSignOut=false){
 }
 
 function showAuthScreen(){
+  hideAppShell();
   hideMarketingSite();
   document.getElementById('auth-screen').classList.remove('hidden');
 }
@@ -2864,6 +2880,7 @@ function hideAuthScreen(){
   document.getElementById('auth-screen').classList.add('hidden');
 }
 function showSubscriptionScreen(message){
+  hideAppShell();
   hideMarketingSite();
   const el=document.getElementById('subscription-screen');
   if(el) el.classList.remove('hidden');
@@ -3119,7 +3136,7 @@ async function refreshSubscriptionGate(){
     showAuthScreen();
     return;
   }
-  if(!SUBSCRIPTION_REQUIRED){ subscriptionState={status:'disabled',active:true}; hideSubscriptionScreen(); updateTrialBanner(); updateAccountPage(); return; }
+  if(!SUBSCRIPTION_REQUIRED){ subscriptionState={status:'disabled',active:true}; hideSubscriptionScreen(); showAppShell(); updateTrialBanner(); updateAccountPage(); return; }
   try{
     subscriptionState = await fetchSubscriptionStatusWithRetry();
     saveSubscriptionCache();
@@ -3131,6 +3148,7 @@ async function refreshSubscriptionGate(){
   updateSubscriptionCheckoutButtons();
   if(subscriptionState.active){
     hideSubscriptionScreen();
+    showAppShell();
   } else {
     const msg = subscriptionState.trialExpired
       ? 'Your free trial has ended. Subscribe to continue, or contact your administrator for complimentary access.'
