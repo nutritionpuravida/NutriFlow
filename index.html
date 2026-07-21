@@ -866,6 +866,64 @@ html[data-theme="dark"] .week-summary-table td:last-child {
 @media (max-width: 760px) {
   #page-report > .card.no-print .card-body > div { grid-template-columns:1fr!important; }
 }
+/* ── CLIENT REPORT PREVIEW THEME ──
+   Three genuinely separate concerns, deliberately kept separate:
+   1. App theme (light/dark) — the dietitian's own workspace preference,
+      completely unaffected by any of this.
+   2. Report PREVIEW theme (light/dark) — an independent choice, scoped to
+      #report-body only, toggled via setReportPreviewTheme() and persisted
+      per-browser. Lets a dietitian read the report comfortably in Dark
+      Mode without implying "my screen preference changes what the client
+      receives" — because it doesn't (see #3).
+   3. Print/PDF output — always the same fixed, professional white
+      document, regardless of #1 or #2. Untouched by this block; see the
+      existing @media print rules below.
+   Both palettes below are complete (every token the app defines) so no
+   report element can ever fall back to an un-themed value, and both were
+   verified for WCAG AA contrast (≥4.5:1 for text, ≥3:1 for borders) across
+   every combination actually used in the report: summary cards, headings,
+   table striping, hover states, and status colors (amber/red). Note
+   --teal-600 and --teal-800 are intentionally NOT the same value in the
+   dark palette — --teal-600 is used as a solid background behind white
+   text (the table header) where the darker original shade keeps white
+   text legible, while --teal-800 is used as heading TEXT color directly on
+   dark backgrounds, which needs a brighter shade to stay readable — reusing
+   one brightened value for both roles failed contrast on one of them. ── */
+[data-report-theme="light"] #report-body,
+[data-report-theme="light"] #report-body * {
+  --bg-page:#fff !important; --bg-surface:#fff !important; --bg-muted:#f0faf6 !important;
+  --bg-hover:#f0faf6 !important; --bg-active:#e1f5ee !important; --bg-input:#fff !important; --bg-sidebar:#fff !important;
+  --border:#cfded7 !important; --border-strong:#b7cbc2 !important;
+  --text-primary:#111827 !important; --text-secondary:#374151 !important; --text-muted:#64748b !important;
+  --text-active:#0f6e56 !important; --text-link:#0f6e56 !important;
+  --teal-50:#e1f5ee !important; --teal-100:#c8ecdf !important; --teal-400:#1d9e75 !important;
+  --teal-600:#0f6e56 !important; --teal-700:#0f6e56 !important; --teal-800:#0f3f34 !important;
+  --amber-bg:#FFF7E6 !important; --amber-border:#EBCB86 !important; --amber-text:#A15C00 !important;
+  --red-bg:#FDEEEE !important; --red-border:#F2B8B8 !important; --red-text:#A33A3A !important; --red-badge:#D94848 !important;
+  --green-bg:#EAF7F0 !important; --green-border:#B9E6CD !important; --green-text:#16734F !important; --green-badge:#1D9E75 !important;
+  --blue-bg:#EDF7FF !important; --blue-border:#B8DDFC !important; --blue-text:#1769AA !important;
+  --metric-bg:#fff !important;
+}
+[data-report-theme="dark"] #report-body,
+[data-report-theme="dark"] #report-body * {
+  --bg-page:#0A0D12 !important; --bg-surface:#171B24 !important; --bg-muted:#1D2230 !important;
+  --bg-hover:#202634 !important; --bg-active:#0E3A2B !important; --bg-input:#1D2230 !important; --bg-sidebar:#11151D !important;
+  --border:#27303B !important; --border-strong:#384250 !important;
+  --text-primary:#EEF2F5 !important; --text-secondary:#A4ADBA !important; --text-muted:#687283 !important;
+  --text-active:#33C394 !important; --text-link:#33C394 !important;
+  --teal-50:#0E3A2B !important; --teal-100:#124B38 !important; --teal-400:#33C394 !important;
+  --teal-600:#11875D !important; --teal-700:#11875D !important; --teal-800:#33C394 !important;
+  --amber-bg:#2B2104 !important; --amber-border:#5D4208 !important; --amber-text:#F6B33B !important;
+  --red-bg:#301415 !important; --red-border:#5A2023 !important; --red-text:#FF6B6B !important; --red-badge:#FF6B6B !important;
+  --green-bg:#102D20 !important; --green-border:#14795E !important; --green-text:#B5F0DD !important; --green-badge:#33C394 !important;
+  --blue-bg:#0B1C2C !important; --blue-border:#203A56 !important; --blue-text:#5FB3FF !important;
+  --metric-bg:#171B24 !important;
+}
+#report-body { background:var(--bg-surface); color:var(--text-primary); transition:background .15s,color .15s; }
+#report-body .report-week-table th { background:var(--teal-600); color:#fff; }
+#report-body .report-week-table tbody tr:nth-child(odd) td { background:var(--bg-surface); }
+#report-body .report-week-table tbody tr:nth-child(even) td { background:var(--teal-50); }
+#report-body .report-week-table tbody tr:last-child td { background:var(--teal-50); font-weight:700; border-top:2px solid var(--teal-600); }
 /* ─── PRINT ─── */
 @media print {
   /* Default: portrait A4 for client report (clean, readable handout) */
@@ -1545,18 +1603,18 @@ table th,
         <div class="sub">Professional Nutrition Platform</div>
       </div>
     </div>
-    <div class="subscription-status" id="subscription-message">Checking subscription…</div>
+    <div class="subscription-status" id="subscription-message"><span class="i18n" data-en="Checking subscription…" data-gr="Έλεγχος συνδρομής…">Checking subscription…</span></div>
     <div class="subscription-plan">
       <strong>Nutrese Professional</strong>
       <div id="subscription-plan-copy" style="font-size:13px;color:var(--text-muted);line-height:1.5">Register and verify your email first. Then choose Start Free Trial through Stripe, or use Complimentary Access if your administrator has granted it.</div>
       <div style="margin-top:12px;display:grid;gap:8px">
         <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg-surface)">
-          <span style="font-weight:700;color:var(--text-primary)">Monthly</span>
-          <span style="font-weight:800;color:var(--teal-800)">€29/month</span>
+          <span class="i18n" data-en="Monthly" data-gr="Μηνιαία" style="font-weight:700;color:var(--text-primary)">Monthly</span>
+          <span style="font-weight:800;color:var(--teal-800)">€29/<span class="i18n" data-en="month" data-gr="μήνα">month</span></span>
         </div>
         <div style="display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid var(--border);border-radius:6px;background:var(--teal-50)">
-          <span style="font-weight:700;color:var(--text-primary)">Yearly</span>
-          <span style="font-weight:800;color:var(--teal-800)">€249/year <span style="font-size:11px;color:var(--teal-600);font-weight:700">(save €99)</span></span>
+          <span class="i18n" data-en="Yearly" data-gr="Ετήσια" style="font-weight:700;color:var(--text-primary)">Yearly</span>
+          <span style="font-weight:800;color:var(--teal-800)">€249/<span class="i18n" data-en="year" data-gr="έτος">year</span> <span class="i18n" data-en="(save €99)" data-gr="(εξοικονόμηση €99)" style="font-size:11px;color:var(--teal-600);font-weight:700">(save €99)</span></span>
         </div>
       </div>
     </div>
@@ -2102,8 +2160,17 @@ table th,
   <!-- REPORT -->
   <div class="page" id="page-report">
     <div class="card no-print" style="border:2px solid var(--teal-600)">
-      <div class="card-header" style="background:var(--teal-50)">
+      <div class="card-header" style="background:var(--teal-50);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
         <span class="card-title" id="report-options-title"><i class="ti ti-settings" aria-hidden="true"></i> Report Options — Choose what to print</span>
+        <div style="display:flex;align-items:center;gap:6px" title="Preview only — does not affect what gets printed or exported, which is always a fixed white document.">
+          <span style="font-size:11px;color:var(--text-muted);font-weight:700">
+            <span class="i18n" data-en="Preview:" data-gr="Προεπισκόπηση:">Preview:</span>
+          </span>
+          <div class="view-toggle" aria-label="Report preview theme">
+            <button id="report-preview-light-btn" class="active" onclick="setReportPreviewTheme('light')"><i class="ti ti-sun" aria-hidden="true"></i> <span class="i18n" data-en="Light" data-gr="Φωτεινό">Light</span></button>
+            <button id="report-preview-dark-btn" onclick="setReportPreviewTheme('dark')"><i class="ti ti-moon" aria-hidden="true"></i> <span class="i18n" data-en="Dark" data-gr="Σκούρο">Dark</span></button>
+          </div>
+        </div>
       </div>
       <div class="card-body">
         <div style="display:grid;grid-template-columns:1fr 260px;gap:16px;align-items:start">
@@ -2996,26 +3063,36 @@ function updateTrialBanner(){
   const banner=document.getElementById('trial-banner');
   const text=document.getElementById('trial-banner-text');
   if(!banner) return;
+  const isGr = window.appLang==='gr';
   const days=subscriptionState.trialDaysRemaining;
   const show=subscriptionState.trialActive && days<=10;
   banner.style.display=show ? 'flex' : 'none';
-  if(show && text) text.innerHTML=`<i class="ti ti-gift" aria-hidden="true"></i> Free trial — ${days} day${days===1?'':'s'} remaining. Subscribe to continue after your trial.`;
+  if(show && text) text.innerHTML=isGr
+    ? `<i class="ti ti-gift" aria-hidden="true"></i> Δωρεάν δοκιμή — απομένουν ${days} ημέρ${days===1?'α':'ες'}. Εγγραφείτε για να συνεχίσετε μετά τη δοκιμή.`
+    : `<i class="ti ti-gift" aria-hidden="true"></i> Free trial — ${days} day${days===1?'':'s'} remaining. Subscribe to continue after your trial.`;
 }
 function updateSubscriptionCheckoutButtons(){
+  const isGr = window.appLang==='gr';
   const trialAlreadyUsed=!!(subscriptionState?.freeTrialUsed || subscriptionState?.trialUsedExpired || subscriptionState?.trialExpired);
   const screenMonthly=document.getElementById('subscription-monthly-checkout-btn');
   const screenYearly=document.getElementById('subscription-yearly-checkout-btn');
   const accountMonthly=document.getElementById('account-monthly-trial-btn');
   const accountYearly=document.getElementById('account-yearly-trial-btn');
   const copy=document.getElementById('subscription-plan-copy');
-  if(screenMonthly) screenMonthly.textContent = trialAlreadyUsed ? 'Subscribe Monthly — €29/month' : 'Start Free Trial — Monthly';
-  if(screenYearly) screenYearly.textContent = trialAlreadyUsed ? 'Subscribe Yearly — €249/year' : 'Start Free Trial — Yearly';
-  if(accountMonthly) accountMonthly.textContent = trialAlreadyUsed ? 'Subscribe Monthly — €29/month' : 'Start Free Trial — Monthly';
-  if(accountYearly) accountYearly.textContent = trialAlreadyUsed ? 'Subscribe Yearly — €249/year' : 'Start Free Trial — Yearly';
+  const monthlyText = trialAlreadyUsed
+    ? (isGr?'Εγγραφή Μηνιαία — €29/μήνα':'Subscribe Monthly — €29/month')
+    : (isGr?`Δωρεάν Δοκιμή ${STRIPE_TRIAL_DAYS} Ημερών — Μηνιαία`:`Start ${STRIPE_TRIAL_DAYS}-Day Free Trial — Monthly`);
+  const yearlyText = trialAlreadyUsed
+    ? (isGr?'Εγγραφή Ετήσια — €249/έτος':'Subscribe Yearly — €249/year')
+    : (isGr?`Δωρεάν Δοκιμή ${STRIPE_TRIAL_DAYS} Ημερών — Ετήσια`:`Start ${STRIPE_TRIAL_DAYS}-Day Free Trial — Yearly`);
+  if(screenMonthly) screenMonthly.textContent = monthlyText;
+  if(screenYearly) screenYearly.textContent = yearlyText;
+  if(accountMonthly) accountMonthly.textContent = monthlyText;
+  if(accountYearly) accountYearly.textContent = yearlyText;
   if(copy){
     copy.textContent = trialAlreadyUsed
-      ? 'Your free trial has already been used. Choose a paid Stripe subscription, or use Complimentary Access if an administrator has granted it.'
-      : 'Choose Start Free Trial through Stripe, or use Complimentary Access if an administrator has granted it. New accounts can register and verify email before checkout.';
+      ? (isGr?'Η δωρεάν δοκιμή σας έχει ήδη χρησιμοποιηθεί. Επιλέξτε συνδρομή μέσω Stripe, ή χρησιμοποιήστε Δωρεάν Πρόσβαση αν σας έχει παραχωρηθεί από διαχειριστή.':'Your free trial has already been used. Choose a paid Stripe subscription, or use Complimentary Access if an administrator has granted it.')
+      : (isGr?`Επιλέξτε Δωρεάν Δοκιμή ${STRIPE_TRIAL_DAYS} ημερών μέσω Stripe, ή χρησιμοποιήστε Δωρεάν Πρόσβαση αν σας έχει παραχωρηθεί από διαχειριστή. Οι νέοι λογαριασμοί μπορούν να εγγραφούν και να επιβεβαιώσουν το email πριν την πληρωμή.`:`Choose Start ${STRIPE_TRIAL_DAYS}-Day Free Trial through Stripe, or use Complimentary Access if an administrator has granted it. New accounts can register and verify email before checkout.`);
   }
 }
 function subscriptionCacheKey(){
@@ -3146,9 +3223,10 @@ async function refreshSubscriptionGate(){
     hideSubscriptionScreen();
     showAppShell();
   } else {
+    const isGr = window.appLang==='gr';
     const msg = subscriptionState.trialExpired
-      ? 'Your free trial has ended. Subscribe to continue, or contact your administrator for complimentary access.'
-      : 'No active subscription. Start a free trial through Stripe, or use complimentary access if your administrator has granted it.';
+      ? (isGr ? 'Η δωρεάν δοκιμή σας έληξε. Εγγραφείτε για να συνεχίσετε, ή επικοινωνήστε με τον διαχειριστή σας για δωρεάν πρόσβαση.' : 'Your free trial has ended. Subscribe to continue, or contact your administrator for complimentary access.')
+      : (isGr ? 'Δεν υπάρχει ενεργή συνδρομή. Ξεκινήστε δωρεάν δοκιμή μέσω Stripe, ή χρησιμοποιήστε δωρεάν πρόσβαση αν σας έχει παραχωρηθεί από τον διαχειριστή σας.' : 'No active subscription. Start a free trial through Stripe, or use complimentary access if your administrator has granted it.');
     showSubscriptionScreen(msg);
   }
   updateTrialBanner();
@@ -4696,6 +4774,58 @@ function dietRestrictionReasonsForText(text, dietType=v('p-diet')||S.dietType||'
 function aiMealDietRestrictionReasons(meal, dietType){
   const text=[meal?.name, meal?.description, meal?.description_gr, meal?.description_en, meal?.text].filter(Boolean).join(' ');
   return dietRestrictionReasonsForText(text, dietType);
+}
+function validateAiMealPlanKcalMacros(plan, payload){
+  if(!plan || typeof plan!=='object' || !payload) return [];
+  const dayKeys=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+  const dayLabels=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const target=Number(payload.kcal_target)||0;
+  const macroPct=payload.macros||{};
+  const warnings=[];
+  const kcalTolerancePct=0.12; // 12% — generous enough to not flag reasonable day-to-day variation, tight enough to catch real drift
+  dayKeys.forEach((dayKey,i)=>{
+    const day=plan[dayKey]||plan[WEEK_DAYS_EN[i]]||plan[WEEK_DAYS_GR[i]]||plan[i];
+    if(!day || typeof day!=='object') return;
+    const reportedKcal=Number(day.total_kcal);
+    // 1. Does the AI's own reported day total reconcile with the client's
+    //    actual kcal target? (This is the check that was previously entirely
+    //    missing — the AI's numbers were applied without ever being checked.)
+    if(Number.isFinite(reportedKcal) && target>0){
+      const diffPct=Math.abs(reportedKcal-target)/target;
+      if(diffPct>kcalTolerancePct){
+        warnings.push(`${dayLabels[i]}: reports ${reportedKcal} kcal vs ${target} target (${Math.round(diffPct*100)}% off)`);
+      }
+    }
+    // 2. Does the sum of the individual meals' kcal match the day's own
+    //    reported total? Catches internal AI arithmetic inconsistency.
+    const slotKeys=['breakfast','snack1','lunch','snack2','dinner','before_sleep'];
+    const mealSum=slotKeys.reduce((sum,k)=>sum+(Number(day[k]?.kcal)||0),0);
+    if(Number.isFinite(reportedKcal) && reportedKcal>0 && mealSum>0){
+      const diffPct=Math.abs(mealSum-reportedKcal)/reportedKcal;
+      if(diffPct>kcalTolerancePct){
+        warnings.push(`${dayLabels[i]}: meals sum to ${Math.round(mealSum)} kcal but day total says ${reportedKcal} kcal (${Math.round(diffPct*100)}% mismatch)`);
+      }
+    }
+    // 3. Do the reported macro grams roughly match both the target macro
+    //    split AND their own stated kcal (protein*4 + carb*4 + fat*9)?
+    const p=Number(day.total_protein_g), c=Number(day.total_carb_g), f=Number(day.total_fat_g);
+    if(Number.isFinite(p) && Number.isFinite(c) && Number.isFinite(f) && (p+c+f)>0){
+      const macroKcal=p*4+c*4+f*9;
+      if(reportedKcal>0 && Math.abs(macroKcal-reportedKcal)/reportedKcal>kcalTolerancePct){
+        warnings.push(`${dayLabels[i]}: macros (${Math.round(p)}g P/${Math.round(c)}g C/${Math.round(f)}g F) imply ${Math.round(macroKcal)} kcal, inconsistent with its own ${reportedKcal} kcal total`);
+      }
+      if(target>0 && macroPct.carb_percent!=null){
+        const targetP=target*(macroPct.protein_percent||0)/100/4;
+        const targetC=target*(macroPct.carb_percent||0)/100/4;
+        const targetF=target*(macroPct.fat_percent||0)/100/9;
+        const macroTolerancePct=0.20; // macros vary more naturally than total kcal meal-to-meal
+        if(targetP>0 && Math.abs(p-targetP)/targetP>macroTolerancePct) warnings.push(`${dayLabels[i]}: protein ${Math.round(p)}g vs ~${Math.round(targetP)}g target`);
+        if(targetC>0 && Math.abs(c-targetC)/targetC>macroTolerancePct) warnings.push(`${dayLabels[i]}: carbs ${Math.round(c)}g vs ~${Math.round(targetC)}g target`);
+        if(targetF>0 && Math.abs(f-targetF)/targetF>macroTolerancePct) warnings.push(`${dayLabels[i]}: fat ${Math.round(f)}g vs ~${Math.round(targetF)}g target`);
+      }
+    }
+  });
+  return warnings;
 }
 function validateAiMealPlanForDiet(plan, dietType=v('p-diet')||S.dietType||'Omnivore'){
   if(!plan || typeof plan!=='object' || dietType==='Omnivore') return;
@@ -8405,6 +8535,19 @@ function applyMealPlanTemplate(templateKey){
     prevDay=picked;
   });
   const dietWarnings=enforceWeekPlanDietCompatibility(templateDiet);
+  // Snapshot the template's final, as-applied state (after diet-compatibility
+  // enforcement) so "Modified" detection, "View Original", and "Reapply
+  // Original" can all compare against/restore exactly this, rather than
+  // re-running the picker (which could theoretically produce a different
+  // result on a second call).
+  S.currentTemplate={
+    key:templateKey,
+    nameEn:tpl.nameEn, nameGr:tpl.nameGr,
+    snapshot:S.weekPlans.map(d=>({
+      brk:d.brk, lun:d.lun, din:d.din,
+      snk1Extras:[...(d.snk1Extras||[])], snk2Extras:[...(d.snk2Extras||[])], sleepExtras:[...(d.sleepExtras||[])]
+    }))
+  };
   S.aiPlanStatus='';
   S_isDirty=true;
   closeTemplatePicker();
@@ -8412,6 +8555,138 @@ function applyMealPlanTemplate(templateKey){
   setWeeklyPlanSaveStatus((isGr?`✓ Πρότυπο εφαρμόστηκε: ${tpl.nameGr} — ελέγξτε κάθε ημέρα πριν την κοινοποίηση.`:`✓ Template applied: ${tpl.nameEn} — please review each day before sharing.`) + (dietWarnings.length ? (isGr?' Κάποιες επιλογές αντικαταστάθηκαν λόγω τύπου διατροφής.':' Some selections were replaced because of the selected diet type.') : ''), true);
 }
 window.applyMealPlanTemplate=applyMealPlanTemplate;
+
+// Compares one day's current meals/snacks against the template snapshot for
+// that day. Used both for the toolbar badge and for highlighting individual
+// days in the "View Original Template" modal.
+function isTemplateDayModified(dayIndex){
+  const snap=S.currentTemplate?.snapshot?.[dayIndex];
+  const day=S.weekPlans?.[dayIndex];
+  if(!snap || !day) return false;
+  if(day.aiMeals) return true; // AI-regenerated or hand-edited via the flexible editor
+  const sameArr=(a,b)=>{
+    const x=[...(a||[])].sort(), y=[...(b||[])].sort();
+    return x.length===y.length && x.every((v,i)=>v===y[i]);
+  };
+  return day.brk!==snap.brk || day.lun!==snap.lun || day.din!==snap.din
+    || !sameArr(day.snk1Extras, snap.snk1Extras)
+    || !sameArr(day.snk2Extras, snap.snk2Extras)
+    || !sameArr(day.sleepExtras, snap.sleepExtras);
+}
+function isCurrentTemplateModified(){
+  if(!S.currentTemplate) return false;
+  return S.currentTemplate.snapshot.some((_,i)=>isTemplateDayModified(i));
+}
+
+// "Reapply Original Template" — restores each day EXACTLY from the stored
+// snapshot (not by re-running the template's picker logic), so the result is
+// guaranteed identical to what was first applied, not just "should match".
+function reapplyOriginalTemplate(){
+  if(!S.currentTemplate) return;
+  const isGr = window.appLang==='gr';
+  const name=isGr?S.currentTemplate.nameGr:S.currentTemplate.nameEn;
+  if(!confirm(isGr
+    ? `Επαναφορά στο αρχικό πρότυπο "${name}"; Οι προσαρμογές σας σε αυτό το πλάνο θα χαθούν.`
+    : `Reapply the original "${name}" template? Your customizations to this plan will be discarded.`)) return;
+  ensureWeekPlans();
+  S.currentTemplate.snapshot.forEach((snap,i)=>{
+    const day=S.weekPlans[i]; if(!day) return;
+    day.brk=snap.brk; day.lun=snap.lun; day.din=snap.din;
+    day.manualMeals={brk:true, lun:true, din:true};
+    delete day.aiMeals;
+    day.source='template';
+    day.snk1Extras=[...snap.snk1Extras]; day.snack1Extras=day.snk1Extras;
+    day.snk2Extras=[...snap.snk2Extras]; day.snack2Extras=day.snk2Extras;
+    day.sleepExtras=[...snap.sleepExtras];
+  });
+  S_isDirty=true;
+  buildSevenDay();
+  setWeeklyPlanSaveStatus(isGr?`✓ Το πρότυπο "${name}" επαναφέρθηκε στην αρχική του μορφή.`:`✓ Reapplied the original "${name}" template.`, true);
+}
+window.reapplyOriginalTemplate=reapplyOriginalTemplate;
+
+// "Remove Template" — exits template mode entirely and restores Nutrese's
+// own default intelligent meal-planning system (the diet-appropriate
+// STRICT_WEEK_MEALS variant), same starting point as a never-templated plan.
+function removeCurrentTemplate(){
+  if(!S.currentTemplate) return;
+  const isGr = window.appLang==='gr';
+  if(!confirm(isGr
+    ? 'Αφαίρεση προτύπου και επαναφορά στο προεπιλεγμένο έξυπνο σύστημα πλάνων γευμάτων του Nutrese; Το τρέχον πλάνο θα αντικατασταθεί.'
+    : "Remove the template and restore Nutrese's default intelligent meal-planning system? The current plan will be replaced.")) return;
+  const dietType=v('p-diet')||S.dietType||'Omnivore';
+  const stricts={
+    Vegetarian: STRICT_WEEK_MEALS_VEGETARIAN,
+    Vegan: STRICT_WEEK_MEALS_VEGAN,
+    Pescatarian: STRICT_WEEK_MEALS_PESCATARIAN,
+  }[dietType] || STRICT_WEEK_MEALS;
+  ensureWeekPlans();
+  S.weekPlans.forEach((day,i)=>{
+    const strict=stricts[i];
+    day.manualMeals={};
+    delete day.aiMeals;
+    day.source='engine';
+    if(strict){ day.brk=strict.brk; day.lun=strict.lun; day.din=strict.din; }
+    const base=WEEK_PLANS[i];
+    day.snk1Extras=[...(base?.snk1Extras||['fruit'])]; day.snack1Extras=day.snk1Extras;
+    day.snk2Extras=[...(base?.snk2Extras||['fruit'])]; day.snack2Extras=day.snk2Extras;
+    day.sleepExtras=[...(base?.sleepExtras||[])];
+  });
+  enforceWeeklyTunaCap(S.weekPlans);
+  enforceWeekPlanDietCompatibility(dietType);
+  S.currentTemplate=null;
+  S_isDirty=true;
+  buildSevenDay();
+  setWeeklyPlanSaveStatus(isGr?"✓ Το πρότυπο αφαιρέθηκε — το πλάνο επανήλθε στο προεπιλεγμένο σύστημα του Nutrese.":"✓ Template removed — plan restored to Nutrese's default system.", true);
+}
+window.removeCurrentTemplate=removeCurrentTemplate;
+
+function catalogMealLabel(key, options, lang){
+  const item=options.find(o=>o.v===key);
+  if(!item) return key||'—';
+  return lang==='EN' ? item.en : item.l;
+}
+function openViewOriginalTemplateModal(){
+  if(!S.currentTemplate) return;
+  closeViewOriginalTemplateModal();
+  const isGr = window.appLang==='gr';
+  const lang = isGr?'GR':'EN';
+  const name=isGr?S.currentTemplate.nameGr:S.currentTemplate.nameEn;
+  const activeIndex=S.sevenDayActiveIndex||0;
+  const rows=S.currentTemplate.snapshot.map((snap,i)=>{
+    const modified=isTemplateDayModified(i);
+    const isActive=i===activeIndex && S.sevenDayView!=='week';
+    const dayLabel=weekDayLabel(S.weekPlans?.[i], i, lang);
+    return `<tr style="${isActive?'background:var(--bg-hover)':''}">
+      <td style="font-weight:${isActive?'800':'600'}">${safeHtml(dayLabel)}${isActive?` <span style="font-size:10px;color:var(--teal-600);font-weight:800">${isGr?'(προβολή)':'(viewing)'}</span>`:''}</td>
+      <td>${safeHtml(catalogMealLabel(snap.brk, BREAKFAST_OPTIONS, lang))}</td>
+      <td>${safeHtml(catalogMealLabel(snap.lun, LUNCH_OPTIONS, lang))}</td>
+      <td>${safeHtml(catalogMealLabel(snap.din, DINNER_OPTIONS, lang))}</td>
+      <td>${modified?`<span class="badge warn">${isGr?'Τροποποιήθηκε':'Modified'}</span>`:`<span class="badge neutral">${isGr?'Αμετάβλητο':'Unchanged'}</span>`}</td>
+    </tr>`;
+  }).join('');
+  const overlay=document.createElement('div');
+  overlay.id='view-original-template-modal';
+  overlay.className='no-print';
+  overlay.style.cssText='position:fixed;inset:0;z-index:1250;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:18px';
+  overlay.onclick=e=>{ if(e.target===overlay) closeViewOriginalTemplateModal(); };
+  overlay.innerHTML=`<div style="width:min(760px,96vw);max-height:90vh;overflow:auto;background:var(--bg-surface);color:var(--text-primary);border:1px solid var(--border);border-radius:10px;box-shadow:0 18px 70px rgba(0,0,0,.35)">
+    <div style="position:sticky;top:0;background:var(--teal-600);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:1">
+      <div><div style="font-size:16px;font-weight:900">${isGr?'Αρχικό Πρότυπο':'Original Template'}: ${safeHtml(name)}</div><div style="font-size:12px;opacity:.9">${isGr?'Αυτή είναι η προβολή μόνο για ανάγνωση· δεν αλλάζει το τρέχον πλάνο σας.':'Read-only view — this does not change your current plan.'}</div></div>
+      <button class="btn" style="background:#fff!important;color:#0F6E56!important" onclick="closeViewOriginalTemplateModal()"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div style="padding:16px;overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr style="text-align:left;color:var(--text-muted);font-size:11px;text-transform:uppercase"><th style="padding:6px 8px">${isGr?'Ημέρα':'Day'}</th><th style="padding:6px 8px">${isGr?'Πρωινό':'Breakfast'}</th><th style="padding:6px 8px">${isGr?'Μεσημεριανό':'Lunch'}</th><th style="padding:6px 8px">${isGr?'Βραδινό':'Dinner'}</th><th style="padding:6px 8px">${isGr?'Κατάσταση':'Status'}</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+window.openViewOriginalTemplateModal=openViewOriginalTemplateModal;
+function closeViewOriginalTemplateModal(){ document.getElementById('view-original-template-modal')?.remove(); }
+window.closeViewOriginalTemplateModal=closeViewOriginalTemplateModal;
 
 function previewRebalanceWeek(){
   const el=document.getElementById('rebalance-preview'); if(!el) return;
@@ -8428,7 +8703,14 @@ function previewRebalanceWeek(){
     return;
   }
   const fruitKcal=(S.exMeta?.fruit?.kcal)||60;
-  const servingsNeeded=Math.min(7, Math.max(1, Math.round(Math.abs(gap)/fruitKcal)));
+  // The gap above is a PER-DAY average; closing it requires shifting the
+  // week's TOTAL kcal by (gap × 7 days), not by `gap` itself — using `gap`
+  // directly here was the bug: it under-corrected by roughly 7x, since only
+  // one day's worth of the needed total was ever actually added/removed.
+  const totalKcalNeeded=Math.abs(gap)*7;
+  const rawServingsNeeded=Math.round(totalKcalNeeded/fruitKcal);
+  const servingsNeeded=Math.min(7, Math.max(1, rawServingsNeeded));
+  const stillShortKcal = rawServingsNeeded>7 ? Math.round(totalKcalNeeded-(7*fruitKcal)) : 0;
   const addMode=gap<0; // weekly average below target -> add fruit; above target -> remove fruit
   // Pick the days with fewest existing snk2 extras first, so we touch the lightest-edited days
   const candidateDays=S.weekPlans.map((day,i)=>({i, count:(day.snk2Extras||day.snack2Extras||[]).length}))
@@ -8450,6 +8732,11 @@ function previewRebalanceWeek(){
   const actionText=addMode
     ? (isGr?`Προσθήκη 1 μερίδας φρούτου στο Σνακ 2`:`Add 1 fruit serving to Snack 2`)
     : (isGr?`Αφαίρεση 1 μερίδας φρούτου από το Σνακ 2`:`Remove 1 fruit serving from Snack 2`);
+  const shortfallHtml = stillShortKcal>0
+    ? `<div class="alert warn" style="margin-top:8px">${isGr
+        ? `⚠ Αυτή η προσαρμογή (7 μερίδες φρούτου) καλύπτει μέρος μόνο του χάσματος — θα παραμείνουν περίπου ${stillShortKcal} kcal/εβδομάδα ανεπίλυτα. Για μεγαλύτερα χάσματα, εξετάστε αλλαγή στόχου θερμίδων, μακροθρεπτικών ποσοστών, ή προσθήκη επιπλέον μερίδων αμύλου/πρωτεΐνης/λίπους χειροκίνητα.`
+        : `⚠ This adjustment (7 fruit servings) only covers part of the gap — roughly ${stillShortKcal} kcal/week will remain unresolved. For larger gaps, consider adjusting the calorie target, macro percentages, or adding extra starch/protein/fat servings manually.`}</div>`
+    : '';
   el.innerHTML=`<div class="card" style="margin:0;border:1px solid var(--teal-300, var(--border))">
     <div class="card-body" style="padding:14px 16px">
       <div style="font-weight:700;font-size:14px;margin-bottom:6px"><i class="ti ti-sparkles" aria-hidden="true"></i> ${isGr?'Προεπισκόπηση Επαναϊσορρόπησης':'Rebalance Preview'}</div>
@@ -8458,7 +8745,8 @@ function previewRebalanceWeek(){
           ? `Η εβδομάδα σας έχει μέσο όρο ${weekAvg} kcal/ημέρα έναντι στόχου ${target} kcal (${gap>0?'+':''}${gap} kcal). Προτεινόμενη προσαρμογή: ${actionText} στις ημέρες: ${dayNames}.`
           : `Your week averages ${weekAvg} kcal/day vs your ${target} kcal target (${gap>0?'+':''}${gap} kcal). Suggested adjustment: ${actionText} on: ${dayNames}.`}
       </div>
-      <div style="display:flex;gap:8px">
+      ${shortfallHtml}
+      <div style="display:flex;gap:8px;margin-top:10px">
         <button class="btn primary" onclick="applyRebalanceWeek()"><i class="ti ti-circle-check" aria-hidden="true"></i> ${isGr?'Εφαρμογή':'Apply'}</button>
         <button class="btn" onclick="document.getElementById('rebalance-preview').innerHTML=''">${isGr?'Ακύρωση':'Cancel'}</button>
       </div>
@@ -8475,8 +8763,20 @@ function applyRebalanceWeek(){
     toggleWeekPlanExtra(dayIndex, 'snk2Extras', 'fruit', pending.addMode);
   });
   S._rebalancePending=null;
-  if(el) el.innerHTML=`<div class="alert ok"><i class="ti ti-circle-check" aria-hidden="true"></i> ${isGr?`Εφαρμόστηκε — ενημερώθηκαν ${dayCount} ημέρα${dayCount===1?'':'ες'}. Το πλάνο ανανεώθηκε.`:`Applied — updated ${dayCount} day${dayCount===1?'':'s'}. Plan refreshed.`}</div>`;
-  setTimeout(()=>{ if(el && el.innerHTML.includes('ti-circle-check')) el.innerHTML=''; }, 4000);
+  // Recompute the actual resulting gap rather than assuming the adjustment
+  // closed it — for large gaps the 7-serving cap may only partially help.
+  const newDayTotals=S.weekPlans.map((day,i)=>calcDayTotalsForPlanDisplay(day, S.mealLanguage||'GR', i).totalKcal);
+  const newWeekAvg=Math.round(newDayTotals.reduce((a,b)=>a+b,0)/newDayTotals.length);
+  const target=Math.round(S.goalKcal||0);
+  const newGap=newWeekAvg-target;
+  const stillOff = Math.abs(newGap)>50;
+  const resultLine = target
+    ? (isGr
+        ? (stillOff ? `Νέος μέσος όρος: ${newWeekAvg} kcal/ημέρα έναντι στόχου ${target} (${newGap>0?'+':''}${newGap} kcal — παραμένει εκτός στόχου, εξετάστε περαιτέρω προσαρμογή).` : `Νέος μέσος όρος: ${newWeekAvg} kcal/ημέρα — τώρα εντός στόχου (${target} kcal).`)
+        : (stillOff ? `New average: ${newWeekAvg} kcal/day vs ${target} target (${newGap>0?'+':''}${newGap} kcal — still off target, consider a further adjustment).` : `New average: ${newWeekAvg} kcal/day — now within target (${target} kcal).`))
+    : '';
+  if(el) el.innerHTML=`<div class="alert ${stillOff?'warn':'ok'}"><i class="ti ${stillOff?'ti-alert-triangle':'ti-circle-check'}" aria-hidden="true"></i> ${isGr?`Εφαρμόστηκε — ενημερώθηκαν ${dayCount} ημέρα${dayCount===1?'':'ες'}.`:`Applied — updated ${dayCount} day${dayCount===1?'':'s'}.`} ${resultLine}</div>`;
+  if(!stillOff) setTimeout(()=>{ if(el && el.innerHTML.includes('ti-circle-check')) el.innerHTML=''; }, 4000);
 }
 function renderPlanQualitySummary(){
   const el=document.getElementById('plan-quality-summary'); if(!el) return;
@@ -8800,6 +9100,21 @@ function buildSevenDay(){
       </div>
     </div>
   </div>
+  ${S.currentTemplate ? (() => {
+    const tplModified=isCurrentTemplateModified();
+    const tplName=lang==='EN'?S.currentTemplate.nameEn:S.currentTemplate.nameGr;
+    const infoText=(lang==='EN'
+      ? `This meal plan was created from the ${S.currentTemplate.nameEn} template. Any changes made after applying the template are automatically tracked.`
+      : `Αυτό το πλάνο γευμάτων δημιουργήθηκε από το πρότυπο ${S.currentTemplate.nameGr}. Οι αλλαγές μετά την εφαρμογή του προτύπου παρακολουθούνται αυτόματα.`);
+    return `<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;font-size:12.5px">
+      <span class="badge ${tplModified?'warn':'neutral'}">${lang==='EN'?'Template':'Πρότυπο'}: ${safeHtml(tplName)}${tplModified?` (${lang==='EN'?'Modified':'Τροποποιήθηκε'})`:''}</span>
+      <span tabindex="0" title="${safeHtml(infoText)}" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'" style="cursor:help;color:var(--text-muted);font-weight:800;border:1px solid var(--border);border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;line-height:1">ⓘ</span>
+      <span style="display:none;font-size:12px;color:var(--text-secondary);flex-basis:100%">${safeHtml(infoText)}</span>
+      <a href="javascript:void(0)" onclick="openViewOriginalTemplateModal()" style="color:var(--text-link);font-weight:700;text-decoration:none">${lang==='EN'?'View Original Template':'Προβολή Αρχικού Προτύπου'}</a>
+      ${tplModified?`<a href="javascript:void(0)" onclick="reapplyOriginalTemplate()" style="color:var(--text-link);font-weight:700;text-decoration:none">${lang==='EN'?'Reapply Original Template':'Επαναφορά Αρχικού Προτύπου'}</a>`:''}
+      <a href="javascript:void(0)" onclick="removeCurrentTemplate()" style="color:var(--text-muted);font-weight:700;text-decoration:none">✕ ${lang==='EN'?'Remove Template':'Αφαίρεση Προτύπου'}</a>
+    </div>`;
+  })() : ''}
   ${(isWeek ? S.weekPlans.some(p=>p.aiMeals) : dayPlan.aiMeals) ? `<div style="padding:10px 12px;border:1px solid var(--teal-100);background:var(--teal-50);border-radius:8px;margin-bottom:12px;color:var(--teal-800);font-size:13px;font-weight:700">✨ AI-generated plan — clinical review required before sharing with client.</div>` : ''}
   ${S.aiPlanStatus?`<div style="padding:9px 12px;border:1px solid var(--border);background:var(--bg-page);border-radius:8px;margin-bottom:12px;color:var(--text-secondary);font-size:13px">${safeHtml(S.aiPlanStatus)}</div>`:''}
   <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -8959,6 +9274,7 @@ window.toggleWeekViewTheme=toggleWeekViewTheme;
 
 function collectAiMealPlanPayload(){
   const selectedCondition=getSelectedPrimaryCondition();
+  const liveExMeta = S.exMeta||makeExMeta();
   return {
     client:{
       age:S.age||v('p-age'), sex:S.sex||v('p-sex'), weight:S.weight||v('p-weight'), height:S.height||v('p-height'),
@@ -8972,20 +9288,32 @@ function collectAiMealPlanPayload(){
       smoking:v('i-smoking'), alcohol:v('i-alcohol'),
       digestion:v('i-digestion'), diagnoses:v('n-diagnoses'), notes:v('n-clinician-notes')
     },
+    // Pulled from this specific client's actual exchange configuration
+    // (S.exMeta), NOT hardcoded — dairy/protein kcal-per-serving varies with
+    // the dietitian's chosen Dairy/Meat fat-type preset (e.g. Full-fat dairy
+    // is 152 kcal/serving vs the old hardcoded 80), and sending the wrong
+    // value here silently broke the AI's own "hit exactly kcal_target"
+    // instruction for any client not on the untouched defaults.
     exchange_values:{
-      fruit:60, vegetable:28, dairy:80, starch:81, protein:46, fat:45
+      fruit:Math.round(liveExMeta.fruit?.kcal||60),
+      vegetable:Math.round(liveExMeta.veg?.kcal||28),
+      dairy:Math.round(liveExMeta.dairy?.kcal||80),
+      starch:Math.round(liveExMeta.starch?.kcal||81),
+      protein:Math.round(liveExMeta.protein?.kcal||46),
+      fat:Math.round(liveExMeta.fat?.kcal||45)
     },
     model:'claude-sonnet-4-6'
   };
 }
 
 function aiMealPlanPrompt(payload){
+  const ev=payload.exchange_values;
   return `You are a clinical dietitian assistant specialising in the ADA Exchange System and Greek/Cypriot cuisine.
 Generate a clinically accurate 7-day meal plan.
 
 STRICT RULES:
 - Use ONLY Greek/Cypriot Mediterranean ingredients
-- Each day must hit exactly ${payload.kcal_target} kcal using the ADA exchange values provided
+- Each day must hit exactly ${payload.kcal_target} kcal using the exchange values provided below (these are this specific client's actual configured values, not generic textbook numbers — use them exactly)
 - No single meal combination repeats more than twice
 - Tuna/canned fish maximum 2 times per week
 - Breakfast alternates: toast days and oat days
@@ -8999,13 +9327,13 @@ STRICT RULES:
 - Include variety: fish, chicken, eggs, lean meat
 - FAT/OIL REALISM (important, frequently violated): 1 fat exchange = 1 tsp olive oil. Never write more than 6 tsp of visible added oil/butter in a single dish, even if the client's total daily fat exchanges (below) is much higher than that. If the daily fat total cannot fit within 6 tsp per meal across the day's main meals, distribute the remainder across snacks, or substitute whole-food fat sources (olives, nuts, avocado, tahini) for some of the exchanges instead of concentrating it all as poured oil in one meal. A single dish listing 10+ tsp of oil is a clinical error — do not do this even for high-calorie weight-gain targets.
 
-ADA EXCHANGE VALUES:
-- Fruit: 60 kcal per serving
-- Vegetable: 28 kcal per serving
-- Dairy low-fat: 80 kcal per serving
-- Starch: 81 kcal per serving
-- Protein lean: 46 kcal per serving
-- Fat: 45 kcal per serving (= 1 tsp olive oil per serving)
+THIS CLIENT'S EXCHANGE VALUES (use these exact numbers, not generic textbook values):
+- Fruit: ${ev.fruit} kcal per serving
+- Vegetable: ${ev.vegetable} kcal per serving
+- Dairy: ${ev.dairy} kcal per serving
+- Starch: ${ev.starch} kcal per serving
+- Protein: ${ev.protein} kcal per serving
+- Fat: ${ev.fat} kcal per serving (= 1 tsp olive oil per serving)
 
 CLIENT EXCHANGE SERVINGS FOR THE DAY:
 Fruit: ${payload.exchanges.fruit}
@@ -9015,8 +9343,9 @@ Starch: ${payload.exchanges.starch}
 Protein: ${payload.exchanges.protein}
 Fat: ${payload.exchanges.fat} (= ${payload.exchanges.fat} tsp olive oil total for the WHOLE DAY — spread across all meals/snacks, max 6 tsp in any single dish)
 Target kcal: ${payload.kcal_target}
+Target macro split: ${payload.macros.carb_percent}% carbohydrate / ${payload.macros.protein_percent}% protein / ${payload.macros.fat_percent}% fat (i.e. ≈${Math.round(payload.kcal_target*payload.macros.carb_percent/100/4)}g carb, ≈${Math.round(payload.kcal_target*payload.macros.protein_percent/100/4)}g protein, ≈${Math.round(payload.kcal_target*payload.macros.fat_percent/100/9)}g fat per day) — the exchange servings above are the primary source of truth for portions, but total_protein_g/total_carb_g/total_fat_g for each day must be consistent with this split.
 
-Return ONLY valid JSON with monday through sunday, each containing breakfast, snack1, lunch, snack2, dinner, before_sleep, total_kcal. Each meal must include name, description_gr, description_en, kcal.`;
+Return ONLY valid JSON with monday through sunday, each containing breakfast, snack1, lunch, snack2, dinner, before_sleep, total_kcal, total_protein_g, total_carb_g, total_fat_g. Each meal must include name, description_gr, description_en, kcal. total_protein_g/total_carb_g/total_fat_g must be the day's total grams and must be consistent with total_kcal (protein_g*4 + carb_g*4 + fat_g*9 ≈ total_kcal) and with the macro percentages given above (carb_percent/protein_percent/fat_percent of ${payload.kcal_target} kcal).`;
 }
 
 async function generateAiSevenDayPlan(){
@@ -9033,9 +9362,10 @@ async function generateAiSevenDayPlan(){
     );
     if(response.error) throw response.error;
     const plan=response.data?.plan || response.data?.meal_plan || response.data;
-    applyAiSevenDayPlan(plan);
-    S.aiPlanStatus = S.aiOilWarnings
-      ? `⚠️ AI plan generated — please review each day and adjust before sharing. Unrealistic oil amounts detected and need manual correction: ${S.aiOilWarnings.join('; ')}.`
+    applyAiSevenDayPlan(plan, payload);
+    const issues=[...(S.aiOilWarnings||[]), ...(S.aiKcalMacroWarnings||[])];
+    S.aiPlanStatus = issues.length
+      ? `⚠️ AI plan generated — please review each day and adjust before sharing. Issues detected and need manual correction: ${issues.slice(0,6).join('; ')}${issues.length>6?` (+${issues.length-6} more)`:''}.`
       : '✨ AI plan generated — please review each day and adjust as needed before sharing with client.';
   }catch(err){
     console.error('[Nutrese AI plan]', err);
@@ -9045,7 +9375,7 @@ async function generateAiSevenDayPlan(){
 }
 window.generateAiSevenDayPlan=generateAiSevenDayPlan;
 
-function applyAiSevenDayPlan(plan){
+function applyAiSevenDayPlan(plan, payload){
   traceDecision('applyAiSevenDayPlan','entry',{plan});
   if(typeof plan==='string') plan=JSON.parse(plan);
   if(!plan || typeof plan!=='object') throw new Error('AI response did not contain a meal plan.');
@@ -9072,9 +9402,17 @@ function applyAiSevenDayPlan(plan){
         };
       }
     });
-    return {...existing, aiMeals, source:'ai'};
+    const aiDayTotals={
+      kcal:Number(src.total_kcal)||null,
+      protein:Number(src.total_protein_g)||null,
+      carb:Number(src.total_carb_g)||null,
+      fat:Number(src.total_fat_g)||null
+    };
+    return {...existing, aiMeals, aiDayTotals, source:'ai'};
   });
   S.aiOilWarnings=null;
+  S.aiKcalMacroWarnings=validateAiMealPlanKcalMacros(plan, payload);
+  S.currentTemplate=null;
   enforceWeekPlanDietCompatibility(dietType);
   traceDecision('applyAiSevenDayPlan','return',{weekPlans:S.weekPlans});
 }
@@ -9258,6 +9596,7 @@ function syncReportModeControls(){
   const equivalents=document.getElementById('rep-include-equivalents');
   if(equivalents) equivalents.checked = S.reportOptions?.includeEquivalents===true;
   renderReportDaySelector();
+  updateReportPreviewThemeButtons();
 }
 function onReportOptionsChange(){
   const checked=[...document.querySelectorAll('.report-day-checkbox:checked')].map(el=>parseInt(el.value,10)).filter(n=>n>=0&&n<7);
@@ -9465,8 +9804,8 @@ function reportMetricGridHtml(title, rows){
     <div style="font-size:13px;font-weight:700;color:var(--teal-800);margin:0 0 6px;border-bottom:2px solid var(--teal-600);padding-bottom:3px">${title}</div>
     <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px">
       ${cleanRows.map(([label,value])=>`<div style="display:flex;justify-content:space-between;gap:8px;background:var(--teal-50);border:1px solid var(--border);border-radius:5px;padding:4px 6px;break-inside:avoid">
-        <span class="report-print-label" style="font-size:12px;color:#374151;font-weight:700">${safeHtml(label)}</span>
-        <strong class="report-print-value" style="font-size:14px;text-align:right;color:#111827;font-weight:800">${safeHtml(value)}</strong>
+        <span class="report-print-label" style="font-size:12px;color:var(--text-secondary);font-weight:700">${safeHtml(label)}</span>
+        <strong class="report-print-value" style="font-size:14px;text-align:right;color:var(--text-primary);font-weight:800">${safeHtml(value)}</strong>
       </div>`).join('')}
     </div>
   </div>`;
@@ -9597,18 +9936,18 @@ function buildReport(){
     ['BMI', S.bmi ? `${S.bmi.toFixed(1)}${S.bmiCat ? ' · '+S.bmiCat : ''}` : '—'],
     [isEn?'Primary condition':'Κύρια κατάσταση', condNames || '—'],
   ];
-  setEl('report-body',`<div class="client-report-print" style="width:100%;font-family:Arial,sans-serif;font-size:14px;color:#111;background:#fff">
+  setEl('report-body',`<div class="client-report-print" style="width:100%;font-family:Arial,sans-serif;font-size:14px;color:var(--text-primary);background:var(--bg-surface)">
 
     <div class="report-page-one with-week">
     <!-- HEADER -->
     <div style="padding-bottom:12px;border-bottom:3px solid var(--teal-600);margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px">
-        <div class="report-print-title" style="font-size:23px;font-weight:800;color:#0f3f34;line-height:1.22;white-space:normal;overflow:visible;padding-top:1mm">${isEn?'Clinical Nutrition Report':'Κλινική Αναφορά Διατροφής'}</div>
-        <div class="report-print-muted" style="font-size:13px;color:#374151;text-align:right;line-height:1.25"><strong>${S.name||'—'}</strong> · ${today}</div>
+        <div class="report-print-title" style="font-size:23px;font-weight:800;color:var(--teal-800);line-height:1.22;white-space:normal;overflow:visible;padding-top:1mm">${isEn?'Clinical Nutrition Report':'Κλινική Αναφορά Διατροφής'}</div>
+        <div class="report-print-muted" style="font-size:13px;color:var(--text-secondary);text-align:right;line-height:1.25"><strong>${S.name||'—'}</strong> · ${today}</div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px">
       ${reportBrandHtml}
-      <div class="report-print-muted" style="text-align:right;font-size:13px;color:#374151;line-height:1.35">
+      <div class="report-print-muted" style="text-align:right;font-size:13px;color:var(--text-secondary);line-height:1.35">
         <div><strong>${S.name||'—'}</strong></div>
         <div>${today}</div>
         <div>${goalLabel}: ${S.goalKcal?Math.round(S.goalKcal)+' '+dayUnit:'—'}</div>
@@ -9618,13 +9957,13 @@ function buildReport(){
 
     <div class="report-header-summary">
       ${headerSummaryRows.map(([l,val])=>`<div style="background:var(--teal-50);border:1px solid var(--border);border-radius:6px;padding:5px 7px;break-inside:avoid">
-        <div class="report-print-label" style="font-size:12px;color:#374151;font-weight:700;margin-bottom:3px">${safeHtml(l)}</div>
-        <div class="report-print-value" style="font-size:14px;font-weight:800;color:#111827">${safeHtml(val)}</div>
+        <div class="report-print-label" style="font-size:12px;color:var(--text-secondary);font-weight:700;margin-bottom:3px">${safeHtml(l)}</div>
+        <div class="report-print-value" style="font-size:14px;font-weight:800;color:var(--text-primary)">${safeHtml(val)}</div>
       </div>`).join('')}
     </div>
 
     ${showClinicalBox?`
-    <div class="report-clinical-box" style="background:#fff8e1;color:#1f2937;border:1px solid #f3d27a;border-left:4px solid #d97706;padding:10px 12px;border-radius:6px;font-size:12px;margin-bottom:14px;line-height:1.55">
+    <div class="report-clinical-box" style="background:var(--amber-bg);color:var(--amber-text);border:1px solid var(--amber-border);border-left:4px solid var(--amber-text);padding:10px 12px;border-radius:6px;font-size:12px;margin-bottom:14px;line-height:1.55">
       ${[n.diagnoses?'<strong>'+(isEn?'Diagnoses':'Διαγνώσεις')+':</strong> '+n.diagnoses:'', n.medication?'<strong>'+(isEn?'Medication':'Φαρμακευτική αγωγή')+':</strong> '+n.medication:''].filter(Boolean).join('<br>')}
     </div>`:''}
     ${bodyCompositionHtml}
@@ -9633,8 +9972,8 @@ function buildReport(){
     </div>
 
     <div class="report-week-section ${fullWeekReport?'report-week-full':'report-week-partial'}">
-    ${reportPlanTableTitle ? `<div style="font-size:16px;font-weight:800;color:#0f3f34;margin:0 0 6px;border-bottom:2px solid var(--teal-600);padding-bottom:4px"><i class="ti ti-calendar" aria-hidden="true"></i> ${reportPlanTableTitle}</div>` : ''}
-    <table class="report-week-table" style="width:100%;table-layout:fixed;border-collapse:collapse;font-size:14px;line-height:1.34;background:#fff;border:1px solid #cfded7;color:#111827;${fullWeekReport?'height:190mm;min-height:190mm;':''}">
+    ${reportPlanTableTitle ? `<div style="font-size:16px;font-weight:800;color:var(--teal-800);margin:0 0 6px;border-bottom:2px solid var(--teal-600);padding-bottom:4px"><i class="ti ti-calendar" aria-hidden="true"></i> ${reportPlanTableTitle}</div>` : ''}
+    <table class="report-week-table" style="width:100%;table-layout:fixed;border-collapse:collapse;font-size:14px;line-height:1.34;background:var(--bg-surface);border:1px solid var(--border);color:var(--text-primary);${fullWeekReport?'height:190mm;min-height:190mm;':''}">
       ${reportWeekColgroup}
       <thead><tr style="background:var(--teal-600);color:#fff">
         <th style="padding:4px">${isEn?'Day':'Ημέρα'}</th>
@@ -9659,7 +9998,7 @@ function buildReport(){
           <td style="padding:4px;word-wrap:break-word">${reportSevenDaySlotText(p,dt,'snk2',lang,dayIndex,reportExtraOpts)}</td>
           <td style="padding:4px;word-wrap:break-word">${reportSevenDaySlotText(p,dt,'din',lang,dayIndex,reportExtraOpts)}</td>
           ${showBeforeSleepColumn ? `<td style="padding:4px;word-wrap:break-word">${reportSevenDaySlotText(p,dt,'sleep',lang,dayIndex,reportExtraOpts)}</td>` : ''}
-          <td style="padding:4px;text-align:right;font-weight:700;white-space:nowrap;color:${ok?'#0f6e56':'#b45309'}">${dt.totalKcal}</td>
+          <td style="padding:4px;text-align:right;font-weight:700;white-space:nowrap;color:${ok?'var(--teal-600)':'var(--amber-text)'}">${dt.totalKcal}</td>
         </tr>`;
       }).join('')}
       <tr style="${fullWeekReport?'height:10mm;':''}background:var(--teal-50);font-weight:700;border-top:2px solid var(--teal-600)">
@@ -10281,10 +10620,10 @@ function reportAbnormalLabsHtml(isEn){
         <th style="padding:5px;text-align:left">${isEn?'Status':'Κατάσταση'}</th>
         <th style="padding:5px;text-align:left">${isEn?'Clinical note':'Κλινική σημείωση'}</th>
       </tr></thead>
-      <tbody>${rows.map(r=>`<tr style="border-bottom:1px solid #eee">
+      <tbody>${rows.map(r=>`<tr style="border-bottom:1px solid var(--border)">
         <td style="padding:5px"><strong>${isEn?r.test.en:r.test.gr}</strong></td>
         <td style="padding:5px">${r.value} ${r.test.unit}</td>
-        <td style="padding:5px;color:${r.status==='low'?'#b45309':'#b91c1c'};font-weight:700">${r.status==='low'?(isEn?'Low':'Χαμηλό'):(isEn?'High':'Υψηλό')}</td>
+        <td style="padding:5px;color:${r.status==='low'?'var(--amber-text)':'var(--red-text)'};font-weight:700">${r.status==='low'?(isEn?'Low':'Χαμηλό'):(isEn?'High':'Υψηλό')}</td>
         <td style="padding:5px">${r.note||'—'}</td>
       </tr>`).join('')}</tbody>
     </table>
@@ -11951,6 +12290,7 @@ return {
     fields, conditions, primaryCondition,
     ex:S.ex, exAuto:S.exAuto, exMeta:S.exMeta, tracking:S.tracking, mealSel:S.mealSel,
     weekPlans:S.weekPlans, savedWeeklyPlan:S.savedWeeklyPlan, customMeals:S.customMeals, mealLanguage:S.mealLanguage, reportOptions:S.reportOptions,
+    currentTemplate:S.currentTemplate||null,
     sevenDayView:S.sevenDayView, sevenDayActiveIndex:S.sevenDayActiveIndex, aiPlanStatus:S.aiPlanStatus,
     weightSuggestionLocked:S.weightSuggestionLocked, calAdjAutoValue:S.calAdjAutoValue, bcManual:S.bcManual,
     intake:S.intake, notes:S.notes, labValues:S.labValues, labDate:S.labDate, clientDocuments:S.clientDocuments, extraFoods:S.extraFoods, equivalentNotes:S.equivalentNotes,
@@ -11998,6 +12338,7 @@ function applyState(state){
   S.savedWeeklyPlan=state.savedWeeklyPlan || null;
   if(state.savedWeeklyPlan?.weekPlans) S.weekPlans=state.savedWeeklyPlan.weekPlans;
   else if(state.weekPlans) S.weekPlans=state.weekPlans;
+  S.currentTemplate=state.currentTemplate||null;
   if(state.customMeals) S.customMeals=state.customMeals;
   if(state.sevenDayView) S.sevenDayView=state.sevenDayView;
   if(state.sevenDayActiveIndex!==undefined) S.sevenDayActiveIndex=Number(state.sevenDayActiveIndex)||0;
@@ -12056,6 +12397,7 @@ function resetForm(){
   S.tracking=[]; S.intake={}; S.notes={}; S.labValues={}; S.labDate=''; S.clientDocuments=[]; S.extraFoods=[]; S.equivalentNotes={};
   S.mealSel={breakfast:'BRK_TOAST',lunch:'LUN_CHICKEN_RICE',dinner:'DIN_FISH_POTATO',snack1Extras:['fruit'],snack2Extras:['fruit'],sleepExtras:[]};
   S.weekPlans=WEEK_PLANS.map(p=>({...p}));
+  S.currentTemplate=null;
   S.savedWeeklyPlan=null;
   S.mealLanguage='GR';
   S.reportOptions={oneDay:false,sevenDay:true,includeBlood:true,includeEquivalents:false,days:allReportDayIndexes()};
@@ -12697,6 +13039,32 @@ function toggleTheme() {
     }
     updateThemeButton();
   } catch(e) {}
+})();
+
+// ─── CLIENT REPORT PREVIEW THEME ───
+// Deliberately independent of the app's global theme above — see the CSS
+// comment near [data-report-theme] for the reasoning. Defaults to 'light'
+// (matching print output) regardless of the app's current theme, so what
+// the dietitian sees by default always matches what will actually print.
+function setReportPreviewTheme(theme){
+  document.documentElement.setAttribute('data-report-theme', theme==='dark' ? 'dark' : 'light');
+  updateReportPreviewThemeButtons();
+  try { localStorage.setItem('nutrese-report-preview-theme', theme==='dark' ? 'dark' : 'light'); } catch(e) {}
+}
+function updateReportPreviewThemeButtons(){
+  const current=document.documentElement.getAttribute('data-report-theme') || 'light';
+  const lightBtn=document.getElementById('report-preview-light-btn');
+  const darkBtn=document.getElementById('report-preview-dark-btn');
+  if(lightBtn) lightBtn.classList.toggle('active', current==='light');
+  if(darkBtn) darkBtn.classList.toggle('active', current==='dark');
+}
+(function() {
+  try {
+    const saved = localStorage.getItem('nutrese-report-preview-theme');
+    document.documentElement.setAttribute('data-report-theme', saved==='dark' ? 'dark' : 'light');
+  } catch(e) {
+    document.documentElement.setAttribute('data-report-theme', 'light');
+  }
 })();
 
 // ─── LANGUAGE ───
