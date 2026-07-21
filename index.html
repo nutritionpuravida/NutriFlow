@@ -3541,6 +3541,33 @@ window.NutreseEngine = {
 
 </script>
 <script>
+// ============================================================
+// STRUCTURED MEAL ENGINE — LIVE INTEGRATION (Phase B/C/D/E)
+// ============================================================
+// Single top-level flag to enable/disable the entire new-engine
+// integration during development. Set to false to instantly revert the
+// whole app to the legacy meal engine with zero other changes.
+const USE_STRUCTURED_MEAL_ENGINE = true;
+// Per-meal rollout: a meal renders/calculates through the new engine ONLY
+// if its key is in this set AND the flag above is on. Every other meal
+// uses the legacy path, completely unaffected. Remove a key to roll back
+// that specific meal.
+const MIGRATED_MEAL_KEYS = new Set([
+  'BRK_TOAST',
+  'LUN_CHICKEN_RICE',
+  'LUN_BAKED_FISH_VEG',
+  'LUN_LENTILS_RICE',
+  'LUN_HALLOUMI_POTATO',
+  'DIN_AVGOLEMONO_SOUP',
+  'DIN_PASTA_MINCE',
+]);
+// Single gate used everywhere the two paths diverge.
+function isMigratedMeal(key){
+  return USE_STRUCTURED_MEAL_ENGINE
+    && MIGRATED_MEAL_KEYS.has(key)
+    && !!(window.NutreseEngine && window.NutreseEngine.RECIPES[key]);
+}
+
 const S = {
   name:'',age:null,sex:'M',height:null,weight:null,activity:1.55,
   activeClientId:null, activeClientRef:'',
@@ -4831,6 +4858,76 @@ Object.assign(MEALS_EN, {
   DIN_CHICKPEAS_SALAD: (ex,p) => 'Chickpeas (1 cup chickpeas + 1 tsp olive oil + tomato) - salad (2 cups)',
 });
 
+// Returns a structured frozen meal instance for a migrated meal. If the
+// current plan slot already has a stored (edited or previously-frozen)
+// instance, that stored instance is returned verbatim (Phase D: saved
+// quantities are the source of truth and are never silently regenerated).
+// Otherwise a fresh instance is frozen from the catalog recipe. The
+// optional _slotCtx lets callers that know their day/slot retrieve a
+// stored instance; callers without context (e.g. week-grid preview) get a
+// fresh freeze, which is correct for display of an unedited meal.
+// Phase C: kcal for a migrated meal comes from its structured instance
+// (sum of real ingredient kcal), not the legacy exchange formula. Returns
+// null for non-migrated meals so callers fall through to the legacy path.
+// Phase E: structured JSON export built from the SAME frozen instances the
+// planner and reports use. Migrated meals contribute full ingredient-level
+// data; non-migrated meals are explicitly marked legacy_pending so the
+// export never silently implies coverage it doesn't have.
+function exportStructuredPlanJSON(){
+  if(!window.NutreseEngine){ alert('Structured engine not loaded.'); return; }
+  ensureWeekPlans();
+  const dayNames=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const slots=[['brk','breakfast'],['lun','lunch'],['din','dinner']];
+  const days=S.weekPlans.map((plan,di)=>{
+    const meals=[];
+    slots.forEach(([sk,slotName])=>{
+      const key=plan[sk];
+      if(!key || isNoMealKey(key)) return;
+      if(isMigratedMeal(key)){
+        const stored=plan.structuredInstances && plan.structuredInstances[sk] && plan.structuredInstances[sk].recipe_id===key
+          ? plan.structuredInstances[sk]
+          : window.NutreseEngine.freezeMealInstance(key);
+        meals.push({ meal:slotName, recipe_id:key, structured:true,
+          items:stored.ingredients.map(i=>({food_id:i.food_id, name:i.food_name.en, quantity:i.grams, unit:'g', state:i.state, fdc_id:i.fdc_id, source:i.source, kcal:i.kcal, protein_g:i.protein_g, carbohydrate_g:i.carbohydrate_g, fat_g:i.fat_g})),
+          totals:stored.totals, exchanges:stored.exchanges });
+      } else {
+        meals.push({ meal:slotName, recipe_id:key, structured:false, status:'legacy_pending', note:'This meal has not yet been migrated to the structured engine; ingredient-level data is not available.' });
+      }
+    });
+    return { day:dayNames[di], meals };
+  });
+  const exportObj={
+    schema:'nutrese-structured-plan-v1',
+    generated_at:new Date().toISOString(),
+    food_db_version:window.NutreseEngine.FOOD_DB_VERSION,
+    client:{ name:S.name||null, age:S.age||null, sex:S.sex||null, weight_kg:S.weight||null, height_cm:S.height||null },
+    targets:{ kcal:Math.round(S.goalKcal||0) },
+    days
+  };
+  const blob=new Blob([JSON.stringify(exportObj,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`nutrese-plan-${(S.name||'client').replace(/[^a-z0-9]/gi,'_')}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function migratedMealKcal(key){
+  if(!isMigratedMeal(key)) return null;
+  const inst = getStructuredInstanceForSlot(key, null);
+  return inst.totals.kcal;
+}
+
+function getStructuredInstanceForSlot(key, portions, _slotCtx){
+  if(_slotCtx && _slotCtx.dayIndex!=null && _slotCtx.slot){
+    const stored = S.weekPlans && S.weekPlans[_slotCtx.dayIndex] && S.weekPlans[_slotCtx.dayIndex].structuredInstances;
+    if(stored && stored[_slotCtx.slot] && stored[_slotCtx.slot].recipe_id===key){
+      return stored[_slotCtx.slot];
+    }
+  }
+  return window.NutreseEngine.freezeMealInstance(key);
+}
+
 function mealText(key, portions, lang){
   if(isNoMealKey(key)){
     traceDecision('mealText','return-empty',{key, lang, reason:'no-meal'});
@@ -4840,6 +4937,16 @@ function mealText(key, portions, lang){
     const customText=customMealText(key, lang);
     traceDecision('mealText','return-custom',{key, lang, text:customText});
     return customText;
+  }
+  // Phase B: migrated meals render from the structured frozen instance via
+  // the new engine. Everything below this point is the untouched legacy
+  // path, used for every non-migrated meal.
+  if(isMigratedMeal(key)){
+    const engineLang = (lang||S.mealLanguage)==='EN' ? 'en' : 'gr';
+    const inst = getStructuredInstanceForSlot(key, portions);
+    const text = window.NutreseEngine.renderMealText(inst, engineLang);
+    traceDecision('mealText','return-migrated',{key, lang, text});
+    return text;
   }
   const comp=mealCatalogIsFixedComposition(key) ? (mealCatalogExchangeComposition(key)||null) : null;
   const textPortions=comp ? {
@@ -5364,9 +5471,9 @@ function calcDayTotals(){
   const snk2Built = allocation.snacks.snk2Built;
   const sleepBuilt = allocation.snacks.sleepBuilt;
 
-  const brkKcal  = (isCustomMealKey(ms.breakfast)?customMealKcal(ms.breakfast):exchangesToKcal(brkComp, null)) + extraKcal('brk', null);
-  const lunKcal  = (isCustomMealKey(ms.lunch)?customMealKcal(ms.lunch):exchangesToKcal(lunComp, effectivePortionsForKcal(ms.lunch, portions.lunch))) + extraKcal('lun', null);
-  const dinKcal  = (isCustomMealKey(ms.dinner)?customMealKcal(ms.dinner):exchangesToKcal(dinComp, effectivePortionsForKcal(ms.dinner, portions.dinner))) + extraKcal('din', null);
+  const brkKcal  = (migratedMealKcal(ms.breakfast) ?? (isCustomMealKey(ms.breakfast)?customMealKcal(ms.breakfast):exchangesToKcal(brkComp, null))) + extraKcal('brk', null);
+  const lunKcal  = (migratedMealKcal(ms.lunch) ?? (isCustomMealKey(ms.lunch)?customMealKcal(ms.lunch):exchangesToKcal(lunComp, effectivePortionsForKcal(ms.lunch, portions.lunch)))) + extraKcal('lun', null);
+  const dinKcal  = (migratedMealKcal(ms.dinner) ?? (isCustomMealKey(ms.dinner)?customMealKcal(ms.dinner):exchangesToKcal(dinComp, effectivePortionsForKcal(ms.dinner, portions.dinner)))) + extraKcal('din', null);
   const snk1Kcal = exchangesToKcal(snk1Built.exch, null) + (snk1Built.addOnKcal||0) + extraKcal('snk1', null);
   const snk2Kcal = exchangesToKcal(snk2Built.exch, null) + (snk2Built.addOnKcal||0) + extraKcal('snk2', null);
   const slpKcal  = exchangesToKcal(sleepBuilt.exch, null) + (sleepBuilt.addOnKcal||0) + extraKcal('sleep', null);
@@ -8396,9 +8503,9 @@ function calcDayTotalsForPlan(dayPlan, lang='GR', dayIndex=0){
   const snk2Built = allocation.snacks.snk2Built;
   const sleepBuilt = allocation.snacks.sleepBuilt;
 
-  const brkKcal  = (isCustomMealKey(dayPlan.brk)?customMealKcal(dayPlan.brk):exchangesToKcal(brkComp, null)) + extraKcal('brk', dayIndex);
-  let lunKcal  = (isCustomMealKey(dayPlan.lun)?customMealKcal(dayPlan.lun):exchangesToKcal(lunComp, effectivePortionsForKcal(dayPlan.lun, portions.lunch))) + extraKcal('lun', dayIndex);
-  let dinKcal  = (isCustomMealKey(dayPlan.din)?customMealKcal(dayPlan.din):exchangesToKcal(dinComp, effectivePortionsForKcal(dayPlan.din, portions.dinner))) + extraKcal('din', dayIndex);
+  const brkKcal  = (migratedMealKcal(dayPlan.brk) ?? (isCustomMealKey(dayPlan.brk)?customMealKcal(dayPlan.brk):exchangesToKcal(brkComp, null))) + extraKcal('brk', dayIndex);
+  let lunKcal  = (migratedMealKcal(dayPlan.lun) ?? (isCustomMealKey(dayPlan.lun)?customMealKcal(dayPlan.lun):exchangesToKcal(lunComp, effectivePortionsForKcal(dayPlan.lun, portions.lunch)))) + extraKcal('lun', dayIndex);
+  let dinKcal  = (migratedMealKcal(dayPlan.din) ?? (isCustomMealKey(dayPlan.din)?customMealKcal(dayPlan.din):exchangesToKcal(dinComp, effectivePortionsForKcal(dayPlan.din, portions.dinner)))) + extraKcal('din', dayIndex);
   const snk1Kcal = exchangesToKcal(snk1Built.exch, null) + (snk1Built.addOnKcal||0) + extraKcal('snk1', dayIndex);
   const snk2Kcal = exchangesToKcal(snk2Built.exch, null) + (snk2Built.addOnKcal||0) + extraKcal('snk2', dayIndex);
   const slpKcal  = exchangesToKcal(sleepBuilt.exch, null) + (sleepBuilt.addOnKcal||0) + extraKcal('sleep', dayIndex);
@@ -10112,6 +10219,7 @@ function buildSevenDay(){
       <button class="btn" onclick="openTemplatePicker()"><i class="ti ti-clipboard-list" aria-hidden="true"></i> ${lang==='EN'?'Use Template':'Χρήση Προτύπου'}</button>
       <button class="btn" onclick="generateAiSevenDayPlan()">✨ ${lang==='EN'?'Generate AI Plan':'Δημιουργία Πλάνου με AI'}</button>
       <button class="btn" onclick="previewRebalanceWeek()">✨ ${lang==='EN'?'Rebalance Week':'Επαναϊσορρόπηση Εβδομάδας'}</button>
+      ${USE_STRUCTURED_MEAL_ENGINE ? `<button class="btn" onclick="exportStructuredPlanJSON()"><i class="ti ti-file-code" aria-hidden="true"></i> ${lang==='EN'?'Export JSON':'Εξαγωγή JSON'}</button>` : ''}
       <span id="weekly-plan-save-status" style="font-size:13px;font-weight:800;color:var(--teal-700)"></span>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
