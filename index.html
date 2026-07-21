@@ -1998,7 +1998,7 @@ table th,
         <div class="alert info"><i class="ti ti-info-circle" aria-hidden="true"></i> <span class="i18n" data-en="Enter Tanita or other device values. Fat mass auto-calculates from Weight × Body Fat % if left blank." data-gr="Εισάγετε τιμές από Tanita ή άλλη συσκευή. Η μάζα λίπους υπολογίζεται αυτόματα από Βάρος × Ποσοστό Λίπους % αν αφεθεί κενό.">Enter Tanita or other device values. Fat mass auto-calculates from Weight × Body Fat % if left blank.</span></div>
         <div class="form-grid three">
           <div class="form-field"><label><i class="ti ti-scale" aria-hidden="true"></i> <span class="i18n" data-en="Body Fat %" data-gr="Ποσοστό Λίπους %">Body Fat %</span></label><input type="number" id="bc-bf" class="i18n-ph" data-en-ph="Men: 10–20%, Women: 18–28%" data-gr-ph="Άνδρες: 10–20%, Γυναίκες: 18–28%" placeholder="Men: 10–20%, Women: 18–28%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-bf-note"></div></div>
-          <div class="form-field"><label><i class="ti ti-scale" aria-hidden="true"></i> <span class="i18n" data-en="Fat Mass kg (auto)" data-gr="Μάζα Λίπους κιλά (αυτόματο)">Fat Mass kg (auto)</span></label><input type="number" id="bc-fatmass" class="i18n-ph" data-en-ph="Auto = Weight × BF%" data-gr-ph="Αυτόματο = Βάρος × ΠΛ%" placeholder="Auto = Weight × BF%" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('fatmass')" style="background:var(--bg-page)" title="Auto-calculated — type a device value here to override"></div>
+          <div class="form-field"><label><i class="ti ti-scale" aria-hidden="true"></i> <span class="i18n" data-en="Fat Mass kg (auto)" data-gr="Μάζα Λίπους κιλά (αυτόματο)">Fat Mass kg (auto)</span></label><input type="number" id="bc-fatmass" class="i18n-ph" data-en-ph="Auto = Weight × BF%" data-gr-ph="Αυτόματο = Βάρος × ΠΛ%" placeholder="Auto = Weight × BF%" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('fatmass')" style="background:var(--bg-page)" title="Auto-calculated from Weight × Body Fat %. Type a device-measured value to override — Fat-Free Mass will then be based on your entry. Clear this field to resume automatic calculation."></div>
           <div class="form-field"><label><i class="ti ti-activity" aria-hidden="true"></i> <span class="i18n" data-en="Fat-Free Mass kg (auto)" data-gr="Άλιπη Μάζα κιλά (αυτόματο)">Fat-Free Mass kg (auto)</span></label><input type="number" id="bc-ffm" class="i18n-ph" data-en-ph="Auto = Weight − Fat mass" data-gr-ph="Αυτόματο = Βάρος − Μάζα λίπους" placeholder="Auto = Weight − Fat mass" step="0.1" inputmode="decimal" oninput="onBodyCompManualInput('ffm')" style="background:var(--bg-page)" title="Auto-calculated — type a device value here to override"></div>
           <div class="form-field"><label><i class="ti ti-droplet" aria-hidden="true"></i> <span class="i18n" data-en="Body Water %" data-gr="Ποσοστό Νερού %">Body Water %</span></label><input type="number" id="bc-water" class="i18n-ph" data-en-ph="Men: 50–65%, Women: 45–60%" data-gr-ph="Άνδρες: 50–65%, Γυναίκες: 45–60%" placeholder="Men: 50–65%, Women: 45–60%" step="0.1" oninput="calcBodyComp()"><div class="field-note" id="bc-water-note"></div></div>
           <div class="form-field"><label><i class="ti ti-clock" aria-hidden="true"></i> <span class="i18n" data-en="Metabolic Age" data-gr="Μεταβολική Ηλικία">Metabolic Age</span></label><input type="number" id="bc-metage" placeholder="—" oninput="calcBodyComp()"><div class="field-note" id="bc-metage-note"></div></div>
@@ -2528,6 +2528,1018 @@ table th,
   <button class="bnav-item" onclick="nav('appointments');setBnav(this)"><span><i class="ti ti-calendar" aria-hidden="true"></i></span><span class="i18n" data-en="Calendar" data-gr="Ημερολόγιο">Calendar</span></button>
   <button class="bnav-item" onclick="nav('account');setBnav(this)"><span><i class="ti ti-credit-card" aria-hidden="true"></i></span><span class="i18n" data-en="Account" data-gr="Λογαριασμός">Account</span></button>
 </nav>
+<script>
+/* ============================================================
+   NUTRESE STRUCTURED MEAL ENGINE — inert port (Phase A)
+   AUTO-GENERATED from /poc/*.js by build_inline.js — DO NOT EDIT HERE.
+   Edit the canonical poc modules and re-run the build script.
+   Source of truth: poc/{food_db.js, fat_role.js, recipes.js, meal_instance.js, edit_meal.js, ai_validation.js, json_export.js, adjustment_lever.js}
+   ============================================================ */
+(function(){
+
+// ---- from food_db.js ----
+// ============================================================
+// FOOD DATABASE — versioned, internal, USDA-provenanced
+// ============================================================
+// Values are USDA FoodData Central-consistent reference values
+// (Foundation/SR Legacy style). Where this environment cannot make a
+// live USDA API call, fdc_id references real, well-known FDC entries
+// for that food/preparation and should be spot-verified against the
+// live API before this goes to production (flagged per item below).
+const FOOD_DB_VERSION = '2026-07-poc-1';
+
+const FOOD_DATABASE = {
+  chicken_breast_cooked: {
+    food_id: 'chicken_breast_cooked', name: { en: 'Chicken breast, cooked, skinless', gr: 'Στήθος κοτόπουλου, μαγειρεμένο, χωρίς πέτσα' },
+    state: 'cooked', fdc_id: 171077, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 165, protein100: 31.0, carbs100: 0, fat100: 3.6, fat_role: 'intrinsic',
+    exchange: { category: 'protein', grams_per_exchange: 30, note: 'ADA standard: 1 lean-protein exchange ≈ 1oz (30g) cooked skinless poultry' },
+    version: FOOD_DB_VERSION
+  },
+  cod_baked: {
+    food_id: 'cod_baked', name: { en: 'Cod fillet, baked', gr: 'Φιλέτο μπακαλιάρου, ψητό' },
+    state: 'cooked', fdc_id: 173687, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 105, protein100: 23.0, carbs100: 0, fat100: 0.9, fat_role: 'intrinsic',
+    exchange: { category: 'protein', grams_per_exchange: 35, note: 'Lean fish; ADA lists commonly use a slightly higher gram equivalent than meat for the same protein exchange' },
+    version: FOOD_DB_VERSION
+  },
+  rice_white_cooked: {
+    food_id: 'rice_white_cooked', name: { en: 'White rice, cooked', gr: 'Λευκό ρύζι, βρασμένο' },
+    state: 'cooked', fdc_id: 168878, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 130, protein100: 2.7, carbs100: 28.2, fat100: 0.3, fiber100: 0.4, fat_role: 'intrinsic',
+    exchange: { category: 'starch', grams_per_exchange: 60, note: '1 starch exchange ≈ 1/3 cup cooked rice' },
+    version: FOOD_DB_VERSION
+  },
+  potato_boiled: {
+    food_id: 'potato_boiled', name: { en: 'Potato, boiled, without skin', gr: 'Πατάτα, βραστή, χωρίς φλούδα' },
+    state: 'cooked', fdc_id: 170093, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 87, protein100: 1.9, carbs100: 20.1, fat100: 0.1, fiber100: 1.8, fat_role: 'intrinsic',
+    exchange: { category: 'starch', grams_per_exchange: 90, note: '1 starch exchange ≈ 1 small potato (~90g)' },
+    version: FOOD_DB_VERSION
+  },
+  lentils_cooked: {
+    food_id: 'lentils_cooked', name: { en: 'Lentils, cooked', gr: 'Φακές, βρασμένες' },
+    state: 'cooked', fdc_id: 172420, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 116, protein100: 9.0, carbs100: 20.1, fat100: 0.4, fiber100: 7.9, fat_role: 'intrinsic',
+    exchange: { category: 'starch', grams_per_exchange: 90, note: 'ADA classifies legumes under starch; 1 exchange ≈ 1/2 cup (~90g) cooked' },
+    version: FOOD_DB_VERSION
+  },
+  olive_oil: {
+    food_id: 'olive_oil', name: { en: 'Olive oil', gr: 'Ελαιόλαδο' },
+    state: 'n/a', fdc_id: 171413, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 884, protein100: 0, carbs100: 0, fat100: 100, fat_role: 'added',
+    exchange: { category: 'fat', grams_per_exchange: 5, note: '1 fat exchange = 1 tsp (~5g) olive oil' },
+    version: FOOD_DB_VERSION
+  },
+  salad_mixed_raw: {
+    food_id: 'salad_mixed_raw', name: { en: 'Mixed salad (lettuce, tomato, cucumber)', gr: 'Ανάμεικτη σαλάτα (μαρούλι, ντομάτα, αγγούρι)' },
+    state: 'raw', fdc_id: null, source: 'Composite estimate — average of USDA lettuce/tomato/cucumber raw entries (SPOT-VERIFY before production)',
+    kcal100: 18, protein100: 1.1, carbs100: 3.4, fat100: 0.2, fiber100: 1.3, fat_role: 'intrinsic',
+    exchange: { category: 'veg', grams_per_exchange: 85, note: '1 veg exchange ≈ 1 cup raw' },
+    version: FOOD_DB_VERSION
+  },
+  mixed_vegetables_cooked: {
+    food_id: 'mixed_vegetables_cooked', name: { en: 'Mixed vegetables, steamed (carrot, green bean, zucchini)', gr: 'Ανάμεικτα λαχανικά στον ατμό (καρότο, φασολάκι, κολοκυθάκι)' },
+    state: 'cooked', fdc_id: null, source: 'Composite estimate — average of USDA carrot/green bean/zucchini cooked entries (SPOT-VERIFY before production)',
+    kcal100: 40, protein100: 1.9, carbs100: 8.2, fat100: 0.3, fiber100: 2.8, fat_role: 'intrinsic',
+    exchange: { category: 'veg', grams_per_exchange: 90, note: '1 veg exchange ≈ 1 cup cooked' },
+    version: FOOD_DB_VERSION
+  },
+  egg_whole_cooked: {
+    food_id: 'egg_whole_cooked', name: { en: 'Egg, whole, cooked (boiled/poached)', gr: 'Αυγό, ολόκληρο, μαγειρεμένο (βραστό/ποσέ)' },
+    state: 'cooked', fdc_id: 173424, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 155, protein100: 12.6, carbs100: 1.1, fat100: 10.6, fat_role: 'intrinsic',
+    exchange: { category: 'protein', grams_per_exchange: 50, note: '1 medium-fat protein exchange = 1 large egg (~50g edible)' },
+    version: FOOD_DB_VERSION
+  },
+  lemon_juice: {
+    food_id: 'lemon_juice', name: { en: 'Lemon juice', gr: 'Χυμός λεμονιού' },
+    state: 'raw', fdc_id: 167746, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 22, protein100: 0.4, carbs100: 6.9, fat100: 0.2, fat_role: 'intrinsic',
+    exchange: { category: 'free', grams_per_exchange: null, note: 'Free food — negligible kcal at typical seasoning quantities' },
+    version: FOOD_DB_VERSION
+  },
+  chicken_broth: {
+    food_id: 'chicken_broth', name: { en: 'Chicken broth, clear', gr: 'Ζωμός κότας, διάφανος' },
+    state: 'n/a', fdc_id: 174608, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 4, protein100: 0.9, carbs100: 0.2, fat100: 0.1, fat_role: 'intrinsic',
+    exchange: { category: 'free', grams_per_exchange: null, note: 'Free food per standard exchange-list convention for clear broth' },
+    version: FOOD_DB_VERSION
+  },
+  halloumi_cheese: {
+    food_id: 'halloumi_cheese', name: { en: 'Halloumi cheese, grilled', gr: 'Χαλούμι, ψητό' },
+    state: 'cooked', fdc_id: 174168, source: 'USDA FoodData Central (SR Legacy) — base halloumi values; grilling assumed negligible nutrient change',
+    kcal100: 321, protein100: 21.3, carbs100: 2.0, fat100: 25.0, fat_role: 'intrinsic',
+    exchange: { category: 'protein', grams_per_exchange: 30, note: 'High-fat protein exchange, consistent with cheese classification under ADA meat/protein category' },
+    version: FOOD_DB_VERSION
+  },
+  wholegrain_bread: {
+    food_id: 'wholegrain_bread', name: { en: 'Wholegrain bread', gr: 'Ψωμί ολικής άλεσης' },
+    state: 'n/a', fdc_id: 172686, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 247, protein100: 9.0, carbs100: 41.0, fat100: 4.0, fiber100: 6.0, fat_role: 'intrinsic',
+    exchange: { category: 'starch', grams_per_exchange: 30, note: '1 starch exchange = 1 slice (~30g)' },
+    version: FOOD_DB_VERSION
+  },
+  cheese_light_slice: {
+    food_id: 'cheese_light_slice', name: { en: 'Cheese, light/reduced-fat, sliced', gr: 'Τυρί light σε φέτες' },
+    state: 'n/a', fdc_id: null, source: 'Composite estimate — typical reduced-fat cheddar-style slice (SPOT-VERIFY brand-specific value before production)',
+    kcal100: 250, protein100: 28.0, carbs100: 4.0, fat100: 14.0, fat_role: 'intrinsic',
+    exchange: { category: 'protein', grams_per_exchange: 30, note: 'Lean protein exchange = 1 slice (~30g)' },
+    version: FOOD_DB_VERSION
+  },
+  ricotta_anthotyro: {
+    food_id: 'ricotta_anthotyro', name: { en: 'Anthotyro (soft whey cheese)', gr: 'Ανθότυρο' },
+    state: 'n/a', fdc_id: 173441, source: 'USDA FoodData Central (SR Legacy) — ricotta used as closest nutritional equivalent to anthotyro',
+    kcal100: 174, protein100: 11.3, carbs100: 3.0, fat100: 13.0, fat_role: 'intrinsic',
+    exchange: { category: 'protein', grams_per_exchange: 40, note: 'Medium-fat protein exchange' },
+    version: FOOD_DB_VERSION
+  },
+  rusk_wholegrain: {
+    food_id: 'rusk_wholegrain', name: { en: 'Wholegrain rusk (barley)', gr: 'Παξιμάδι ολικής (κριθαρένιο)' },
+    state: 'n/a', fdc_id: null, source: 'Composite estimate — typical Cypriot barley rusk (SPOT-VERIFY brand-specific value before production)',
+    kcal100: 350, protein100: 10.0, carbs100: 70.0, fat100: 3.0, fiber100: 8.0, fat_role: 'intrinsic',
+    exchange: { category: 'starch', grams_per_exchange: 20, note: '1 starch exchange ≈ 1 rusk piece (~20g)' },
+    version: FOOD_DB_VERSION
+  },
+  apple: {
+    food_id: 'apple', name: { en: 'Apple, whole, raw', gr: 'Μήλο, ολόκληρο, ωμό' },
+    state: 'raw', fdc_id: 171688, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 52, protein100: 0.3, carbs100: 13.8, fat100: 0.2, fiber100: 2.4, fat_role: 'intrinsic',
+    exchange: { category: 'fruit', grams_per_exchange: 120, note: '1 fruit exchange ≈ 1 small apple (~120g)' },
+    version: FOOD_DB_VERSION
+  },
+  // ---- Batch 2 additions ----
+  pork_loin_cooked: {
+    food_id: 'pork_loin_cooked', name: { en: 'Pork loin, lean, cooked', gr: 'Χοιρινό φιλέτο, άπαχο, μαγειρεμένο' },
+    state: 'cooked', fdc_id: 168312, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 143, protein100: 26.0, carbs100: 0, fat100: 3.5, fat_role: 'intrinsic',
+    exchange: { category: 'protein', grams_per_exchange: 30, note: 'Lean-protein exchange, same convention as chicken' },
+    version: FOOD_DB_VERSION
+  },
+  beef_mince_lean_cooked: {
+    food_id: 'beef_mince_lean_cooked', name: { en: 'Beef mince, lean (90/10), cooked', gr: 'Κιμάς μοσχαρίσιος, άπαχος (90/10), μαγειρεμένος' },
+    state: 'cooked', fdc_id: 174036, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 176, protein100: 26.0, carbs100: 0, fat100: 8.0, fat_role: 'intrinsic',
+    exchange: { category: 'protein', grams_per_exchange: 30, note: 'Medium-fat protein exchange (leaner mince still carries more fat/exchange than poultry)' },
+    version: FOOD_DB_VERSION
+  },
+  tuna_canned_drained: {
+    food_id: 'tuna_canned_drained', name: { en: 'Tuna, canned in water, drained', gr: 'Τόνος κονσέρβα σε νερό, στραγγισμένος' },
+    state: 'drained', fdc_id: 175159, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 116, protein100: 25.5, carbs100: 0, fat100: 0.8, fat_role: 'intrinsic',
+    exchange: { category: 'protein', grams_per_exchange: 30, note: 'Very lean protein exchange; weight is drained weight, not can weight' },
+    version: FOOD_DB_VERSION
+  },
+  beef_pork_patty_cooked: {
+    food_id: 'beef_pork_patty_cooked', name: { en: 'Bifteki (seasoned beef/pork patty), grilled', gr: 'Μπιφτέκι (μοσχάρι/χοιρινό με μπαχαρικά), ψητό' },
+    state: 'cooked', fdc_id: null, source: 'Composite estimate — seasoned mixed beef/pork patty with breadcrumb/onion filler (SPOT-VERIFY before production; recipe-dependent)',
+    kcal100: 215, protein100: 22.0, carbs100: 4.0, fat100: 12.5, fat_role: 'intrinsic',
+    exchange: { category: 'protein', grams_per_exchange: 30, note: 'Medium/high-fat protein exchange' },
+    version: FOOD_DB_VERSION
+  },
+  bulgur_cooked: {
+    food_id: 'bulgur_cooked', name: { en: 'Bulgur wheat, cooked', gr: 'Πλιγούρι, βρασμένο' },
+    state: 'cooked', fdc_id: 169739, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 83, protein100: 3.1, carbs100: 18.6, fat100: 0.2, fiber100: 4.5, fat_role: 'intrinsic',
+    exchange: { category: 'starch', grams_per_exchange: 90, note: '1 starch exchange ≈ 1/2 cup cooked bulgur' },
+    version: FOOD_DB_VERSION
+  },
+  green_beans_cooked: {
+    food_id: 'green_beans_cooked', name: { en: 'Green beans, cooked in tomato sauce', gr: 'Φασολάκια, βρασμένα σε σάλτσα ντομάτας' },
+    state: 'cooked', fdc_id: null, source: 'Composite estimate — USDA green beans cooked + light tomato sauce (SPOT-VERIFY before production)',
+    kcal100: 42, protein100: 1.8, carbs100: 8.5, fat100: 0.3, fiber100: 3.4, fat_role: 'intrinsic',
+    exchange: { category: 'veg', grams_per_exchange: 90, note: '1 veg exchange ≈ 1 cup cooked' },
+    version: FOOD_DB_VERSION
+  },
+  pasta_cooked: {
+    food_id: 'pasta_cooked', name: { en: 'Pasta, cooked', gr: 'Ζυμαρικά, βρασμένα' },
+    state: 'cooked', fdc_id: 168927, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 131, protein100: 5.0, carbs100: 25.0, fat100: 1.1, fiber100: 1.8, fat_role: 'intrinsic',
+    exchange: { category: 'starch', grams_per_exchange: 75, note: '1 starch exchange ≈ 1/2 cup cooked pasta' },
+    version: FOOD_DB_VERSION
+  },
+  pita_bread: {
+    food_id: 'pita_bread', name: { en: 'Pita bread', gr: 'Πίτα' },
+    state: 'n/a', fdc_id: 172687, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 275, protein100: 9.1, carbs100: 55.7, fat100: 1.2, fiber100: 3.0, fat_role: 'intrinsic',
+    exchange: { category: 'starch', grams_per_exchange: 30, note: '1 starch exchange ≈ 1/3 pita' },
+    version: FOOD_DB_VERSION
+  },
+  tomato_sauce: {
+    food_id: 'tomato_sauce', name: { en: 'Tomato sauce', gr: 'Σάλτσα ντομάτας' },
+    state: 'n/a', fdc_id: 169228, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 29, protein100: 1.4, carbs100: 6.0, fat100: 0.2, fat_role: 'intrinsic',
+    exchange: { category: 'free', grams_per_exchange: null, note: 'Small quantities treated as a free-food seasoning base at typical amounts' },
+    version: FOOD_DB_VERSION
+  },
+  // ---- Batch 3 additions ----
+  salmon_baked: {
+    food_id: 'salmon_baked', name: { en: 'Salmon fillet, baked', gr: 'Φιλέτο σολομού, ψητό' },
+    state: 'cooked', fdc_id: 173686, source: 'USDA FoodData Central (SR Legacy)',
+    kcal100: 206, protein100: 22.1, carbs100: 0, fat100: 12.4, fat_role: 'intrinsic',
+    exchange: { category: 'protein', grams_per_exchange: 30, note: 'Higher-fat fish; still classified as protein exchange, omega-3-rich intrinsic fat' },
+    version: FOOD_DB_VERSION
+  },
+};
+
+// ---- from fat_role.js ----
+// FAT-ROLE DATA MODEL (confirmed design):
+// fat_role lives at TWO levels —
+//   1. Food record (FOOD_DATABASE[id].fat_role): the food's DEFAULT role,
+//      correct for the overwhelming majority of uses (olive oil is added,
+//      halloumi's fat is intrinsic).
+//   2. Recipe ingredient instance (ingredient.fat_role, OPTIONAL): a
+//      per-recipe override for the genuinely usage-dependent cases — the
+//      same food can be a deliberately-added fat source in one recipe
+//      (walnuts sprinkled over a salad as the fat component) and an
+//      inherent core component in another (walnuts as the body of a
+//      snack). The override, when present, always wins.
+// Every consumer (fat-split reporting, adjustment levers, review tables)
+// must resolve the effective role through this one function, never by
+// reading either field directly — so the precedence rule cannot drift
+// between call sites.
+function effectiveFatRole(ingredient) {
+  if (ingredient.fat_role === 'added' || ingredient.fat_role === 'intrinsic') return ingredient.fat_role;
+  return FOOD_DATABASE[ingredient.food_id]?.fat_role || 'intrinsic';
+}
+
+// ---- from recipes.js ----
+const RECIPE_SCHEMA_VERSION = '2026-07-poc-1';
+
+// Reuses the exact same ingredient-total math as the app's existing
+// recipeTotals()/ingredientTotals() functions (Recipe Builder / custom
+// meals) — no new calculation logic, per the single-source-of-truth
+// requirement.
+function ingredientTotal(item) {
+  const food = FOOD_DATABASE[item.food_id];
+  if (!food) throw new Error(`Unknown food_id: ${item.food_id}`);
+  const f = item.grams / 100;
+  return {
+    kcal: food.kcal100 * f,
+    protein_g: food.protein100 * f,
+    carbohydrate_g: food.carbs100 * f,
+    fat_g: food.fat100 * f,
+    fiber_g: (food.fiber100 || 0) * f,
+  };
+}
+function recipeTotals(ingredients) {
+  return ingredients.reduce((sum, item) => {
+    const t = ingredientTotal(item);
+    return {
+      kcal: sum.kcal + t.kcal,
+      protein_g: sum.protein_g + t.protein_g,
+      carbohydrate_g: sum.carbohydrate_g + t.carbohydrate_g,
+      fat_g: sum.fat_g + t.fat_g,
+      fiber_g: sum.fiber_g + t.fiber_g,
+    };
+  }, { kcal: 0, protein_g: 0, carbohydrate_g: 0, fat_g: 0, fiber_g: 0 });
+}
+// Exchanges are DERIVED from the actual ingredients — never assigned
+// independently. Free foods contribute 0 exchanges by definition.
+function deriveExchanges(ingredients) {
+  const totals = {};
+  ingredients.forEach(item => {
+    const food = FOOD_DATABASE[item.food_id];
+    const ex = food.exchange;
+    if (!ex || ex.category === 'free' || !ex.grams_per_exchange) return;
+    const count = item.grams / ex.grams_per_exchange;
+    totals[ex.category] = (totals[ex.category] || 0) + count;
+  });
+  // Round each exchange to 1 decimal for realistic clinical granularity
+  Object.keys(totals).forEach(k => { totals[k] = Math.round(totals[k] * 10) / 10; });
+  return totals;
+}
+function round1(n) { return Math.round(n * 10) / 10; }
+function roundKcal(n) { return Math.round(n); }
+
+function buildRecipe({ recipe_id, name, yield_servings, ingredients }) {
+  const total = recipeTotals(ingredients);
+  const perServing = {
+    kcal: total.kcal / yield_servings,
+    protein_g: total.protein_g / yield_servings,
+    carbohydrate_g: total.carbohydrate_g / yield_servings,
+    fat_g: total.fat_g / yield_servings,
+    fiber_g: total.fiber_g / yield_servings,
+  };
+  const perServingIngredients = ingredients.map(i => ({ ...i, grams: round1(i.grams / yield_servings) }));
+  const exchangesPerServing = deriveExchanges(perServingIngredients);
+  return {
+    recipe_id,
+    recipe_version: RECIPE_SCHEMA_VERSION,
+    name,
+    yield_servings,
+    ingredients, // full-recipe quantities
+    ingredients_per_serving: perServingIngredients,
+    total: { kcal: roundKcal(total.kcal), protein_g: round1(total.protein_g), carbohydrate_g: round1(total.carbohydrate_g), fat_g: round1(total.fat_g), fiber_g: round1(total.fiber_g) },
+    per_serving: { kcal: roundKcal(perServing.kcal), protein_g: round1(perServing.protein_g), carbohydrate_g: round1(perServing.carbohydrate_g), fat_g: round1(perServing.fat_g), fiber_g: round1(perServing.fiber_g) },
+    exchanges_per_serving: exchangesPerServing,
+    food_db_version: FOOD_DB_VERSION,
+  };
+}
+
+// ============================================================
+// 7 PROOF-OF-CONCEPT RECIPES
+// ============================================================
+const RECIPES = {};
+
+// 1. Simple protein + starch — realistic portion per explicit guidance (90-120g)
+RECIPES.LUN_CHICKEN_RICE = buildRecipe({
+  recipe_id: 'LUN_CHICKEN_RICE', name: { en: 'Chicken breast with rice', gr: 'Στήθος κοτόπουλου με ρύζι' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'chicken_breast_cooked', grams: 100, state: 'cooked' },
+    { food_id: 'rice_white_cooked', grams: 150, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 5, state: 'n/a' },
+    { food_id: 'salad_mixed_raw', grams: 170, state: 'raw' },
+  ],
+});
+
+// 2. Fish meal — 100-150g cooked per explicit guidance
+RECIPES.LUN_BAKED_FISH_VEG = buildRecipe({
+  recipe_id: 'LUN_BAKED_FISH_VEG', name: { en: 'Baked cod with vegetables', gr: 'Ψητός μπακαλιάρος με λαχανικά' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'cod_baked', grams: 140, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 10, state: 'n/a' },
+    { food_id: 'mixed_vegetables_cooked', grams: 180, state: 'cooked' },
+    { food_id: 'potato_boiled', grams: 90, state: 'cooked' },
+  ],
+});
+
+// 3. Legume-based
+RECIPES.LUN_LENTILS_RICE = buildRecipe({
+  recipe_id: 'LUN_LENTILS_RICE', name: { en: 'Lentils with rice', gr: 'Φακές με ρύζι' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'lentils_cooked', grams: 200, state: 'cooked' },
+    { food_id: 'rice_white_cooked', grams: 90, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 10, state: 'n/a' },
+    { food_id: 'salad_mixed_raw', grams: 85, state: 'raw' },
+  ],
+});
+
+// 4. Traditional recipe/soup — recipe yields multiple servings, client gets 1
+RECIPES.DIN_AVGOLEMONO_SOUP = buildRecipe({
+  recipe_id: 'DIN_AVGOLEMONO_SOUP', name: { en: 'Avgolemono soup (chicken, rice, egg-lemon)', gr: 'Κοτόσουπα αυγολέμονο' },
+  yield_servings: 4, // whole-pot recipe; client portion below reflects 1 of 4 servings
+  ingredients: [
+    { food_id: 'chicken_breast_cooked', grams: 240, state: 'cooked' }, // 60g/serving
+    { food_id: 'rice_white_cooked', grams: 240, state: 'cooked' },     // 60g/serving
+    { food_id: 'egg_whole_cooked', grams: 100, state: 'cooked' },      // 2 eggs total, 0.5/serving
+    { food_id: 'chicken_broth', grams: 1200, state: 'n/a' },           // 300ml/serving
+    { food_id: 'lemon_juice', grams: 80, state: 'raw' },               // 20ml/serving
+    { food_id: 'olive_oil', grams: 20, state: 'n/a' },                 // 5g/serving
+  ],
+});
+
+// 5. Dairy/cheese-based
+RECIPES.LUN_HALLOUMI_POTATO = buildRecipe({
+  recipe_id: 'LUN_HALLOUMI_POTATO', name: { en: 'Grilled halloumi with potato', gr: 'Χαλούμι ψητό με πατάτα' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'halloumi_cheese', grams: 80, state: 'cooked' },
+    { food_id: 'potato_boiled', grams: 150, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 5, state: 'n/a' },
+    { food_id: 'salad_mixed_raw', grams: 170, state: 'raw' },
+  ],
+});
+
+// 6. Breakfast
+RECIPES.BRK_TOAST = buildRecipe({
+  recipe_id: 'BRK_TOAST', name: { en: 'Toast with light cheese', gr: 'Τοστ με τυρί light' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'wholegrain_bread', grams: 60, state: 'n/a' }, // 2 slices
+    { food_id: 'cheese_light_slice', grams: 30, state: 'n/a' }, // 1 slice
+  ],
+});
+
+// 7. Snack — multi-ingredient combo
+RECIPES.snk_anthotyro_rusk_fruit = buildRecipe({
+  recipe_id: 'snk_anthotyro_rusk_fruit', name: { en: 'Anthotyro, rusk and fruit', gr: 'Ανθότυρο, παξιμάδι και φρούτο' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'ricotta_anthotyro', grams: 40, state: 'n/a' },
+    { food_id: 'rusk_wholegrain', grams: 20, state: 'n/a' }, // 1 rusk
+    { food_id: 'apple', grams: 120, state: 'raw' },
+  ],
+});
+
+// ============================================================
+// BATCH 2 — protein-anchored: pick a realistic protein portion FIRST,
+// then build starch/fat/veg around it, per the confirmed philosophy.
+// ============================================================
+
+// 8. Pork + green beans — protein anchor 100g (was showing NO quantity at all before)
+RECIPES.LUN_FASOLAKIA_PORK = buildRecipe({
+  recipe_id: 'LUN_FASOLAKIA_PORK', name: { en: 'Pork with green beans', gr: 'Χοιρινό με φασολάκια' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'pork_loin_cooked', grams: 100, state: 'cooked' },
+    { food_id: 'green_beans_cooked', grams: 220, state: 'cooked' },
+    { food_id: 'potato_boiled', grams: 80, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 8, state: 'n/a' },
+  ],
+});
+
+// 9. Pasta + mince — protein anchor 100g lean mince
+RECIPES.DIN_PASTA_MINCE = buildRecipe({
+  recipe_id: 'DIN_PASTA_MINCE', name: { en: 'Pasta with mince', gr: 'Μακαρόνια με κιμά' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'beef_mince_lean_cooked', grams: 100, state: 'cooked' },
+    { food_id: 'pasta_cooked', grams: 180, state: 'cooked' },
+    { food_id: 'tomato_sauce', grams: 60, state: 'n/a' },
+    { food_id: 'olive_oil', grams: 5, state: 'n/a' },
+    { food_id: 'salad_mixed_raw', grams: 150, state: 'raw' },
+  ],
+});
+
+// 10. Tuna + rice — drained weight explicitly stated (was one of the 16 completely broken meals)
+RECIPES.LUN_TUNA_RICE = buildRecipe({
+  recipe_id: 'LUN_TUNA_RICE', name: { en: 'Tuna with rice', gr: 'Τόνος με ρύζι' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'tuna_canned_drained', grams: 120, state: 'drained' },
+    { food_id: 'rice_white_cooked', grams: 150, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 8, state: 'n/a' },
+    { food_id: 'salad_mixed_raw', grams: 170, state: 'raw' },
+  ],
+});
+
+// 11. Burger + bulgur — protein anchor 110g patty (legacy had fixed protein:3
+// exchanges = 90g equivalent, already reasonably close; flagged fat separately, see report)
+RECIPES.DIN_BIFTEKI_BULGUR = buildRecipe({
+  recipe_id: 'DIN_BIFTEKI_BULGUR', name: { en: 'Bifteki (burger) with bulgur', gr: 'Μπιφτέκι με πλιγούρι' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'beef_pork_patty_cooked', grams: 110, state: 'cooked' },
+    { food_id: 'bulgur_cooked', grams: 150, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 5, state: 'n/a' }, // reduced from legacy's implied 20g — see flag below
+    { food_id: 'salad_mixed_raw', grams: 170, state: 'raw' },
+  ],
+});
+
+// 12. Grilled halloumi + salad + bread — protein anchor 90g (legacy showed literally NO quantity)
+RECIPES.DIN_HALLOUMI_SALAD = buildRecipe({
+  recipe_id: 'DIN_HALLOUMI_SALAD', name: { en: 'Grilled halloumi with salad and bread', gr: 'Χαλούμι ψητό με σαλάτα και ψωμί' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'halloumi_cheese', grams: 90, state: 'cooked' },
+    { food_id: 'wholegrain_bread', grams: 30, state: 'n/a' }, // 1 slice
+    { food_id: 'salad_mixed_raw', grams: 255, state: 'raw' }, // legacy's "large salad, 3 cups"
+  ],
+});
+
+// ============================================================
+// BATCH 3 — closing 6 more of the originally-broken 16 meals
+// ============================================================
+
+// 13. Chicken + potato — protein+starch variant
+RECIPES.LUN_CHICKEN_POTATO = buildRecipe({
+  recipe_id: 'LUN_CHICKEN_POTATO', name: { en: 'Chicken breast with potato', gr: 'Στήθος κοτόπουλου με πατάτα' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'chicken_breast_cooked', grams: 100, state: 'cooked' },
+    { food_id: 'potato_boiled', grams: 150, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 5, state: 'n/a' },
+    { food_id: 'salad_mixed_raw', grams: 170, state: 'raw' },
+  ],
+});
+
+// 14. Salmon + potato — omega-3-rich fish, note salmon's own fat reduces need for added oil
+RECIPES.LUN_SALMON_POTATO = buildRecipe({
+  recipe_id: 'LUN_SALMON_POTATO', name: { en: 'Baked salmon with potato', gr: 'Ψητός σολομός με πατάτα' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'salmon_baked', grams: 130, state: 'cooked' },
+    { food_id: 'potato_boiled', grams: 150, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 3, state: 'n/a' }, // reduced — salmon already contributes substantial intrinsic fat
+    { food_id: 'salad_mixed_raw', grams: 170, state: 'raw' },
+  ],
+});
+
+// 15. Chicken vegetable soup — another traditional recipe/soup type
+RECIPES.LUN_VEG_SOUP_CHICKEN = buildRecipe({
+  recipe_id: 'LUN_VEG_SOUP_CHICKEN', name: { en: 'Chicken vegetable soup', gr: 'Κοτόσουπα με λαχανικά' },
+  yield_servings: 4,
+  ingredients: [
+    { food_id: 'chicken_breast_cooked', grams: 320, state: 'cooked' }, // 80g/serving
+    { food_id: 'mixed_vegetables_cooked', grams: 480, state: 'cooked' }, // 120g/serving
+    { food_id: 'rice_white_cooked', grams: 200, state: 'cooked' }, // 50g/serving
+    { food_id: 'chicken_broth', grams: 1200, state: 'n/a' }, // 300ml/serving
+    { food_id: 'olive_oil', grams: 20, state: 'n/a' }, // 5g/serving
+  ],
+});
+
+// 16. Grilled halloumi + potato (DINNER variant — lighter than the lunch version)
+RECIPES.DIN_HALLOUMI_POTATO = buildRecipe({
+  recipe_id: 'DIN_HALLOUMI_POTATO', name: { en: 'Grilled halloumi with potato (dinner)', gr: 'Χαλούμι ψητό με πατάτα (βραδινό)' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'halloumi_cheese', grams: 70, state: 'cooked' }, // slightly lighter than the lunch version
+    { food_id: 'potato_boiled', grams: 120, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 3, state: 'n/a' },
+    { food_id: 'salad_mixed_raw', grams: 170, state: 'raw' },
+  ],
+});
+
+// 17. Chicken + green beans — chicken variant of the pork dish
+RECIPES.LUN_FASOLAKIA_CHICKEN = buildRecipe({
+  recipe_id: 'LUN_FASOLAKIA_CHICKEN', name: { en: 'Chicken with green beans', gr: 'Κοτόπουλο με φασολάκια' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'chicken_breast_cooked', grams: 100, state: 'cooked' },
+    { food_id: 'green_beans_cooked', grams: 220, state: 'cooked' },
+    { food_id: 'potato_boiled', grams: 80, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 8, state: 'n/a' },
+  ],
+});
+
+// 18. Tuna + rice (DINNER variant)
+RECIPES.DIN_TUNA_RICE = buildRecipe({
+  recipe_id: 'DIN_TUNA_RICE', name: { en: 'Tuna with rice (dinner)', gr: 'Τόνος με ρύζι (βραδινό)' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'tuna_canned_drained', grams: 120, state: 'drained' },
+    { food_id: 'rice_white_cooked', grams: 120, state: 'cooked' }, // slightly less starch for dinner
+    { food_id: 'olive_oil', grams: 8, state: 'n/a' },
+    { food_id: 'salad_mixed_raw', grams: 170, state: 'raw' },
+  ],
+});
+
+// ============================================================
+// BATCH 4 — the final 6 of the originally-broken 16 meals.
+// All are meal-slot counterparts of dishes migrated in Batches 1-3,
+// so they reuse already-verified food records; portions are set
+// independently per slot (dinners generally lighter on starch).
+// ============================================================
+
+// 19. Chicken + potato (DINNER) — counterpart of LUN_CHICKEN_POTATO
+RECIPES.DIN_CHICKEN_POTATO = buildRecipe({
+  recipe_id: 'DIN_CHICKEN_POTATO', name: { en: 'Chicken breast with potato (dinner)', gr: 'Στήθος κοτόπουλου με πατάτα (βραδινό)' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'chicken_breast_cooked', grams: 100, state: 'cooked' },
+    { food_id: 'potato_boiled', grams: 120, state: 'cooked' }, // lighter starch than lunch (150g)
+    { food_id: 'olive_oil', grams: 5, state: 'n/a' },
+    { food_id: 'salad_mixed_raw', grams: 170, state: 'raw' },
+  ],
+});
+
+// 20. Salmon + potato (DINNER) — counterpart of LUN_SALMON_POTATO; oil kept at 3g for the same intrinsic-fat reason
+RECIPES.DIN_SALMON_POTATO = buildRecipe({
+  recipe_id: 'DIN_SALMON_POTATO', name: { en: 'Baked salmon with potato (dinner)', gr: 'Ψητός σολομός με πατάτα (βραδινό)' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'salmon_baked', grams: 130, state: 'cooked' },
+    { food_id: 'potato_boiled', grams: 120, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 3, state: 'n/a' }, // salmon's ~16g intrinsic fat already covers most of the dish's fat
+    { food_id: 'salad_mixed_raw', grams: 170, state: 'raw' },
+  ],
+});
+
+// 21. Baked fish + veg (DINNER) — counterpart of LUN_BAKED_FISH_VEG
+RECIPES.DIN_BAKED_FISH_VEG = buildRecipe({
+  recipe_id: 'DIN_BAKED_FISH_VEG', name: { en: 'Baked cod with vegetables (dinner)', gr: 'Ψητός μπακαλιάρος με λαχανικά (βραδινό)' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'cod_baked', grams: 140, state: 'cooked' },
+    { food_id: 'olive_oil', grams: 10, state: 'n/a' },
+    { food_id: 'mixed_vegetables_cooked', grams: 180, state: 'cooked' },
+    { food_id: 'potato_boiled', grams: 80, state: 'cooked' },
+  ],
+});
+
+// 22. Chicken + green beans (DINNER) — counterpart of LUN_FASOLAKIA_CHICKEN
+RECIPES.DIN_FASOLAKIA_CHICKEN = buildRecipe({
+  recipe_id: 'DIN_FASOLAKIA_CHICKEN', name: { en: 'Chicken with green beans (dinner)', gr: 'Κοτόπουλο με φασολάκια (βραδινό)' },
+  yield_servings: 1,
+  ingredients: [
+    { food_id: 'chicken_breast_cooked', grams: 100, state: 'cooked' },
+    { food_id: 'green_beans_cooked', grams: 220, state: 'cooked' },
+    { food_id: 'potato_boiled', grams: 60, state: 'cooked' }, // lighter starch than lunch (80g)
+    { food_id: 'olive_oil', grams: 8, state: 'n/a' },
+  ],
+});
+
+// 23. Chicken vegetable soup (DINNER) — counterpart of LUN_VEG_SOUP_CHICKEN
+RECIPES.DIN_VEG_SOUP_CHICKEN = buildRecipe({
+  recipe_id: 'DIN_VEG_SOUP_CHICKEN', name: { en: 'Chicken vegetable soup (dinner)', gr: 'Κοτόσουπα με λαχανικά (βραδινό)' },
+  yield_servings: 4,
+  ingredients: [
+    { food_id: 'chicken_breast_cooked', grams: 320, state: 'cooked' }, // 80g/serving
+    { food_id: 'mixed_vegetables_cooked', grams: 480, state: 'cooked' }, // 120g/serving
+    { food_id: 'rice_white_cooked', grams: 200, state: 'cooked' }, // 50g/serving
+    { food_id: 'chicken_broth', grams: 1200, state: 'n/a' }, // 300ml/serving
+    { food_id: 'olive_oil', grams: 20, state: 'n/a' }, // 5g/serving
+  ],
+});
+
+// 24. Avgolemono soup (LUNCH) — counterpart of DIN_AVGOLEMONO_SOUP (Batch 1)
+RECIPES.LUN_AVGOLEMONO_SOUP = buildRecipe({
+  recipe_id: 'LUN_AVGOLEMONO_SOUP', name: { en: 'Avgolemono soup (chicken, rice, egg-lemon)', gr: 'Κοτόσουπα αυγολέμονο' },
+  yield_servings: 4,
+  ingredients: [
+    { food_id: 'chicken_breast_cooked', grams: 240, state: 'cooked' }, // 60g/serving (soup exception, as in Batch 1)
+    { food_id: 'rice_white_cooked', grams: 240, state: 'cooked' },
+    { food_id: 'egg_whole_cooked', grams: 100, state: 'cooked' },
+    { food_id: 'chicken_broth', grams: 1200, state: 'n/a' },
+    { food_id: 'lemon_juice', grams: 80, state: 'raw' },
+    { food_id: 'olive_oil', grams: 20, state: 'n/a' },
+  ],
+});
+
+// ---- from meal_instance.js ----
+// ============================================================
+// ROUNDING POLICY (documented, applied consistently everywhere)
+// ============================================================
+const ROUNDING_POLICY = {
+  ingredient_grams_internal: 'full precision (float, unrounded)',
+  ingredient_grams_display: 1,      // 1 decimal place
+  macro_grams_display: 1,           // 1 decimal place
+  kcal_display: 0,                  // whole number
+  exchange_display: 1,              // 1 decimal place
+  reconciliation_tolerance_kcal_pct: 0.02,   // 2% — meal/day totals vs sum of parts
+
+  // MACRO-TO-KCAL RECONCILIATION METHODOLOGY
+  // A naive protein×4 + carbohydrate×4 + fat×9 calculation systematically
+  // overstates kcal for any food containing dietary fiber, because fiber is
+  // not fully metabolizable — USDA's own reported kcal values already
+  // account for this using food-specific Atwater factors. Rather than
+  // widening the tolerance to paper over this, the reconciliation check
+  // uses the standard MODIFIED ATWATER formula, which is the scientifically
+  // correct approach (used by USDA and most professional nutrition
+  // software): fiber contributes ~2 kcal/g instead of 4 kcal/g, with the
+  // remaining ("net") carbohydrate at the normal 4 kcal/g.
+  //   kcal_reconstructed = protein×4 + (carbohydrate − fiber)×4 + fiber×2 + fat×9
+  // This requires every food to carry a fiber100 value (defaults to 0 for
+  // foods where fiber is negligible or not applicable, e.g. meat/oil/dairy).
+  // This is a PLAUSIBILITY check, not an exact-reconciliation check. Even
+  // the modified-Atwater formula is a generic approximation — USDA's own
+  // reported kcal values use more granular, food-specific energy
+  // conversion factors that no single formula can perfectly replicate
+  // (verified: max observed deviation across 12 real recipes was 6.0%,
+  // for a lentil-forward dish, using correct USDA fiber data). The
+  // AUTHORITATIVE kcal value is always the sum of ingredient-level USDA
+  // kcal100 values (checked exactly, zero tolerance, by the sum-of-parts
+  // tests) — this check exists only to catch gross data errors (e.g. a
+  // fat value entered 10x too high), not to validate the display value
+  // against a formula. Set from real observed data, not picked arbitrarily.
+  reconciliation_tolerance_macro_kcal_pct: 0.07,
+  reconciliation_tolerance_macro_kcal_abs: 5,
+  note: 'Internal calculation always uses full, unrounded floating-point values. Rounding is applied ONLY at display/export time, never between calculation steps. Sum-of-parts totals (ingredient->meal->day) are EXACT, zero-tolerance arithmetic and must always reconcile precisely. The macro-to-kcal plausibility check is the one exception with a wider, explicitly-justified tolerance, because it validates against an inherently approximate model, not a second measurement of the same fact.'
+};
+function macroReconstructedKcal(totals) {
+  const fiber = totals.fiber_g || 0;
+  const netCarb = Math.max(0, totals.carbohydrate_g - fiber);
+  return totals.protein_g * 4 + netCarb * 4 + fiber * 2 + totals.fat_g * 9;
+}
+
+// ============================================================
+// FROZEN MEAL INSTANCE
+// ============================================================
+// Once a meal is generated for a client, its actual ingredients/quantities
+// are captured into an immutable snapshot. Editing the catalog Recipe or
+// Food Database later NEVER changes an already-saved meal instance — the
+// instance carries its own copy of everything needed to reconstruct it,
+// plus a reference back to the recipe/food-db versions it was built from
+// (for audit trail), but does not re-read those live sources afterward.
+function freezeMealInstance(recipeKey, { servingsUsed = 1, scaledIngredients = null, generatedAt = new Date().toISOString() } = {}) {
+  const recipe = RECIPES[recipeKey];
+  if (!recipe) throw new Error(`Unknown recipe: ${recipeKey}`);
+
+  // Use explicitly-scaled ingredients if provided (e.g. engine scaled portions
+  // for this client's targets), otherwise use the recipe's own per-serving
+  // ingredients x servingsUsed.
+  const ingredients = scaledIngredients || recipe.ingredients_per_serving.map(i => ({
+    ...i, grams: Math.round(i.grams * servingsUsed * 10) / 10
+  }));
+
+  const totals = recipeTotals(ingredients);
+  const exchanges = deriveExchanges(ingredients);
+
+  return {
+    // Provenance — traceable back to source, but frozen from here on
+    recipe_id: recipe.recipe_id,
+    recipe_version_at_generation: recipe.recipe_version,
+    food_db_version_at_generation: recipe.food_db_version,
+    generated_at: generatedAt,
+    servings_used: servingsUsed,
+
+    // Frozen, self-contained data — this is what gets saved with the client
+    // plan and NEVER changes even if the catalog recipe is edited later
+    ingredients: ingredients.map(i => ({
+      food_id: i.food_id,
+      food_name: FOOD_DATABASE[i.food_id].name,
+      grams: i.grams,
+      state: i.state,
+      ...(i.fat_role === 'added' || i.fat_role === 'intrinsic' ? { fat_role: i.fat_role } : {}), // per-recipe override, when present (see fat_role.js)
+      source: FOOD_DATABASE[i.food_id].source,
+      fdc_id: FOOD_DATABASE[i.food_id].fdc_id,
+      kcal: Math.round(FOOD_DATABASE[i.food_id].kcal100 * i.grams / 100 * 10) / 10,
+      protein_g: Math.round(FOOD_DATABASE[i.food_id].protein100 * i.grams / 100 * 10) / 10,
+      carbohydrate_g: Math.round(FOOD_DATABASE[i.food_id].carbs100 * i.grams / 100 * 10) / 10,
+      fat_g: Math.round(FOOD_DATABASE[i.food_id].fat100 * i.grams / 100 * 10) / 10,
+    })),
+    totals: {
+      kcal: Math.round(totals.kcal),
+      protein_g: Math.round(totals.protein_g * 10) / 10,
+      carbohydrate_g: Math.round(totals.carbohydrate_g * 10) / 10,
+      fat_g: Math.round(totals.fat_g * 10) / 10,
+    },
+    exchanges,
+  };
+}
+
+// ============================================================
+// RENDERING — human-readable text generated FROM the frozen instance,
+// not from a separate formula. Planner, templates, reports and PDF all
+// call this same function.
+// ============================================================
+const STATE_LABELS = {
+  cooked: { en: 'cooked', gr: 'μαγειρεμένο' },
+  raw: { en: 'raw', gr: 'ωμό' },
+  drained: { en: 'drained', gr: 'στραγγισμένο' },
+};
+function renderMealText(instance, lang = 'en') {
+  const parts = instance.ingredients.map(i => {
+    const name = i.food_name[lang] || i.food_name.en;
+    const stateLabel = STATE_LABELS[i.state];
+    const stateTxt = stateLabel ? ` (${stateLabel[lang] || stateLabel.en})` : '';
+    return `${name}${stateTxt} — ${i.grams}g`;
+  });
+  return parts.join(' + ');
+}
+
+// ---- from edit_meal.js ----
+// Recomputes an instance's totals/exchanges from its current ingredient
+// list. This is the ONLY place totals get calculated from ingredients —
+// every edit operation below ends by calling this, so there is exactly one
+// calculation path regardless of how the meal originated (dropdown,
+// template, AI, or custom).
+function recalculate(instance) {
+  const totals = recipeTotals(instance.ingredients.map(i => ({ food_id: i.food_id, grams: i.grams })));
+  const exchanges = deriveExchanges(instance.ingredients.map(i => ({ food_id: i.food_id, grams: i.grams })));
+  return {
+    ...instance,
+    edited: true,
+    edited_at: new Date().toISOString(),
+    ingredients: instance.ingredients.map(i => {
+      const t = ingredientTotal({ food_id: i.food_id, grams: i.grams });
+      const food = FOOD_DATABASE[i.food_id];
+      return {
+        food_id: i.food_id,
+        food_name: food.name,
+        grams: Math.round(i.grams * 10) / 10,
+        state: i.state,
+        source: food.source,
+        fdc_id: food.fdc_id,
+        kcal: Math.round(t.kcal * 10) / 10,
+        protein_g: Math.round(t.protein_g * 10) / 10,
+        carbohydrate_g: Math.round(t.carbohydrate_g * 10) / 10,
+        fat_g: Math.round(t.fat_g * 10) / 10,
+      };
+    }),
+    totals: {
+      kcal: Math.round(totals.kcal),
+      protein_g: Math.round(totals.protein_g * 10) / 10,
+      carbohydrate_g: Math.round(totals.carbohydrate_g * 10) / 10,
+      fat_g: Math.round(totals.fat_g * 10) / 10,
+      fiber_g: Math.round(totals.fiber_g * 10) / 10,
+    },
+    exchanges,
+  };
+}
+
+function setIngredientQuantity(instance, food_id, newGrams) {
+  if (newGrams < 0) throw new Error('Quantity cannot be negative');
+  const found = instance.ingredients.some(i => i.food_id === food_id);
+  if (!found) throw new Error(`Ingredient ${food_id} not found in this meal`);
+  const updated = { ...instance, ingredients: instance.ingredients.map(i => i.food_id === food_id ? { ...i, grams: newGrams } : i) };
+  return recalculate(updated);
+}
+
+function addIngredient(instance, { food_id, grams, state }) {
+  if (!FOOD_DATABASE[food_id]) throw new Error(`Unknown food_id: ${food_id}`);
+  if (instance.ingredients.some(i => i.food_id === food_id)) throw new Error(`${food_id} is already in this meal — use setIngredientQuantity to change its amount instead`);
+  const updated = { ...instance, ingredients: [...instance.ingredients, { food_id, grams, state: state || FOOD_DATABASE[food_id].state }] };
+  return recalculate(updated);
+}
+
+function removeIngredient(instance, food_id) {
+  const updated = { ...instance, ingredients: instance.ingredients.filter(i => i.food_id !== food_id) };
+  return recalculate(updated);
+}
+
+function replaceIngredient(instance, oldFoodId, newIngredient) {
+  const withRemoved = removeIngredient(instance, oldFoodId);
+  return addIngredient(withRemoved, newIngredient);
+}
+
+// Scales EVERY ingredient proportionally — used for "change recipe
+// servings" (e.g. 1 -> 2.5 servings scales every ingredient by 2.5x).
+//
+// DESIGN DECISION (confirmed): this scales whatever is CURRENTLY in
+// instance.ingredients — i.e. the dietitian's already-edited amounts if
+// any edits have been made — never re-derives from the original catalog
+// recipe. If a dietitian changes chicken from 100g to 130g and then
+// changes servings from 1 to 1.5, the result is 130g x 1.5 = 195g, not a
+// reversion to the catalog's 100g. This is intentional: the edited
+// instance IS the source of truth for that client's plan from the moment
+// of the first edit onward, and a later servings change is a further edit
+// on top of it, not a reset.
+function setServings(instance, newServingsUsed) {
+  if (newServingsUsed <= 0) throw new Error('Servings must be positive');
+  const ratio = newServingsUsed / instance.servings_used;
+  const updated = {
+    ...instance,
+    servings_used: newServingsUsed,
+    ingredients: instance.ingredients.map(i => ({ ...i, grams: i.grams * ratio })),
+  };
+  return recalculate(updated);
+}
+
+// ---- from ai_validation.js ----
+// The AI may suggest a food NAME and quantity, but its own kcal/macro
+// numbers (if it provides any) are NEVER used — Nutrese resolves the name
+// to a known food_id and computes everything itself. Anything that can't
+// be resolved is flagged for the dietitian, never silently accepted or guessed.
+function normalizeForMatch(s) {
+  // Keep Latin AND Greek letters (Unicode range \u0370-\u03FF covers Greek)
+  // plus digits and spaces — the previous ASCII-only regex silently
+  // stripped every Greek food name down to an empty string, and an empty
+  // string matches everything via .includes(''), causing every AI
+  // suggestion to spuriously match the first food in the database
+  // regardless of actual similarity. Caught by the AI-validation test below.
+  return String(s || '').toLowerCase().replace(/[^a-z0-9\u0370-\u03ff ]/g, '').trim();
+}
+function resolveAiFoodSuggestion(aiItem) {
+  // aiItem: { name, quantity_g, state, ai_claimed_kcal (IGNORED) }
+  const target = normalizeForMatch(aiItem.name);
+  let bestMatch = null, bestScore = 0;
+  for (const food of Object.values(FOOD_DATABASE)) {
+    const candidates = [food.name.en, food.name.gr, food.food_id.replace(/_/g, ' ')]
+      .map(normalizeForMatch)
+      .filter(c => c.length >= 3); // degenerate/empty candidates (e.g. non-Latin names under old normalization) must never match
+    for (const c of candidates) {
+      if (c === target) { bestMatch = food; bestScore = 3; break; }
+      if (!bestMatch && target.length > 2 && (c.includes(target) || target.includes(c))) { bestMatch = food; bestScore = 1; }
+    }
+    if (bestScore === 3) break;
+  }
+  if (!bestMatch) {
+    return { resolved: false, ai_suggestion: aiItem, flag: `Unresolved food: "${aiItem.name}" does not match any known food database record. Requires dietitian review before this item can be included — it is NOT auto-accepted.` };
+  }
+  return {
+    resolved: true,
+    food_id: bestMatch.food_id,
+    grams: Number(aiItem.quantity_g) || 0,
+    state: aiItem.state || bestMatch.state,
+    match_confidence: bestScore === 3 ? 'exact' : 'partial-needs-review',
+    ai_claimed_kcal_DISCARDED: aiItem.ai_claimed_kcal, // kept only for audit/debug, never used in calculation
+  };
+}
+function validateAiMealSuggestion(aiItems) {
+  const resolved = [], flags = [];
+  aiItems.forEach(item => {
+    const r = resolveAiFoodSuggestion(item);
+    if (r.resolved) {
+      resolved.push({ food_id: r.food_id, grams: r.grams, state: r.state });
+      if (r.match_confidence !== 'exact') flags.push(`"${item.name}" matched to "${FOOD_DATABASE[r.food_id].name.en}" with partial confidence — please confirm this is correct.`);
+    } else {
+      flags.push(r.flag);
+    }
+  });
+  // Totals/exchanges are computed ONLY from resolved, known foods —
+  // never from anything the AI claimed directly.
+  const totals = resolved.length ? recipeTotals(resolved) : null;
+  const exchanges = resolved.length ? deriveExchanges(resolved) : null;
+  return { resolved, flags, computed_totals: totals, computed_exchanges: exchanges, fully_resolved: flags.length === 0 };
+}
+
+// ---- from json_export.js ----
+// Builds the structured export exactly matching the schema specified,
+// generated directly from frozen meal instances — not a second,
+// independently-derived serialization.
+function exportPlanJSON({ client, targets, exchange_targets, days }) {
+  return {
+    client, targets, exchange_targets,
+    days: days.map(day => {
+      const meals = day.meals.map(m => {
+        const items = m.instance.ingredients.map(i => ({
+          food_id: i.food_id,
+          name: i.food_name.en,
+          quantity: i.grams,
+          unit: 'g',
+          state: i.state,
+          fdc_id: i.fdc_id,
+          source: i.source,
+          kcal: i.kcal,
+          protein_g: i.protein_g,
+          carbohydrate_g: i.carbohydrate_g,
+          fat_g: i.fat_g,
+        }));
+        return {
+          meal: m.slot,
+          recipe_id: m.instance.recipe_id,
+          recipe_version: m.instance.recipe_version_at_generation,
+          servings_used: m.instance.servings_used,
+          items,
+          totals: m.instance.totals,
+          exchanges: m.instance.exchanges,
+        };
+      });
+      const dayTotals = meals.reduce((sum, m) => ({
+        kcal: sum.kcal + m.totals.kcal,
+        protein_g: sum.protein_g + m.totals.protein_g,
+        carbohydrate_g: sum.carbohydrate_g + m.totals.carbohydrate_g,
+        fat_g: sum.fat_g + m.totals.fat_g,
+      }), { kcal: 0, protein_g: 0, carbohydrate_g: 0, fat_g: 0 });
+      return {
+        day: day.day,
+        meals,
+        totals: {
+          kcal: Math.round(dayTotals.kcal),
+          protein_g: Math.round(dayTotals.protein_g * 10) / 10,
+          carbohydrate_g: Math.round(dayTotals.carbohydrate_g * 10) / 10,
+          fat_g: Math.round(dayTotals.fat_g * 10) / 10,
+        },
+      };
+    }),
+  };
+}
+
+// ---- from adjustment_lever.js ----
+// Given a clinical adjustment GOAL (reduce energy / reduce carb / reduce
+// added fat / reduce intrinsic fat), recommends which ingredient(s) are
+// actually capable of achieving it — rather than defaulting to "reduce
+// starch or oil" regardless of whether that ingredient contributes the
+// nutrient that actually needs to change. This directly addresses the
+// halloumi case: a dish with 0g added fat cannot have its fat reduced by
+// touching the oil, because there isn't any.
+function suggestAdjustmentLevers(instance, goal) {
+  const candidates = instance.ingredients.map(i => {
+    const food = FOOD_DATABASE[i.food_id];
+    return { food_id: i.food_id, name: food.name.en, grams: i.grams, fat_role: effectiveFatRole(i), exchange_category: food.exchange?.category, kcal: i.kcal, fat_g: i.fat_g, carbohydrate_g: i.carbohydrate_g };
+  });
+
+  if (goal === 'reduce_added_fat') {
+    const levers = candidates.filter(c => c.fat_role === 'added' && c.fat_g > 0);
+    if (levers.length === 0) {
+      const intrinsicSources = candidates.filter(c => c.fat_role === 'intrinsic' && c.fat_g > 2).sort((a,b)=>b.fat_g-a.fat_g);
+      return {
+        achievable_by_reducing_added_fat: false,
+        reason: 'This meal has no added fat (oil/butter) to reduce — all its fat is intrinsic to the food itself.',
+        alternative_levers: intrinsicSources.map(s => `Reduce the quantity of "${s.name}" (contributes ${s.fat_g}g intrinsic fat), or substitute a lower-fat alternative for the same food category.`),
+      };
+    }
+    return { achievable_by_reducing_added_fat: true, levers: levers.map(l => `Reduce "${l.name}" (${l.grams}g, contributing ${l.fat_g}g added fat)`) };
+  }
+
+  if (goal === 'reduce_intrinsic_fat') {
+    const levers = candidates.filter(c => c.fat_role === 'intrinsic' && c.fat_g > 2).sort((a,b)=>b.fat_g-a.fat_g);
+    return {
+      achievable_by_reducing_intrinsic_fat: levers.length > 0,
+      levers: levers.map(l => `Reduce the quantity of "${l.name}" (${l.grams}g, ${l.fat_g}g intrinsic fat), or select a leaner alternative within the same food category (e.g. a lower-fat cheese/protein).`),
+    };
+  }
+
+  if (goal === 'reduce_carbohydrate') {
+    const levers = candidates.filter(c => c.exchange_category === 'starch' && c.carbohydrate_g > 0).sort((a,b)=>b.carbohydrate_g-a.carbohydrate_g);
+    return {
+      achievable_by_reducing_carbohydrate: levers.length > 0,
+      levers: levers.map(l => `Reduce "${l.name}" (${l.grams}g, contributing ${l.carbohydrate_g}g carbohydrate)`),
+      note: 'Reducing carbohydrate lowers total energy but does NOT reduce fat — if the clinical goal is specifically fat reduction, use reduce_added_fat or reduce_intrinsic_fat instead.',
+    };
+  }
+
+  if (goal === 'reduce_energy') {
+    // Energy can come down via any macro — surface the single biggest kcal
+    // contributor as the most efficient lever, tagging what kind of change
+    // it would actually be (so the dietitian isn't surprised that the
+    // "biggest lever" happens to also be the fat source, etc.)
+    const biggest = [...candidates].sort((a,b)=>b.kcal-a.kcal)[0];
+    return {
+      biggest_single_lever: `"${biggest.name}" (${biggest.grams}g, ${biggest.kcal} kcal) — reducing this has the largest effect on total energy, but will also change ${biggest.fat_role==='intrinsic' && biggest.fat_g>2 ? 'fat' : biggest.exchange_category==='starch' ? 'carbohydrate' : 'the corresponding macro'} specifically, not necessarily the nutrient the dietitian actually wants to target — clarify the specific clinical goal before applying this.`,
+    };
+  }
+
+  throw new Error(`Unknown adjustment goal: ${goal}`);
+}
+
+// ---- public surface ----
+window.NutreseEngine = {
+  FOOD_DATABASE, FOOD_DB_VERSION, RECIPES, RECIPE_SCHEMA_VERSION,
+  recipeTotals, deriveExchanges, ingredientTotal,
+  freezeMealInstance, renderMealText, ROUNDING_POLICY, macroReconstructedKcal,
+  setIngredientQuantity, addIngredient, removeIngredient, replaceIngredient, setServings, recalculate,
+  resolveAiFoodSuggestion, validateAiMealSuggestion,
+  exportPlanJSON, suggestAdjustmentLevers, effectiveFatRole,
+};
+})();
+
+</script>
 <script>
 const S = {
   name:'',age:null,sex:'M',height:null,weight:null,activity:1.55,
@@ -6832,7 +7844,7 @@ function calcAll() {
   const sidebarAvatarEl=document.getElementById('sidebar-client-avatar');
   if(sidebarAvatarEl) sidebarAvatarEl.innerHTML = name ? clientAvatarHtml(S.clientPhoto, name, 34) : '';
 
-  calcMacros(); calcExchanges(); updateDashMetrics(); renderEngine();
+  calcMacros(); calcExchanges(); updateDashMetrics(); renderEngine(); calcBodyComp();
 }
 
 function calcMacros(){
@@ -7133,11 +8145,21 @@ function calcBodyComp(){
   const isMale=S.sex==='M';
   const bf=parseFloat(v('bc-bf'))||null, water=parseFloat(v('bc-water'))||null;
   const visceral=parseFloat(v('bc-visceral'))||null, metage=parseFloat(v('bc-metage'))||null, bone=parseFloat(v('bc-bone'))||null;
-  const fatmass=bf&&w ? w*bf/100 : null;
-  const ffm=fatmass!==null ? w-fatmass : null;
   const fatmassEl=document.getElementById('bc-fatmass');
   const ffmEl=document.getElementById('bc-ffm');
-  if(fatmass!==null && fatmassEl && (!S.bcManual?.fatmass || !String(fatmassEl.value||'').trim())) fatmassEl.value=fatmass.toFixed(1);
+  const autoFatmass=bf&&w ? w*bf/100 : null;
+  // Fat-Free Mass must always be derived from whichever Fat Mass value is
+  // actually in effect — the manually-entered one if the dietitian has
+  // protected it (e.g. a real device/caliper measurement), otherwise the
+  // freshly auto-calculated one. Using the auto value unconditionally here
+  // was the bug: it made Fat-Free Mass silently ignore a protected manual
+  // Fat Mass entry, so the two fields no longer summed to the client's
+  // actual weight (FFM = Weight − Fat Mass must always hold).
+  const manualFatmassRaw=parseFloat(v('bc-fatmass'));
+  const usingManualFatmass = !!S.bcManual?.fatmass && Number.isFinite(manualFatmassRaw) && String(fatmassEl?.value||'').trim()!=='';
+  const fatmass = usingManualFatmass ? manualFatmassRaw : autoFatmass;
+  const ffm=(fatmass!==null && w) ? w-fatmass : null;
+  if(autoFatmass!==null && fatmassEl && (!S.bcManual?.fatmass || !String(fatmassEl.value||'').trim())) fatmassEl.value=autoFatmass.toFixed(1);
   if(ffm!==null && ffmEl && (!S.bcManual?.ffm || !String(ffmEl.value||'').trim())) ffmEl.value=ffm.toFixed(1);
   const muscle=parseFloat(v('bc-muscle'))||null;
   const folds={triceps:v('bc-fold-triceps'),biceps:v('bc-fold-biceps'),subscapular:v('bc-fold-subscapular'),suprailiac:v('bc-fold-suprailiac'),abdominal:v('bc-fold-abdominal'),thigh:v('bc-fold-thigh'),calf:v('bc-fold-calf'),notes:v('bc-fold-notes')};
