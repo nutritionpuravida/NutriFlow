@@ -2686,6 +2686,36 @@ table th,
 //   required for rendering — not the whole object — so that historical
 //   frozen instances do not silently change structure as the schema grows.
 //
+// PATIENT NAME GOVERNANCE (ratified).
+//   `name.patient` is the patient-facing label. It exists to be RECOGNISABLE
+//   AND UNAMBIGUOUS at the point of shopping and eating — not to restate
+//   clinical detail.
+//
+//   Patient names MAY omit:
+//     * preparation / cooking-state descriptors (cooked, boiled, grilled)
+//       where the meal context and gram weight already imply them
+//     * recipe-authoring notes (e.g. "for stuffing")
+//     * technical clinical wording and internal qualifiers
+//
+//   Patient names MUST retain:
+//     * PRODUCT-SELECTION information — anything determining which product
+//       to buy (fat %, "fortified", "unsweetened", species/variety where
+//       nutrition differs)
+//     * THERAPEUTIC qualifiers — the clinical reason the food was prescribed
+//     * PORTION-RELEVANT qualifiers — e.g. "dry", where the stated grams
+//       refer to a different state than the patient would assume
+//     * NUTRIENT-RELEVANT qualifiers — anything materially changing kcal,
+//       macros, or exchange value
+//
+//   TEST TO APPLY: if a patient shopping with only this label could buy a
+//   materially different product, the qualifier stays.
+//
+//   "Patient names should optimise for patient recognition and correct
+//    selection, not minimum length."
+//
+//   Patient names are AUTHORED data, reviewed clinically — never derived in
+//   code (same rule as provenance_tier and exchange mappings).
+//
 // ── VERSIONING (two independent axes, per Governance Spec v1) ──
 // FOOD_DB_VERSION      — tracks food DATA changes: nutrition values, new
 //                        foods, corrected macros, exchange value changes.
@@ -2989,7 +3019,7 @@ const FOOD_DATABASE = {
     version: FOOD_DB_VERSION
   },
   cannellini_beans_cooked: {
-    food_id: 'cannellini_beans_cooked', name: { en: 'White (cannellini) beans, cooked', gr: 'Φασόλια (κανελίνι), βρασμένα', clinical: { en: 'White (cannellini) beans, cooked', gr: 'Φασόλια (κανελίνι), βρασμένα' }, patient: { en: 'White beans', gr: 'Φασόλια' } },
+    food_id: 'cannellini_beans_cooked', name: { en: 'White (cannellini) beans, cooked', gr: 'Φασόλια (κανελίνι), βρασμένα', clinical: { en: 'White (cannellini) beans, cooked', gr: 'Φασόλια (κανελίνι), βρασμένα' }, patient: { en: 'Cannellini beans', gr: 'Φασόλια κανελίνι' } },
     state: 'cooked', fdc_id: 173745, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 139, protein100: 9.7, carbs100: 25.1, fat100: 0.5, fiber100: 6.3, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 90, note: 'ADA classifies legumes under starch; 1 exchange ≈ 1/2 cup (~90g) cooked beans' },
@@ -3017,7 +3047,7 @@ const FOOD_DATABASE = {
     version: FOOD_DB_VERSION
   },
   onion_cooked: {
-    food_id: 'onion_cooked', name: { en: 'Onion, sautéed', gr: 'Κρεμμύδι, σοταρισμένο', clinical: { en: 'Onion, sautéed', gr: 'Κρεμμύδι, σοταρισμένο' }, patient: { en: 'Onion', gr: 'Κρεμμύδι' } },
+    food_id: 'onion_cooked', name: { en: 'Onion, sautéed', gr: 'Κρεμμύδι, σοταρισμένο', clinical: { en: 'Onion, sautéed', gr: 'Κρεμμύδι, σοταρισμένο' }, patient: { en: 'Onion, sautéed', gr: 'Κρεμμύδι, σοταρισμένο' } },
     state: 'cooked', fdc_id: 170000, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 44, protein100: 1.4, carbs100: 10.2, fat100: 0.2, fiber100: 1.4, fat_role: 'intrinsic',
     exchange: { category: 'free', grams_per_exchange: null, note: 'Aromatic base; treated as free food at typical recipe quantities' },
@@ -3055,7 +3085,7 @@ const FOOD_DATABASE = {
     version: FOOD_DB_VERSION
   },
   black_eyed_beans_cooked: {
-    food_id: 'black_eyed_beans_cooked', name: { en: 'Black-eyed beans (louvi), cooked', gr: 'Λουβί (μαυρομάτικα), βρασμένα', clinical: { en: 'Black-eyed beans (louvi), cooked', gr: 'Λουβί (μαυρομάτικα), βρασμένα' }, patient: { en: 'Black-eyed beans', gr: 'Λουβί' } },
+    food_id: 'black_eyed_beans_cooked', name: { en: 'Black-eyed beans (louvi), cooked', gr: 'Λουβί (μαυρομάτικα), βρασμένα', clinical: { en: 'Black-eyed beans (louvi), cooked', gr: 'Λουβί (μαυρομάτικα), βρασμένα' }, patient: { en: 'Black-eyed beans', gr: 'Λουβί (μαυρομάτικα)' } },
     state: 'cooked', fdc_id: 173735, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 116, protein100: 7.7, carbs100: 20.8, fat100: 0.5, fiber100: 6.5, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 90, note: 'ADA classifies legumes under starch; 1 exchange ≈ 1/2 cup (~90g) cooked' },
@@ -3064,7 +3094,7 @@ const FOOD_DATABASE = {
     version: FOOD_DB_VERSION
   },
   peas_cooked: {
-    food_id: 'peas_cooked', name: { en: 'Green peas (arakas), braised', gr: 'Αρακάς, λαδερός', clinical: { en: 'Green peas (arakas), braised', gr: 'Αρακάς, λαδερός' }, patient: { en: 'Peas', gr: 'Αρακάς' } },
+    food_id: 'peas_cooked', name: { en: 'Green peas (arakas), braised', gr: 'Αρακάς, λαδερός', clinical: { en: 'Green peas (arakas), braised', gr: 'Αρακάς, λαδερός' }, patient: { en: 'Green peas', gr: 'Αρακάς' } },
     state: 'cooked', fdc_id: 170420, source: 'USDA FoodData Central (SR Legacy) — green peas, boiled',
     kcal100: 84, protein100: 5.4, carbs100: 15.6, fat100: 0.2, fiber100: 5.5, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 80, note: 'Starchy vegetable; ADA lists peas under starch. 1 exchange ≈ 1/2 cup (~80g)' },
@@ -3094,7 +3124,7 @@ const FOOD_DATABASE = {
   },
   // ---- Batch 8 additions (breakfast catalogue) ----
   milk_lowfat: {
-    food_id: 'milk_lowfat', name: { en: 'Milk, 1.5% fat', gr: 'Γάλα 1,5%', clinical: { en: 'Milk, 1.5% fat', gr: 'Γάλα 1,5%' }, patient: { en: 'Milk', gr: 'Γάλα' } },
+    food_id: 'milk_lowfat', name: { en: 'Milk, 1.5% fat', gr: 'Γάλα 1,5%', clinical: { en: 'Milk, 1.5% fat', gr: 'Γάλα 1,5%' }, patient: { en: 'Milk, 1.5% fat', gr: 'Γάλα 1,5%' } },
     state: 'n/a', fdc_id: 746782, source: 'USDA FoodData Central (SR Legacy) — reduced-fat milk',
     kcal100: 50, protein100: 3.4, carbs100: 4.8, fat100: 1.5, fiber100: 0, fat_role: 'intrinsic',
     exchange: { category: 'dairy', grams_per_exchange: 240, note: '1 dairy exchange ≈ 1 cup (~240g) milk' },
@@ -3103,7 +3133,7 @@ const FOOD_DATABASE = {
     version: FOOD_DB_VERSION
   },
   plant_milk_fortified: {
-    food_id: 'plant_milk_fortified', name: { en: 'Fortified plant milk (almond/soy)', gr: 'Εμπλουτισμένο φυτικό γάλα (αμύγδαλο/σόγια)', clinical: { en: 'Fortified plant milk (almond/soy)', gr: 'Εμπλουτισμένο φυτικό γάλα (αμύγδαλο/σόγια)' }, patient: { en: 'Plant milk', gr: 'Φυτικό γάλα' } },
+    food_id: 'plant_milk_fortified', name: { en: 'Fortified plant milk (almond/soy)', gr: 'Εμπλουτισμένο φυτικό γάλα (αμύγδαλο/σόγια)', clinical: { en: 'Fortified plant milk (almond/soy)', gr: 'Εμπλουτισμένο φυτικό γάλα (αμύγδαλο/σόγια)' }, patient: { en: 'Fortified plant milk', gr: 'Εμπλουτισμένο φυτικό γάλα' } },
     state: 'n/a', fdc_id: 174832, source: 'USDA FoodData Central (SR Legacy) — fortified soy/almond milk, unsweetened',
     kcal100: 43, protein100: 3.3, carbs100: 1.6, fat100: 1.8, fiber100: 0.4, fat_role: 'intrinsic',
     exchange: { category: 'dairy', grams_per_exchange: 240, note: 'Plant-based dairy alternative; 1 exchange ≈ 1 cup (~240g)' },
@@ -3112,7 +3142,7 @@ const FOOD_DATABASE = {
     version: FOOD_DB_VERSION
   },
   greek_yogurt_2pct: {
-    food_id: 'greek_yogurt_2pct', name: { en: 'Greek yogurt, 2%', gr: 'Γιαούρτι στραγγιστό 2%', clinical: { en: 'Greek yogurt, 2%', gr: 'Γιαούρτι στραγγιστό 2%' }, patient: { en: 'Greek yogurt', gr: 'Γιαούρτι' } },
+    food_id: 'greek_yogurt_2pct', name: { en: 'Greek yogurt, 2%', gr: 'Γιαούρτι στραγγιστό 2%', clinical: { en: 'Greek yogurt, 2%', gr: 'Γιαούρτι στραγγιστό 2%' }, patient: { en: 'Greek yogurt, 2%', gr: 'Γιαούρτι στραγγιστό 2%' } },
     state: 'n/a', fdc_id: 170903, source: 'USDA FoodData Central (SR Legacy) — Greek yogurt, lowfat',
     kcal100: 73, protein100: 9.9, carbs100: 3.9, fat100: 1.9, fiber100: 0, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 60, note: 'Protein-rich dairy; counted as protein exchange (~60g per exchange for strained yogurt)' },
@@ -3130,7 +3160,7 @@ const FOOD_DATABASE = {
     version: FOOD_DB_VERSION
   },
   oats_dry: {
-    food_id: 'oats_dry', name: { en: 'Oats, rolled (dry)', gr: 'Βρώμη, νιφάδες (ξηρή)', clinical: { en: 'Oats, rolled (dry)', gr: 'Βρώμη, νιφάδες (ξηρή)' }, patient: { en: 'Oats', gr: 'Βρώμη' } },
+    food_id: 'oats_dry', name: { en: 'Oats, rolled (dry)', gr: 'Βρώμη, νιφάδες (ξηρή)', clinical: { en: 'Oats, rolled (dry)', gr: 'Βρώμη, νιφάδες (ξηρή)' }, patient: { en: 'Dry oats', gr: 'Βρώμη (ξηρή)' } },
     state: 'raw', fdc_id: 173904, source: 'USDA FoodData Central (SR Legacy) — oats, dry',
     kcal100: 379, protein100: 13.2, carbs100: 67.7, fat100: 6.5, fiber100: 10.1, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 20, note: '1 starch exchange ≈ 20g dry oats (~2.5 tbsp)' },
@@ -3175,7 +3205,7 @@ const FOOD_DATABASE = {
     version: FOOD_DB_VERSION
   },
   turkey_slice: {
-    food_id: 'turkey_slice', name: { en: 'Turkey breast, sliced (deli)', gr: 'Γαλοπούλα, φέτες', clinical: { en: 'Turkey breast, sliced (deli)', gr: 'Γαλοπούλα, φέτες' }, patient: { en: 'Turkey', gr: 'Γαλοπούλα' } },
+    food_id: 'turkey_slice', name: { en: 'Turkey breast, sliced (deli)', gr: 'Γαλοπούλα, φέτες', clinical: { en: 'Turkey breast, sliced (deli)', gr: 'Γαλοπούλα, φέτες' }, patient: { en: 'Turkey breast slices', gr: 'Φέτες γαλοπούλας' } },
     state: 'n/a', fdc_id: 171506, source: 'USDA FoodData Central (SR Legacy) — turkey breast, low-fat deli',
     kcal100: 104, protein100: 17.0, carbs100: 2.0, fat100: 3.0, fiber100: 0, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'Lean protein exchange; 1 slice ≈ 30g' },
@@ -3203,7 +3233,7 @@ const FOOD_DATABASE = {
   },
   // ---- Batch 9 additions ----
   white_fish_grilled: {
-    food_id: 'white_fish_grilled', name: { en: 'White fish (sea bream/bass), grilled', gr: 'Λευκό ψάρι (τσιπούρα/λαβράκι), ψητό', clinical: { en: 'White fish (sea bream/bass), grilled', gr: 'Λευκό ψάρι (τσιπούρα/λαβράκι), ψητό' }, patient: { en: 'White fish', gr: 'Λευκό ψάρι' } },
+    food_id: 'white_fish_grilled', name: { en: 'White fish (sea bream/bass), grilled', gr: 'Λευκό ψάρι (τσιπούρα/λαβράκι), ψητό', clinical: { en: 'White fish (sea bream/bass), grilled', gr: 'Λευκό ψάρι (τσιπούρα/λαβράκι), ψητό' }, patient: { en: 'White fish (sea bream or bass)', gr: 'Λευκό ψάρι (τσιπούρα ή λαβράκι)' } },
     state: 'cooked', fdc_id: 175176, source: 'USDA FoodData Central (SR Legacy) — sea bass, cooked',
     kcal100: 124, protein100: 23.6, carbs100: 0, fat100: 2.6, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 35, note: 'Lean fish; slightly higher gram equivalent than meat per protein exchange' },
@@ -3214,7 +3244,7 @@ const FOOD_DATABASE = {
   },
   // ---- Batch 10 additions (snack catalogue) ----
   cottage_cheese: {
-    food_id: 'cottage_cheese', name: { en: 'Cottage cheese, low-fat', gr: 'Τυρί cottage, χαμηλών λιπαρών', clinical: { en: 'Cottage cheese, low-fat', gr: 'Τυρί cottage, χαμηλών λιπαρών' }, patient: { en: 'Cottage cheese', gr: 'Τυρί cottage' } },
+    food_id: 'cottage_cheese', name: { en: 'Cottage cheese, low-fat', gr: 'Τυρί cottage, χαμηλών λιπαρών', clinical: { en: 'Cottage cheese, low-fat', gr: 'Τυρί cottage, χαμηλών λιπαρών' }, patient: { en: 'Low-fat cottage cheese', gr: 'Τυρί cottage χαμηλών λιπαρών' } },
     state: 'n/a', fdc_id: 173417, source: 'USDA FoodData Central (SR Legacy) — cottage cheese, lowfat 2%',
     kcal100: 84, protein100: 11.0, carbs100: 4.3, fat100: 2.3, fiber100: 0, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 60, note: 'Protein-rich fresh cheese; ~60g per protein exchange' },
@@ -3250,7 +3280,7 @@ const FOOD_DATABASE = {
     version: FOOD_DB_VERSION
   },
   dried_fruit: {
-    food_id: 'dried_fruit', name: { en: 'Dried fruit (raisins/apricots)', gr: 'Αποξηραμένα φρούτα (σταφίδες/βερίκοκα)', clinical: { en: 'Dried fruit (raisins/apricots)', gr: 'Αποξηραμένα φρούτα (σταφίδες/βερίκοκα)' }, patient: { en: 'Dried fruit', gr: 'Αποξηραμένα φρούτα' } },
+    food_id: 'dried_fruit', name: { en: 'Dried fruit (raisins/apricots)', gr: 'Αποξηραμένα φρούτα (σταφίδες/βερίκοκα)', clinical: { en: 'Dried fruit (raisins/apricots)', gr: 'Αποξηραμένα φρούτα (σταφίδες/βερίκοκα)' }, patient: { en: 'Dried fruit (raisins or apricots)', gr: 'Αποξηραμένα φρούτα (σταφίδες ή βερίκοκα)' } },
     state: 'n/a', fdc_id: 168165, source: 'USDA FoodData Central (SR Legacy) — raisins, seedless',
     kcal100: 299, protein100: 3.1, carbs100: 79.2, fat100: 0.5, fiber100: 3.7, fat_role: 'intrinsic',
     exchange: { category: 'fruit', grams_per_exchange: 20, note: 'Concentrated fruit; 1 fruit exchange ≈ ~20g (2 tbsp)' },
@@ -3259,7 +3289,7 @@ const FOOD_DATABASE = {
     version: FOOD_DB_VERSION
   },
   cocoa_powder: {
-    food_id: 'cocoa_powder', name: { en: 'Cocoa powder, unsweetened', gr: 'Κακάο σκόνη, χωρίς ζάχαρη', clinical: { en: 'Cocoa powder, unsweetened', gr: 'Κακάο σκόνη, χωρίς ζάχαρη' }, patient: { en: 'Cocoa', gr: 'Κακάο' } },
+    food_id: 'cocoa_powder', name: { en: 'Cocoa powder, unsweetened', gr: 'Κακάο σκόνη, χωρίς ζάχαρη', clinical: { en: 'Cocoa powder, unsweetened', gr: 'Κακάο σκόνη, χωρίς ζάχαρη' }, patient: { en: 'Unsweetened cocoa powder', gr: 'Κακάο χωρίς ζάχαρη' } },
     state: 'n/a', fdc_id: 169593, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 228, protein100: 19.6, carbs100: 57.9, fat100: 13.7, fiber100: 37.0, fat_role: 'intrinsic',
     exchange: { category: 'free', grams_per_exchange: null, note: 'Used in small quantities (~5g) as flavoring; treated as free at typical amounts' },
@@ -4647,48 +4677,14 @@ function renderMealText(instance, lang = 'en') {
   return parts.join(' + ');
 }
 
-// Concise, patient-facing food names — strips the clinical qualifiers that
-// are useful internally (", cooked, skinless", ", boiled, without skin",
-// composite parentheticals) but read as clutter on a patient handout.
-const PATIENT_FOOD_NAME = {
-  chicken_breast_cooked: { en: 'Chicken breast', gr: 'Στήθος κοτόπουλου' },
-  cod_baked: { en: 'Cod', gr: 'Μπακαλιάρος' },
-  salmon_baked: { en: 'Salmon', gr: 'Σολομός' },
-  rice_white_cooked: { en: 'White rice', gr: 'Λευκό ρύζι' },
-  potato_boiled: { en: 'Potato', gr: 'Πατάτα' },
-  lentils_cooked: { en: 'Lentils', gr: 'Φακές' },
-  olive_oil: { en: 'Olive oil', gr: 'Ελαιόλαδο' },
-  salad_mixed_raw: { en: 'Mixed salad', gr: 'Ανάμεικτη σαλάτα' },
-  mixed_vegetables_cooked: { en: 'Mixed vegetables', gr: 'Ανάμεικτα λαχανικά' },
-  egg_whole_cooked: { en: 'Egg', gr: 'Αυγό' },
-  lemon_juice: { en: 'Lemon juice', gr: 'Χυμός λεμονιού' },
-  chicken_broth: { en: 'Chicken broth', gr: 'Ζωμός κότας' },
-  halloumi_cheese: { en: 'Halloumi', gr: 'Χαλούμι' },
-  wholegrain_bread: { en: 'Wholegrain bread', gr: 'Ψωμί ολικής' },
-  cheese_light_slice: { en: 'Light cheese', gr: 'Τυρί light' },
-  ricotta_anthotyro: { en: 'Anthotyro', gr: 'Ανθότυρο' },
-  rusk_wholegrain: { en: 'Wholegrain rusk', gr: 'Παξιμάδι ολικής' },
-  apple: { en: 'Apple', gr: 'Μήλο' },
-  pork_loin_cooked: { en: 'Pork loin', gr: 'Χοιρινό φιλέτο' },
-  beef_mince_lean_cooked: { en: 'Lean beef mince', gr: 'Άπαχος κιμάς' },
-  tuna_canned_drained: { en: 'Tuna', gr: 'Τόνος' },
-  beef_pork_patty_cooked: { en: 'Bifteki (patty)', gr: 'Μπιφτέκι' },
-  bulgur_cooked: { en: 'Bulgur', gr: 'Πλιγούρι' },
-  green_beans_cooked: { en: 'Green beans', gr: 'Φασολάκια' },
-  pasta_cooked: { en: 'Pasta', gr: 'Ζυμαρικά' },
-  pita_bread: { en: 'Pita', gr: 'Πίτα' },
-  tomato_sauce: { en: 'Tomato sauce', gr: 'Σάλτσα ντομάτας' },
-};
 function renderMealTextPatient(instance, lang = 'en') {
   return instance.ingredients.map(i => {
-    const shortName = (PATIENT_FOOD_NAME[i.food_id] && (PATIENT_FOOD_NAME[i.food_id][lang] || PATIENT_FOOD_NAME[i.food_id].en))
-    // SCOPE NOTE: the fallback deliberately resolves the CLINICAL name, not
-    // getPatientName(). The pre-migration fallback was `food_name[lang]`,
-    // i.e. the clinical/legacy name. Switching it to the snapshot's patient
-    // name would change rendered output for every food absent from the
-    // PATIENT_FOOD_NAME map below — a behaviour change outside this
-    // migration's scope. See checkpoint note on PATIENT_FOOD_NAME duplication.
-      || getClinicalName(i.food_name, lang);
+    // Patient naming now comes from the canonical snapshot (name.patient),
+    // resolved through the accessor. The former PATIENT_FOOD_NAME map was a
+    // second source of truth that duplicated this data exactly (verified:
+    // 27/27 entries byte-identical) and blocked the canonical patient names
+    // for the other 35 foods. It has been removed.
+    const shortName = getPatientName(i.food_name, lang);
     // Keep 'drained' only — it materially changes the weight's meaning for
     // canned goods. 'cooked'/'raw' are dropped as redundant on a handout.
     const drainedTxt = i.state === 'drained' ? (lang === 'gr' ? ' (στραγγισμένο)' : ' (drained)') : '';
