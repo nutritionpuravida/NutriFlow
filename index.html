@@ -978,6 +978,20 @@ html[data-theme="dark"] .week-summary-table td:last-child {
 #report-body .report-week-table tbody tr:nth-child(odd) td { background:var(--bg-surface); }
 #report-body .report-week-table tbody tr:nth-child(even) td { background:var(--teal-50); }
 #report-body .report-week-table tbody tr:last-child td { background:var(--teal-50); font-weight:700; border-top:2px solid var(--teal-600); }
+/* ─── MOBILE REPORT (screen only) ───
+   On narrow screens the 7-day table would otherwise compress its columns
+   into unreadable text (table-layout:fixed + width:100% with no minimum).
+   Here we let the existing .report-week-section wrapper scroll horizontally
+   and give the table a readable minimum width, so the user swipes sideways
+   instead. Strictly @media screen + mobile: never affects desktop (which
+   already fits) or print/PDF (governed by @media print / #nutriflow-print-only). */
+@media screen and (max-width: 760px) {
+  #report-body .report-week-section { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #report-body .report-week-table { min-width: 720px; }
+  /* subtle affordance that the table scrolls */
+  #report-body .report-week-section::-webkit-scrollbar { height: 8px; }
+  #report-body .report-week-section::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 8px; }
+}
 /* ─── PRINT ─── */
 @media print {
   /* Default: portrait A4 for client report (clean, readable handout) */
@@ -2606,7 +2620,18 @@ table th,
 // live USDA API call, fdc_id references real, well-known FDC entries
 // for that food/preparation and should be spot-verified against the
 // live API before this goes to production (flagged per item below).
+// ── VERSIONING (two independent axes, per Governance Spec v1) ──
+// FOOD_DB_VERSION      — tracks food DATA changes: nutrition values, new
+//                        foods, corrected macros, exchange value changes.
+//                        Bump when the CONTENT of any food changes.
+// FOOD_SCHEMA_VERSION  — tracks STRUCTURAL changes to the food object:
+//                        added/removed/renamed fields, shape changes.
+//                        Bump when the SHAPE of the object changes,
+//                        independently of whether any values changed.
+// Keeping these separate avoids ambiguity when the schema evolves without
+// nutrition changing (e.g. Phase 1 enrichment: schema up, data unchanged).
 const FOOD_DB_VERSION = '2026-07-poc-1';
+const FOOD_SCHEMA_VERSION = 'food-object-v1';
 
 const FOOD_DATABASE = {
   chicken_breast_cooked: {
@@ -2614,6 +2639,9 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 171077, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 165, protein100: 31.0, carbs100: 0, fat100: 3.6, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'ADA standard: 1 lean-protein exchange ≈ 1oz (30g) cooked skinless poultry' },
+    aliases: ["chicken breast, cooked, skinless","chicken breast","στήθος κοτόπουλου, μαγειρεμένο, χωρίς πέτσα","στήθος κοτόπουλου","chicken breast cooked"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   cod_baked: {
@@ -2621,6 +2649,9 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 173687, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 105, protein100: 23.0, carbs100: 0, fat100: 0.9, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 35, note: 'Lean fish; ADA lists commonly use a slightly higher gram equivalent than meat for the same protein exchange' },
+    aliases: ["cod fillet, baked","cod fillet","φιλέτο μπακαλιάρου, ψητό","φιλέτο μπακαλιάρου","cod baked"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   rice_white_cooked: {
@@ -2628,6 +2659,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 168878, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 130, protein100: 2.7, carbs100: 28.2, fat100: 0.3, fiber100: 0.4, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 60, note: '1 starch exchange ≈ 1/3 cup cooked rice' },
+    aliases: ["white rice, cooked","white rice","λευκό ρύζι, βρασμένο","λευκό ρύζι","rice white cooked"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   potato_boiled: {
@@ -2635,6 +2668,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 170093, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 87, protein100: 1.9, carbs100: 20.1, fat100: 0.1, fiber100: 1.8, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 90, note: '1 starch exchange ≈ 1 small potato (~90g)' },
+    aliases: ["potato, boiled, without skin","potato","πατάτα, βραστή, χωρίς φλούδα","πατάτα","potato boiled"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   lentils_cooked: {
@@ -2642,6 +2677,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 172420, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 116, protein100: 9.0, carbs100: 20.1, fat100: 0.4, fiber100: 7.9, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 90, note: 'ADA classifies legumes under starch; 1 exchange ≈ 1/2 cup (~90g) cooked' },
+    aliases: ["lentils, cooked","lentils","φακές, βρασμένες","φακές","lentils cooked"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   olive_oil: {
@@ -2649,6 +2686,9 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 171413, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 884, protein100: 0, carbs100: 0, fat100: 100, fat_role: 'added',
     exchange: { category: 'fat', grams_per_exchange: 5, note: '1 fat exchange = 1 tsp (~5g) olive oil' },
+    aliases: ["olive oil","ελαιόλαδο"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   salad_mixed_raw: {
@@ -2656,6 +2696,8 @@ const FOOD_DATABASE = {
     state: 'raw', fdc_id: null, source: 'Composite estimate — average of USDA lettuce/tomato/cucumber raw entries (SPOT-VERIFY before production)',
     kcal100: 18, protein100: 1.1, carbs100: 3.4, fat100: 0.2, fiber100: 1.3, fat_role: 'intrinsic',
     exchange: { category: 'veg', grams_per_exchange: 85, note: '1 veg exchange ≈ 1 cup raw' },
+    aliases: ["mixed salad (lettuce, tomato, cucumber)","mixed salad","ανάμεικτη σαλάτα (μαρούλι, ντομάτα, αγγούρι)","ανάμεικτη σαλάτα","salad mixed raw"],
+    provenance_tier: 'composite_estimate',
     version: FOOD_DB_VERSION
   },
   mixed_vegetables_cooked: {
@@ -2663,6 +2705,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: null, source: 'Composite estimate — average of USDA carrot/green bean/zucchini cooked entries (SPOT-VERIFY before production)',
     kcal100: 40, protein100: 1.9, carbs100: 8.2, fat100: 0.3, fiber100: 2.8, fat_role: 'intrinsic',
     exchange: { category: 'veg', grams_per_exchange: 90, note: '1 veg exchange ≈ 1 cup cooked' },
+    aliases: ["mixed vegetables, steamed (carrot, green bean, zucchini)","mixed vegetables","ανάμεικτα λαχανικά στον ατμό (καρότο, φασολάκι, κολοκυθάκι)","ανάμεικτα λαχανικά στον ατμό","mixed vegetables cooked"],
+    provenance_tier: 'composite_estimate',
     version: FOOD_DB_VERSION
   },
   egg_whole_cooked: {
@@ -2670,6 +2714,9 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 173424, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 155, protein100: 12.6, carbs100: 1.1, fat100: 10.6, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 50, note: '1 medium-fat protein exchange = 1 large egg (~50g edible)' },
+    aliases: ["egg, whole, cooked (boiled/poached)","egg","αυγό, ολόκληρο, μαγειρεμένο (βραστό/ποσέ)","αυγό","egg whole cooked"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   lemon_juice: {
@@ -2677,6 +2724,9 @@ const FOOD_DATABASE = {
     state: 'raw', fdc_id: 167746, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 22, protein100: 0.4, carbs100: 6.9, fat100: 0.2, fat_role: 'intrinsic',
     exchange: { category: 'free', grams_per_exchange: null, note: 'Free food — negligible kcal at typical seasoning quantities' },
+    aliases: ["lemon juice","χυμός λεμονιού"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   chicken_broth: {
@@ -2684,6 +2734,9 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 174608, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 4, protein100: 0.9, carbs100: 0.2, fat100: 0.1, fat_role: 'intrinsic',
     exchange: { category: 'free', grams_per_exchange: null, note: 'Free food per standard exchange-list convention for clear broth' },
+    aliases: ["chicken broth, clear","chicken broth","ζωμός κότας, διάφανος","ζωμός κότας"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   halloumi_cheese: {
@@ -2691,6 +2744,9 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 174168, source: 'USDA FoodData Central (SR Legacy) — base halloumi values; grilling assumed negligible nutrient change',
     kcal100: 321, protein100: 21.3, carbs100: 2.0, fat100: 25.0, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'High-fat protein exchange, consistent with cheese classification under ADA meat/protein category' },
+    aliases: ["halloumi cheese, grilled","halloumi cheese","χαλούμι, ψητό","χαλούμι"],
+    provenance_tier: 'usda_approximate',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   wholegrain_bread: {
@@ -2698,6 +2754,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 172686, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 247, protein100: 9.0, carbs100: 41.0, fat100: 4.0, fiber100: 6.0, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 30, note: '1 starch exchange = 1 slice (~30g)' },
+    aliases: ["wholegrain bread","ψωμί ολικής άλεσης"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   cheese_light_slice: {
@@ -2705,6 +2763,9 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: null, source: 'Composite estimate — typical reduced-fat cheddar-style slice (SPOT-VERIFY brand-specific value before production)',
     kcal100: 250, protein100: 28.0, carbs100: 4.0, fat100: 14.0, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'Lean protein exchange = 1 slice (~30g)' },
+    aliases: ["cheese, light/reduced-fat, sliced","cheese","τυρί light σε φέτες","cheese light slice"],
+    provenance_tier: 'composite_estimate',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   ricotta_anthotyro: {
@@ -2712,6 +2773,9 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 173441, source: 'USDA FoodData Central (SR Legacy) — ricotta used as closest nutritional equivalent to anthotyro',
     kcal100: 174, protein100: 11.3, carbs100: 3.0, fat100: 13.0, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 40, note: 'Medium-fat protein exchange' },
+    aliases: ["anthotyro (soft whey cheese)","anthotyro","ανθότυρο","ricotta anthotyro"],
+    provenance_tier: 'usda_approximate',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   rusk_wholegrain: {
@@ -2719,6 +2783,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: null, source: 'Composite estimate — typical Cypriot barley rusk (SPOT-VERIFY brand-specific value before production)',
     kcal100: 350, protein100: 10.0, carbs100: 70.0, fat100: 3.0, fiber100: 8.0, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 20, note: '1 starch exchange ≈ 1 rusk piece (~20g)' },
+    aliases: ["wholegrain rusk (barley)","wholegrain rusk","παξιμάδι ολικής (κριθαρένιο)","παξιμάδι ολικής","rusk wholegrain"],
+    provenance_tier: 'composite_estimate',
     version: FOOD_DB_VERSION
   },
   apple: {
@@ -2726,6 +2792,8 @@ const FOOD_DATABASE = {
     state: 'raw', fdc_id: 171688, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 52, protein100: 0.3, carbs100: 13.8, fat100: 0.2, fiber100: 2.4, fat_role: 'intrinsic',
     exchange: { category: 'fruit', grams_per_exchange: 120, note: '1 fruit exchange ≈ 1 small apple (~120g)' },
+    aliases: ["apple, whole, raw","apple","μήλο, ολόκληρο, ωμό","μήλο"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   // ---- Batch 2 additions ----
@@ -2734,6 +2802,9 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 168312, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 143, protein100: 26.0, carbs100: 0, fat100: 3.5, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'Lean-protein exchange, same convention as chicken' },
+    aliases: ["pork loin, lean, cooked","pork loin","χοιρινό φιλέτο, άπαχο, μαγειρεμένο","χοιρινό φιλέτο","pork loin cooked"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   beef_mince_lean_cooked: {
@@ -2741,6 +2812,9 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 174036, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 176, protein100: 26.0, carbs100: 0, fat100: 8.0, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'Medium-fat protein exchange (leaner mince still carries more fat/exchange than poultry)' },
+    aliases: ["beef mince, lean (90/10), cooked","beef mince","κιμάς μοσχαρίσιος, άπαχος (90/10), μαγειρεμένος","κιμάς μοσχαρίσιος","beef mince lean cooked"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   tuna_canned_drained: {
@@ -2748,6 +2822,9 @@ const FOOD_DATABASE = {
     state: 'drained', fdc_id: 175159, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 116, protein100: 25.5, carbs100: 0, fat100: 0.8, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'Very lean protein exchange; weight is drained weight, not can weight' },
+    aliases: ["tuna, canned in water, drained","tuna","τόνος κονσέρβα σε νερό, στραγγισμένος","τόνος κονσέρβα σε νερό","tuna canned drained"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   beef_pork_patty_cooked: {
@@ -2755,6 +2832,9 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: null, source: 'Composite estimate — seasoned mixed beef/pork patty with breadcrumb/onion filler (SPOT-VERIFY before production; recipe-dependent)',
     kcal100: 215, protein100: 22.0, carbs100: 4.0, fat100: 12.5, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'Medium/high-fat protein exchange' },
+    aliases: ["bifteki (seasoned beef/pork patty), grilled","bifteki","μπιφτέκι (μοσχάρι/χοιρινό με μπαχαρικά), ψητό","μπιφτέκι","beef pork patty cooked"],
+    provenance_tier: 'composite_estimate',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   bulgur_cooked: {
@@ -2762,6 +2842,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 169739, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 83, protein100: 3.1, carbs100: 18.6, fat100: 0.2, fiber100: 4.5, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 90, note: '1 starch exchange ≈ 1/2 cup cooked bulgur' },
+    aliases: ["bulgur wheat, cooked","bulgur wheat","πλιγούρι, βρασμένο","πλιγούρι","bulgur cooked"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   green_beans_cooked: {
@@ -2769,6 +2851,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: null, source: 'Composite estimate — USDA green beans cooked + light tomato sauce (SPOT-VERIFY before production)',
     kcal100: 42, protein100: 1.8, carbs100: 8.5, fat100: 0.3, fiber100: 3.4, fat_role: 'intrinsic',
     exchange: { category: 'veg', grams_per_exchange: 90, note: '1 veg exchange ≈ 1 cup cooked' },
+    aliases: ["green beans, cooked in tomato sauce","green beans","φασολάκια, βρασμένα σε σάλτσα ντομάτας","φασολάκια","green beans cooked"],
+    provenance_tier: 'composite_estimate',
     version: FOOD_DB_VERSION
   },
   pasta_cooked: {
@@ -2776,6 +2860,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 168927, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 131, protein100: 5.0, carbs100: 25.0, fat100: 1.1, fiber100: 1.8, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 75, note: '1 starch exchange ≈ 1/2 cup cooked pasta' },
+    aliases: ["pasta, cooked","pasta","ζυμαρικά, βρασμένα","ζυμαρικά","pasta cooked"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   pita_bread: {
@@ -2783,6 +2869,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 172687, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 275, protein100: 9.1, carbs100: 55.7, fat100: 1.2, fiber100: 3.0, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 30, note: '1 starch exchange ≈ 1/3 pita' },
+    aliases: ["pita bread","πίτα"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   tomato_sauce: {
@@ -2790,6 +2878,9 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 169228, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 29, protein100: 1.4, carbs100: 6.0, fat100: 0.2, fat_role: 'intrinsic',
     exchange: { category: 'free', grams_per_exchange: null, note: 'Small quantities treated as a free-food seasoning base at typical amounts' },
+    aliases: ["tomato sauce","σάλτσα ντομάτας"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   // ---- Batch 3 additions ----
@@ -2798,6 +2889,9 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 173686, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 206, protein100: 22.1, carbs100: 0, fat100: 12.4, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'Higher-fat fish; still classified as protein exchange, omega-3-rich intrinsic fat' },
+    aliases: ["salmon fillet, baked","salmon fillet","φιλέτο σολομού, ψητό","φιλέτο σολομού","salmon baked"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   // ---- Batch 5 additions ----
@@ -2806,6 +2900,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 173757, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 164, protein100: 8.9, carbs100: 27.4, fat100: 2.6, fiber100: 7.6, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 85, note: 'ADA classifies legumes under starch; 1 exchange ≈ 1/2 cup (~85g) cooked chickpeas' },
+    aliases: ["chickpeas, cooked","chickpeas","ρεβίθια, βρασμένα","ρεβίθια","chickpeas cooked"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   tofu_firm: {
@@ -2813,6 +2909,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 172475, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 144, protein100: 17.3, carbs100: 2.8, fat100: 8.7, fiber100: 2.3, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 60, note: 'Plant protein; 1 medium-fat protein exchange ≈ 1/2 cup (~60g) firm tofu' },
+    aliases: ["tofu, firm","tofu","τόφου, σκληρό","τόφου","tofu firm"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   quinoa_cooked: {
@@ -2820,6 +2918,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 168917, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 120, protein100: 4.4, carbs100: 21.3, fat100: 1.9, fiber100: 2.8, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 75, note: '1 starch exchange ≈ 1/2 cup (~75g) cooked quinoa' },
+    aliases: ["quinoa, cooked","quinoa","κινόα, βρασμένη","κινόα","quinoa cooked"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   cannellini_beans_cooked: {
@@ -2827,6 +2927,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 173745, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 139, protein100: 9.7, carbs100: 25.1, fat100: 0.5, fiber100: 6.3, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 90, note: 'ADA classifies legumes under starch; 1 exchange ≈ 1/2 cup (~90g) cooked beans' },
+    aliases: ["white (cannellini) beans, cooked","white","φασόλια (κανελίνι), βρασμένα","φασόλια","cannellini beans cooked"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   spinach_cooked: {
@@ -2834,6 +2936,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 168463, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 23, protein100: 3.0, carbs100: 3.8, fat100: 0.3, fiber100: 2.4, fat_role: 'intrinsic',
     exchange: { category: 'veg', grams_per_exchange: 90, note: '1 veg exchange ≈ 1/2 cup (~90g) cooked spinach (denser than raw)' },
+    aliases: ["spinach, cooked","spinach","σπανάκι, βρασμένο","σπανάκι","spinach cooked"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   feta_cheese: {
@@ -2841,6 +2945,9 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 173420, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 264, protein100: 14.2, carbs100: 4.1, fat100: 21.3, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'High-fat protein exchange, consistent with cheese classification' },
+    aliases: ["feta cheese","φέτα"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   onion_cooked: {
@@ -2848,6 +2955,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 170000, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 44, protein100: 1.4, carbs100: 10.2, fat100: 0.2, fiber100: 1.4, fat_role: 'intrinsic',
     exchange: { category: 'free', grams_per_exchange: null, note: 'Aromatic base; treated as free food at typical recipe quantities' },
+    aliases: ["onion, sautéed","onion","κρεμμύδι, σοταρισμένο","κρεμμύδι","onion cooked"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   bell_pepper_raw: {
@@ -2855,6 +2964,8 @@ const FOOD_DATABASE = {
     state: 'raw', fdc_id: 170108, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 26, protein100: 1.0, carbs100: 6.0, fat100: 0.3, fiber100: 2.1, fat_role: 'intrinsic',
     exchange: { category: 'veg', grams_per_exchange: 90, note: '1 veg exchange ≈ 1 medium pepper shell' },
+    aliases: ["bell pepper (for stuffing)","bell pepper","πιπεριά (για γεμιστά)","πιπεριά","bell pepper raw"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   tomato_raw: {
@@ -2862,6 +2973,8 @@ const FOOD_DATABASE = {
     state: 'raw', fdc_id: 170457, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 18, protein100: 0.9, carbs100: 3.9, fat100: 0.2, fiber100: 1.2, fat_role: 'intrinsic',
     exchange: { category: 'veg', grams_per_exchange: 90, note: '1 veg exchange ≈ 1 medium tomato shell' },
+    aliases: ["tomato (for stuffing)","tomato","ντομάτα (για γεμιστά)","ντομάτα","tomato raw"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   // ---- Batch 6 additions ----
@@ -2870,6 +2983,9 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 168333, source: 'USDA FoodData Central (SR Legacy) — lean pork, grilled',
     kcal100: 168, protein100: 27.0, carbs100: 0, fat100: 6.5, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'Lean-protein exchange; souvlaki cut carries a little more fat than loin' },
+    aliases: ["pork souvlaki, grilled","pork souvlaki","χοιρινό σουβλάκι, ψητό","χοιρινό σουβλάκι","pork souvlaki cooked"],
+    provenance_tier: 'usda_approximate',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   black_eyed_beans_cooked: {
@@ -2877,6 +2993,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 173735, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 116, protein100: 7.7, carbs100: 20.8, fat100: 0.5, fiber100: 6.5, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 90, note: 'ADA classifies legumes under starch; 1 exchange ≈ 1/2 cup (~90g) cooked' },
+    aliases: ["black-eyed beans (louvi), cooked","black-eyed beans","λουβί (μαυρομάτικα), βρασμένα","λουβί","black eyed beans cooked"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   peas_cooked: {
@@ -2884,6 +3002,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 170420, source: 'USDA FoodData Central (SR Legacy) — green peas, boiled',
     kcal100: 84, protein100: 5.4, carbs100: 15.6, fat100: 0.2, fiber100: 5.5, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 80, note: 'Starchy vegetable; ADA lists peas under starch. 1 exchange ≈ 1/2 cup (~80g)' },
+    aliases: ["green peas (arakas), braised","green peas","αρακάς, λαδερός","αρακάς","peas cooked"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   trachanas_soup: {
@@ -2891,6 +3011,8 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: null, source: 'Composite estimate — Cypriot fermented cracked-wheat/yogurt soup, prepared (SPOT-VERIFY before production; recipe-dependent)',
     kcal100: 65, protein100: 3.0, carbs100: 11.0, fat100: 0.9, fiber100: 1.0, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 120, note: 'Wheat-based soup; 1 starch exchange ≈ ~120g prepared soup' },
+    aliases: ["trahanas soup (prepared)","trahanas soup","τραχανάς σούπα (έτοιμη)","τραχανάς σούπα","trachanas soup"],
+    provenance_tier: 'composite_estimate',
     version: FOOD_DB_VERSION
   },
   // ---- Batch 7 additions ----
@@ -2899,6 +3021,9 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 171478, source: 'USDA FoodData Central (SR Legacy) — ground chicken, cooked',
     kcal100: 189, protein100: 27.0, carbs100: 0, fat100: 8.7, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'Lean/medium-fat protein exchange; leaner than beef mince but carries some intrinsic fat' },
+    aliases: ["chicken mince, cooked","chicken mince","κιμάς κοτόπουλου, μαγειρεμένος","κιμάς κοτόπουλου","chicken mince cooked"],
+    provenance_tier: 'usda_exact',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   // ---- Batch 8 additions (breakfast catalogue) ----
@@ -2907,6 +3032,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 746782, source: 'USDA FoodData Central (SR Legacy) — reduced-fat milk',
     kcal100: 50, protein100: 3.4, carbs100: 4.8, fat100: 1.5, fiber100: 0, fat_role: 'intrinsic',
     exchange: { category: 'dairy', grams_per_exchange: 240, note: '1 dairy exchange ≈ 1 cup (~240g) milk' },
+    aliases: ["milk, 1.5% fat","milk","γάλα 1,5%","γάλα 1","milk lowfat"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   plant_milk_fortified: {
@@ -2914,6 +3041,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 174832, source: 'USDA FoodData Central (SR Legacy) — fortified soy/almond milk, unsweetened',
     kcal100: 43, protein100: 3.3, carbs100: 1.6, fat100: 1.8, fiber100: 0.4, fat_role: 'intrinsic',
     exchange: { category: 'dairy', grams_per_exchange: 240, note: 'Plant-based dairy alternative; 1 exchange ≈ 1 cup (~240g)' },
+    aliases: ["fortified plant milk (almond/soy)","fortified plant milk","εμπλουτισμένο φυτικό γάλα (αμύγδαλο/σόγια)","εμπλουτισμένο φυτικό γάλα","plant milk fortified"],
+    provenance_tier: 'usda_approximate',
     version: FOOD_DB_VERSION
   },
   greek_yogurt_2pct: {
@@ -2921,6 +3050,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 170903, source: 'USDA FoodData Central (SR Legacy) — Greek yogurt, lowfat',
     kcal100: 73, protein100: 9.9, carbs100: 3.9, fat100: 1.9, fiber100: 0, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 60, note: 'Protein-rich dairy; counted as protein exchange (~60g per exchange for strained yogurt)' },
+    aliases: ["greek yogurt, 2%","greek yogurt","γιαούρτι στραγγιστό 2%","greek yogurt 2pct"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   soy_yogurt: {
@@ -2928,6 +3059,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 330512, source: 'Composite estimate — plain unsweetened soy yogurt (SPOT-VERIFY brand before production)',
     kcal100: 66, protein100: 3.5, carbs100: 5.0, fat100: 3.0, fiber100: 0.5, fat_role: 'intrinsic',
     exchange: { category: 'dairy', grams_per_exchange: 150, note: 'Plant-based yogurt; 1 exchange ≈ small pot (~150g)' },
+    aliases: ["soy yogurt","γιαούρτι σόγιας"],
+    provenance_tier: 'composite_estimate',
     version: FOOD_DB_VERSION
   },
   oats_dry: {
@@ -2935,6 +3068,8 @@ const FOOD_DATABASE = {
     state: 'raw', fdc_id: 173904, source: 'USDA FoodData Central (SR Legacy) — oats, dry',
     kcal100: 379, protein100: 13.2, carbs100: 67.7, fat100: 6.5, fiber100: 10.1, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 20, note: '1 starch exchange ≈ 20g dry oats (~2.5 tbsp)' },
+    aliases: ["oats, rolled (dry)","oats","βρώμη, νιφάδες (ξηρή)","βρώμη","oats dry"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   walnuts: {
@@ -2942,6 +3077,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 170187, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 654, protein100: 15.2, carbs100: 13.7, fat100: 65.2, fiber100: 6.7, fat_role: 'intrinsic',
     exchange: { category: 'fat', grams_per_exchange: 8, note: 'Nut fat is intrinsic; ~8g (about 4 halves) per fat exchange' },
+    aliases: ["walnuts","καρύδια"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   honey: {
@@ -2949,6 +3086,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 169640, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 304, protein100: 0.3, carbs100: 82.4, fat100: 0, fiber100: 0.2, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 15, note: 'Concentrated sugar; ~15g (~1 tsp) counted as 1 starch/carb exchange' },
+    aliases: ["honey","μέλι"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   tahini: {
@@ -2956,6 +3095,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 170188, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 595, protein100: 17.0, carbs100: 21.2, fat100: 53.8, fiber100: 9.3, fat_role: 'intrinsic',
     exchange: { category: 'fat', grams_per_exchange: 10, note: 'Seed paste; fat is intrinsic; ~10g per fat exchange' },
+    aliases: ["tahini (sesame paste)","tahini","ταχίνι"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   banana: {
@@ -2963,6 +3104,8 @@ const FOOD_DATABASE = {
     state: 'raw', fdc_id: 173944, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 89, protein100: 1.1, carbs100: 22.8, fat100: 0.3, fiber100: 2.6, fat_role: 'intrinsic',
     exchange: { category: 'fruit', grams_per_exchange: 100, note: '1 fruit exchange ≈ 1 small banana (~100g)' },
+    aliases: ["banana","μπανάνα"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   turkey_slice: {
@@ -2970,6 +3113,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 171506, source: 'USDA FoodData Central (SR Legacy) — turkey breast, low-fat deli',
     kcal100: 104, protein100: 17.0, carbs100: 2.0, fat100: 3.0, fiber100: 0, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 30, note: 'Lean protein exchange; 1 slice ≈ 30g' },
+    aliases: ["turkey breast, sliced (deli)","turkey breast","γαλοπούλα, φέτες","γαλοπούλα","turkey slice"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   cucumber_raw: {
@@ -2977,6 +3122,8 @@ const FOOD_DATABASE = {
     state: 'raw', fdc_id: 168409, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 15, protein100: 0.7, carbs100: 3.6, fat100: 0.1, fiber100: 0.5, fat_role: 'intrinsic',
     exchange: { category: 'free', grams_per_exchange: null, note: 'Non-starchy; small side quantities treated as free' },
+    aliases: ["cucumber","αγγούρι","cucumber raw"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   cherry_tomatoes: {
@@ -2984,6 +3131,8 @@ const FOOD_DATABASE = {
     state: 'raw', fdc_id: null, source: 'Same USDA reference as raw tomato (fdc 170457); modeled as a distinct free-food side item',
     kcal100: 18, protein100: 0.9, carbs100: 3.9, fat100: 0.2, fiber100: 1.2, fat_role: 'intrinsic',
     exchange: { category: 'free', grams_per_exchange: null, note: 'Non-starchy side; small quantities treated as free' },
+    aliases: ["cherry tomatoes","ντοματίνια"],
+    provenance_tier: 'usda_approximate',
     version: FOOD_DB_VERSION
   },
   // ---- Batch 9 additions ----
@@ -2992,6 +3141,9 @@ const FOOD_DATABASE = {
     state: 'cooked', fdc_id: 175176, source: 'USDA FoodData Central (SR Legacy) — sea bass, cooked',
     kcal100: 124, protein100: 23.6, carbs100: 0, fat100: 2.6, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 35, note: 'Lean fish; slightly higher gram equivalent than meat per protein exchange' },
+    aliases: ["white fish (sea bream/bass), grilled","white fish","λευκό ψάρι (τσιπούρα/λαβράκι), ψητό","λευκό ψάρι","white fish grilled"],
+    provenance_tier: 'usda_approximate',
+    fiber100: 0,
     version: FOOD_DB_VERSION
   },
   // ---- Batch 10 additions (snack catalogue) ----
@@ -3000,6 +3152,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 173417, source: 'USDA FoodData Central (SR Legacy) — cottage cheese, lowfat 2%',
     kcal100: 84, protein100: 11.0, carbs100: 4.3, fat100: 2.3, fiber100: 0, fat_role: 'intrinsic',
     exchange: { category: 'protein', grams_per_exchange: 60, note: 'Protein-rich fresh cheese; ~60g per protein exchange' },
+    aliases: ["cottage cheese, low-fat","cottage cheese","τυρί cottage, χαμηλών λιπαρών","τυρί cottage"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   crackers_wholegrain: {
@@ -3007,6 +3161,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 174954, source: 'USDA FoodData Central (SR Legacy) — whole-wheat crackers',
     kcal100: 424, protein100: 10.0, carbs100: 68.0, fat100: 12.0, fiber100: 9.0, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 18, note: '1 starch exchange ≈ 4 crackers (~18g)' },
+    aliases: ["wholegrain crackers","κράκερ ολικής","crackers wholegrain"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   rice_cakes: {
@@ -3014,6 +3170,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 174928, source: 'USDA FoodData Central (SR Legacy) — rice cakes, plain',
     kcal100: 387, protein100: 8.2, carbs100: 81.5, fat100: 2.8, fiber100: 4.2, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 10, note: '1 starch exchange ≈ 1-2 rice cakes (~10g)' },
+    aliases: ["rice cakes","ρυζογκοφρέτες"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   almonds: {
@@ -3021,6 +3179,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 170567, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 579, protein100: 21.2, carbs100: 21.6, fat100: 49.9, fiber100: 12.5, fat_role: 'intrinsic',
     exchange: { category: 'fat', grams_per_exchange: 8, note: 'Nut fat is intrinsic; ~8g (about 6 almonds) per fat exchange' },
+    aliases: ["almonds","αμύγδαλα"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   dried_fruit: {
@@ -3028,6 +3188,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 168165, source: 'USDA FoodData Central (SR Legacy) — raisins, seedless',
     kcal100: 299, protein100: 3.1, carbs100: 79.2, fat100: 0.5, fiber100: 3.7, fat_role: 'intrinsic',
     exchange: { category: 'fruit', grams_per_exchange: 20, note: 'Concentrated fruit; 1 fruit exchange ≈ ~20g (2 tbsp)' },
+    aliases: ["dried fruit (raisins/apricots)","dried fruit","αποξηραμένα φρούτα (σταφίδες/βερίκοκα)","αποξηραμένα φρούτα"],
+    provenance_tier: 'usda_approximate',
     version: FOOD_DB_VERSION
   },
   cocoa_powder: {
@@ -3035,6 +3197,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: 169593, source: 'USDA FoodData Central (SR Legacy)',
     kcal100: 228, protein100: 19.6, carbs100: 57.9, fat100: 13.7, fiber100: 37.0, fat_role: 'intrinsic',
     exchange: { category: 'free', grams_per_exchange: null, note: 'Used in small quantities (~5g) as flavoring; treated as free at typical amounts' },
+    aliases: ["cocoa powder, unsweetened","cocoa powder","κακάο σκόνη, χωρίς ζάχαρη","κακάο σκόνη"],
+    provenance_tier: 'usda_exact',
     version: FOOD_DB_VERSION
   },
   oat_biscuits: {
@@ -3042,6 +3206,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: null, source: 'Composite estimate — typical oat biscuit/digestive (SPOT-VERIFY brand before production)',
     kcal100: 450, protein100: 6.5, carbs100: 66.0, fat100: 17.0, fiber100: 4.5, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 20, note: '2-3 biscuits ≈ 1 starch + 1 fat; ~20g per starch exchange' },
+    aliases: ["oat biscuits","μπισκότα βρώμης"],
+    provenance_tier: 'composite_estimate',
     version: FOOD_DB_VERSION
   },
   cereal_bar: {
@@ -3049,6 +3215,8 @@ const FOOD_DATABASE = {
     state: 'n/a', fdc_id: null, source: 'Composite estimate — typical cereal/granola bar ~25g (SPOT-VERIFY brand before production)',
     kcal100: 400, protein100: 6.0, carbs100: 68.0, fat100: 12.0, fiber100: 5.0, fat_role: 'intrinsic',
     exchange: { category: 'starch', grams_per_exchange: 25, note: '1 bar (~25g) ≈ 1 starch + 1 fat exchange' },
+    aliases: ["cereal bar","μπάρα δημητριακών"],
+    provenance_tier: 'composite_estimate',
     version: FOOD_DB_VERSION
   },
 };
@@ -4542,6 +4710,18 @@ window.NutreseEngine = {
 // integration during development. Set to false to instantly revert the
 // whole app to the legacy meal engine with zero other changes.
 const USE_STRUCTURED_MEAL_ENGINE = true;
+// ── Developer/verification flag: Export JSON button ──
+// The "Export JSON" button in the 7-Day Plan toolbar is an INTERNAL
+// verification tool that dumps structured plan data (incl. client PII) for
+// inspection during migration testing — NOT an end-user feature. It is
+// gated here by a dedicated build-time flag, default OFF, so it is provably
+// absent from normal builds. This is DELIBERATELY decoupled from
+// authentication / subscriptionState / admin roles: it is a developer
+// switch, not an access-control gate. The exportStructuredPlanJSON()
+// function itself remains defined and callable (e.g. from the console) even
+// when this flag is off, for future testing. Flip to true only in a local/
+// dev build when you need the button visible.
+const ENABLE_EXPORT_JSON_BUTTON = false;
 // Per-meal rollout: a meal renders/calculates through the new engine ONLY
 // if its key is in this set AND the flag above is on. Every other meal
 // uses the legacy path, completely unaffected. Remove a key to roll back
@@ -11247,7 +11427,7 @@ function buildSevenDay(){
       <button class="btn" onclick="openTemplatePicker()"><i class="ti ti-clipboard-list" aria-hidden="true"></i> ${lang==='EN'?'Use Template':'Χρήση Προτύπου'}</button>
       <button class="btn" onclick="generateAiSevenDayPlan()">✨ ${lang==='EN'?'Generate AI Plan':'Δημιουργία Πλάνου με AI'}</button>
       <button class="btn" onclick="previewRebalanceWeek()">✨ ${lang==='EN'?'Rebalance Week':'Επαναϊσορρόπηση Εβδομάδας'}</button>
-      ${USE_STRUCTURED_MEAL_ENGINE ? `<button class="btn" onclick="exportStructuredPlanJSON()"><i class="ti ti-file-code" aria-hidden="true"></i> ${lang==='EN'?'Export JSON':'Εξαγωγή JSON'}</button>` : ''}
+      ${ENABLE_EXPORT_JSON_BUTTON ? `<button class="btn" onclick="exportStructuredPlanJSON()"><i class="ti ti-file-code" aria-hidden="true"></i> ${lang==='EN'?'Export JSON':'Εξαγωγή JSON'}</button>` : ''}
       <span id="weekly-plan-save-status" style="font-size:13px;font-weight:800;color:var(--teal-700)"></span>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
